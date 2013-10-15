@@ -52,6 +52,7 @@ public class MailActivity extends Activity
 			String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
 			String password = "Yy9m7NRc";
 			int port = 993;
+			
 			Properties props = new Properties();
 			props.setProperty("mail.imaps.host", posteingang_host);
 			props.setProperty("mail.imaps.user", benutzerName);
