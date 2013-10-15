@@ -20,24 +20,6 @@ import com.jesm3.newDualis.R;
 
 public class MailActivity extends Activity
 {
-	static String indentStr = "                                               ";
-	static int level = 0;
-
-
-	static String protocol = "imap";
-	static String host = "lehre-mail.dhbw-stuttgart.de";
-	static String user = "it12184@lehre.dhbw-stuttgart.de";
-	static String password = "aurumopesest1";
-	static String mbox = null;
-	static String url = null;
-	static int port = 993;
-	static boolean verbose = false;
-	static boolean debug = false;
-	static boolean showStructure = false;
-	static boolean showMessage = false;
-	static boolean showAlert = false;
-	static boolean saveAttachments = false;
-	static int attnum = 1;
 
     /** Called when the activity is first created. */
     @Override
@@ -69,13 +51,14 @@ public class MailActivity extends Activity
 			String posteingang_host = "lehre-mail.dhbw-stuttgart.de";
 			String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
 			String password = "Yy9m7NRc";
+			int port = 993;
 			Properties props = new Properties();
 			props.setProperty("mail.imaps.host", posteingang_host);
 			props.setProperty("mail.imaps.user", benutzerName);
 			props.setProperty("mail.imaps.password", password);
 			props.setProperty("mail.imaps.auth", "true");
 			props.setProperty("mail.imaps.starttls.enable", "true");
-			props.setProperty("mail.imaps.socketFactory.port", String.valueOf(993));
+			props.setProperty("mail.imaps.socketFactory.port", String.valueOf(port));
 			props.setProperty("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 			props.setProperty("mail.imaps.socketFactory.fallback", "false");
 			
@@ -83,7 +66,6 @@ public class MailActivity extends Activity
 			
 //			// Get a Session object
 			Session session = Session.getInstance(props, new PassAuthenticator(benutzerName, password));
-			session.setDebug(debug);
 			
 //			// Get a Store object
 			Store store = null;
@@ -98,10 +80,7 @@ public class MailActivity extends Activity
 				System.out.println("No default folder");
 				log("No default folder");
 			}
-
-			if (mbox == null)
-				mbox = "INBOX";
-			folder = folder.getFolder(mbox);
+			folder = folder.getFolder("INBOX");
 			if (folder == null)
 			{
 				System.out.println("Invalid folder");
