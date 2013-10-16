@@ -2,6 +2,8 @@ package com.jesm3.newDualis.jinterface;
 
 public class DualisLinks {
 
+	//Datenklasse für geparste Links, damit diese nicht erneut geparst werden müssen
+	
 	String stundenPlan;
 	String leistung;
 	String noten;

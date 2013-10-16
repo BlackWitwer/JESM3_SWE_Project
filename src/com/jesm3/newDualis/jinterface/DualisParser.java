@@ -26,14 +26,13 @@ public class DualisParser {
 		this.r = r;
 	}
 	
-	public String parseLink(String aContent, int xslSystemId){
-		String parseResult = parse(aContent, xslSystemId);
-		return Html.fromHtml(parseResult.substring(parseResult.indexOf("/"))).toString();
-	}
-	
+	// JSoup HTML Parser, schnell aber noch kein Parsing mit xsl files 
 	public String parseHtml(String aContent){
 		Document doc = Jsoup.parse(aContent);
-		Elements monthel = doc.select(".apmntLink");
+		
+		// Siehe auch http://jsoup.org/apidocs/org/jsoup/select/Selector.html
+		Elements monthel = doc.select(".apmntLink"); // Alle Elemente mit class="apmntLink"
+		
 		String out = "";
 		for(int i=0; i<monthel.size();i++){
 			out=out+monthel.get(0).toString();
@@ -41,6 +40,13 @@ public class DualisParser {
 		return out;
 	}
 	
+	// Methode die den Link mit xslt herausparst, weiterverwenden?
+	public String parseLink(String aContent, int xslSystemId){
+		String parseResult = parse(aContent, xslSystemId);
+		return Html.fromHtml(parseResult.substring(parseResult.indexOf("/"))).toString();
+	}
+	
+	// XSLT, leider sehr langsam
 	public String parse(String aContent, int xslSystemId) {
 		CustomOutput out = new CustomOutput();
 		try {

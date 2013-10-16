@@ -34,26 +34,7 @@ public class DualisConnection {
 	public DualisConnection(MainActivity mainActivity){
 		httpClient = new DefaultHttpClient();
 		this.main = mainActivity;
-		dparse = new DualisParser(mainActivity.getResources());
-	}
-	
-	public HttpPost generateLoginPost(String user, String pw){
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		nameValuePairs.add(new BasicNameValuePair("usrname", user));
-		nameValuePairs.add(new BasicNameValuePair("pass", pw));
-		nameValuePairs.add(new BasicNameValuePair("APPNAME", "CampusNet"));
-		nameValuePairs.add(new BasicNameValuePair("PRGNAME", "LOGINCHECK"));
-		nameValuePairs.add(new BasicNameValuePair("ARGUMENTS", "clino,usrname,pass,menuno,menu_type,browser,platform"));
-		nameValuePairs.add(new BasicNameValuePair("clino", "000000000000001"));
-		nameValuePairs.add(new BasicNameValuePair("menuno", "000324"));
-		nameValuePairs.add(new BasicNameValuePair("menu_type", "classic"));
-		HttpPost loginPost = new HttpPost("https://dualis.dhbw.de/scripts/mgrqcgi");
-		try {
-			loginPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return loginPost;
+		dparse = new DualisParser(mainActivity.getResources());  //Initialisiere Parser
 	}
 	
 	
@@ -76,18 +57,20 @@ public class DualisConnection {
 		HttpResponse secondRedirectResponse = httpClient.execute(secondRedirect);
 		HttpEntity redirectEntity = secondRedirectResponse.getEntity();
 		
-		//Parse Hauptmenülinks
+		//Parse Hauptmenülinks von Startseite
 		getMainMenuLinks(EntityUtils.toString(redirectEntity));
 		
 		//Erfolgreich eingeloggt.
 		main.appendTimestamp("Login fertig");
 	}
 	
+	//Parse Hauptmenülinks von Startseite
 	public void getMainMenuLinks(String startPageContent){
 		mlinks = new DualisLinks();
 		mlinks.setStundenPlan(dparse.parseLink(startPageContent, R.raw.stundenplan_link));
 	}
 	
+	// Geht zur Monatsübersicht und parst den Stundenplan
 	public void loadStundenplan() {
 		String stundenplanContent = getPage("https://dualis.dhbw.de" + mlinks.getStundenPlan());
 		main.appendTimestamp("Wechsel zur Stundenplanseite");
@@ -102,6 +85,7 @@ public class DualisConnection {
 		main.appendToRightTV(vorlesungen);
 	}
 	
+	// Läd Seite ohne HTML Code zurückzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);
 		try {
@@ -113,6 +97,7 @@ public class DualisConnection {
 		}
 	}
 	
+	// Läd Seite und gibt deren HTML Code als String zurück
 	public String getPage(String url) {
 		String pageContent = "";
 		try {
@@ -126,5 +111,25 @@ public class DualisConnection {
 			e.printStackTrace();
 		}
 		return pageContent;
+	}
+
+	// Generiert POST für Login
+	public HttpPost generateLoginPost(String user, String pw){
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		nameValuePairs.add(new BasicNameValuePair("usrname", user));
+		nameValuePairs.add(new BasicNameValuePair("pass", pw));
+		nameValuePairs.add(new BasicNameValuePair("APPNAME", "CampusNet"));
+		nameValuePairs.add(new BasicNameValuePair("PRGNAME", "LOGINCHECK"));
+		nameValuePairs.add(new BasicNameValuePair("ARGUMENTS", "clino,usrname,pass,menuno,menu_type,browser,platform"));
+		nameValuePairs.add(new BasicNameValuePair("clino", "000000000000001"));
+		nameValuePairs.add(new BasicNameValuePair("menuno", "000324"));
+		nameValuePairs.add(new BasicNameValuePair("menu_type", "classic"));
+		HttpPost loginPost = new HttpPost("https://dualis.dhbw.de/scripts/mgrqcgi");
+		try {
+			loginPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return loginPost;
 	}
 }
