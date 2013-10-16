@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="center"
-    android:orientation="vertical" >
-
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+        >
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:id="@+id/text"
-        android:text="@string/hello" />
-
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars = "vertical|horizontal"
+            android:id="@+id/textView" android:layout_weight="10"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:layout_weight="5">
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textViewLeft"
+                android:maxLines = "10000"
+                android:scrollbars = "vertical|horizontal"
+                android:text="textViewLeft"
+                android:layout_weight="10"/>
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="textViewRight"
+                android:maxLines = "10000"
+                android:scrollbars = "vertical|horizontal"
+                android:id="@+id/textViewRight" android:layout_weight="10"/>
+    </LinearLayout>
 </LinearLayout>
+
