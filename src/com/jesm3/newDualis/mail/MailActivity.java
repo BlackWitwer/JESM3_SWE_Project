@@ -1,22 +1,15 @@
 package com.jesm3.newDualis.mail;
 
-import java.util.Properties;
+import android.app.*;
+import android.os.*;
+import android.util.*;
+import android.widget.*;
+import com.jesm3.newDualis.*;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
 
-import javax.mail.Authenticator;
-import javax.mail.Folder;
 import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
-import android.widget.TextView;
-
-import com.jesm3.newDualis.R;
 
 public class MailActivity extends Activity
 {
@@ -35,6 +28,60 @@ public class MailActivity extends Activity
 		//-----------------------------------
 		
 		
+		send();
+	}
+	
+	public void send() {
+		TextView text = ((TextView)findViewById(R.id.text));
+		// Recipient's email ID needs to be mentioned.
+			String to = "basti.wahl92@gmail.com";
+
+		// Sender's email ID needs to be mentioned
+		String from = "it12126@lehre.dhbw-stuttgart.com";
+
+		String posteingang_host = "lehre-mail.dhbw-stuttgart.de";
+		String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
+		String password = "Yy9m7NRc";
+		int port = 587;
+
+		Properties props = new Properties();
+		props.setProperty("mail.smtp.host", posteingang_host);
+		props.setProperty("mail.smtp.user", benutzerName);
+		props.setProperty("mail.smtp.password", password);
+		props.setProperty("mail.smtp.auth", "true");
+		props.setProperty("mail.smtp..port", String.valueOf(port));
+		
+		// Get the default Session object.
+		Session session = Session.getDefaultInstance(props, new PassAuthenticator(benutzerName, password));
+
+		try{
+			// Create a default MimeMessage object.
+			MimeMessage message = new MimeMessage(session);
+
+			// Set From: header field of the header.
+			message.setFrom(new InternetAddress(from));
+
+			// Set To: header field of the header.
+			message.addRecipient(Message.RecipientType.TO,
+								 new InternetAddress(to));
+
+			// Set Subject: header field
+			message.setSubject("This is the Subject Line!");
+
+			// Now set the actual message
+//			message.setText("This is actual message");
+
+			// Send message
+			Transport.send(message);
+			text.append("Sent message");
+			System.out.println("Sent message successfully....");
+		}catch (MessagingException mex) {
+			mex.printStackTrace();
+			log(mex.toString());
+		}
+	}
+
+	public void receive() {
 		TextView text = ((TextView)findViewById(R.id.text));
 		/*
 		 * Demo app that exercises the Message interfaces.
@@ -52,7 +99,7 @@ public class MailActivity extends Activity
 			String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
 			String password = "Yy9m7NRc";
 			int port = 993;
-			
+
 			Properties props = new Properties();
 			props.setProperty("mail.imaps.host", posteingang_host);
 			props.setProperty("mail.imaps.user", benutzerName);
@@ -62,12 +109,12 @@ public class MailActivity extends Activity
 			props.setProperty("mail.imaps.socketFactory.port", String.valueOf(port));
 			props.setProperty("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 			props.setProperty("mail.imaps.socketFactory.fallback", "false");
-			
+
 			long time = System.currentTimeMillis();
-			
+
 //			// Get a Session object
 			Session session = Session.getInstance(props, new PassAuthenticator(benutzerName, password));
-			
+
 //			// Get a Store object
 			Store store = null;
 			store = session.getStore("imaps");
@@ -122,7 +169,7 @@ public class MailActivity extends Activity
 		}
 ////		System.exit(0);
 	}
-
+	
 	public void log(String message) {
 		Log.w("MailTest", message);
 	}
