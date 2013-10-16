@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mail_dummy">
+        <item>Stuckert</item>
+        <item>Rentschler</item>
+        <item>Stroetmann</item>
+    </string-array>
+    
+</resources>

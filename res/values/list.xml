@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="unis_array">
+        <item>Stuttgart</item>
+        <item>Mannheim</item>
+        <item>Horb</item>
+    </string-array>
+</resources>

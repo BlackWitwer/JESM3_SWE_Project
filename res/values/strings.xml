@@ -2,6 +2,14 @@
 <resources>
 
     <string name="hello">Hello World, MainActivity!</string>
-    <string name="app_name">NewDualis</string>
+    <string name="app_name">yourDualis</string>
+    <string name="pdf">PDF</string>
+    <string name="xls">XLS</string>
+    <string name="eintragen_">Eintragen:</string>
+    <string name="dozent">Dozent</string>
+    <string name="uhrzeit">Uhrzeit</string>
+    <string name="vorlesungsname">Vorlesungsname</string>
+    <string name="kalenderwoche">Kalenderwoche</string>
+    <string name="semesterplan">Semesterplan</string>
 
 </resources>

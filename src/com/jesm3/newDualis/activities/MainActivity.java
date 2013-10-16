@@ -14,7 +14,6 @@ public class MainActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main2);
-        startActivity(new Intent(this, MailActivity.class));
+        setContentView(R.layout.login_main);
     }
 }
