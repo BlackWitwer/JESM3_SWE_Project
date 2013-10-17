@@ -5,6 +5,7 @@ import android.app.*;
 public class CustomApplication extends Application {
 
 	private Backend backend;
+	private User user;
 
 	@Override
 	public void onCreate() {
@@ -17,5 +18,9 @@ public class CustomApplication extends Application {
 			backend = new Backend();
 		}
 		return backend;
+	}
+	
+	public User getUser() {
+		return user;
 	}
 }

@@ -1,28 +1,24 @@
 package com.jesm3.newDualis.mail;
 
-import android.content.*;
-import android.preference.*;
+import com.jesm3.newDualis.is.*;
 import java.util.*;
 import javax.mail.*;
-import java.io.*;
 
 public class MailManager
 {
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
 	private final int port = 993;
 
-	private String username;
-	private String password;
+	private User user;
 	private Session session;
 	private Store store;
 	private Folder folder;
 	
 	private ArrayList<Message> messages;
 	
-	public MailManager(String aUsername, String aPassword)
+	public MailManager(User aUser)
 	{
-		this.username = aUsername;
-		this.password = aPassword;
+		this.user = aUser;
 		init();
 	}
 
@@ -88,6 +84,9 @@ public class MailManager
 		return -1;
 	}
 	
+	/**
+	 * Gibt die Anzahl der ungelesenen Nachrichten zurück.
+	 */
 	public int getNewMessageCount() {
 		try {
 			return getFolder().getNewMessageCount();
@@ -109,12 +108,12 @@ public class MailManager
 
 	private String getUsername()
 	{
-		return username;
+		return user.getUsername();
 	}
 
 	private String getPassword()
 	{
-		return password;
+		return user.getPassword();
 	}
 	
 	private Store getStore() {

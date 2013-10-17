@@ -5,6 +5,7 @@ import android.os.*;
 import android.util.*;
 import android.widget.*;
 import com.jesm3.newDualis.*;
+import com.jesm3.newDualis.is.*;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -27,7 +28,7 @@ public class MailActivity extends Activity
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		
-		MailManager m = new MailManager("it12126@lehre.dhbw-stuttgart.de", "Yy9m7NRc");
+		MailManager m = new MailManager(new User("it12126@lehre.dhbw-stuttgart.de", "Yy9m7NRc"));
 		TextView text = ((TextView)findViewById(R.id.text));
 		try {
 			for (Message eachMessage : m.getMessagesFromTo(1, 20)) {
