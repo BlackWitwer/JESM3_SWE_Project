@@ -27,8 +27,7 @@ public class MailActivity extends Activity
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		
-		
-		send();
+		receive();
 	}
 	
 	public void send() {
@@ -41,7 +40,7 @@ public class MailActivity extends Activity
 
 		String posteingang_host = "lehre-mail.dhbw-stuttgart.de";
 		String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
-		String password = "Yy9m7NRc";
+		String password = "";
 		int port = 587;
 
 		Properties props = new Properties();
@@ -123,11 +122,6 @@ public class MailActivity extends Activity
 //			// Open the Folder
 
 			Folder folder = store.getDefaultFolder();
-			if (folder == null)
-			{
-				System.out.println("No default folder");
-				log("No default folder");
-			}
 			folder = folder.getFolder("INBOX");
 			if (folder == null)
 			{
@@ -157,6 +151,7 @@ public class MailActivity extends Activity
 			}
 			for (Message eachMessage : folder.getMessages()) {
 				text.append(eachMessage.getSubject()+"\n");
+				eachMessage.get
 			}
 			folder.close(false);
 			store.close();
