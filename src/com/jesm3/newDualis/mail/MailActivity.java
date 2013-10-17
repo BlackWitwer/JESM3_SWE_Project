@@ -27,7 +27,16 @@ public class MailActivity extends Activity
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		
-		receive();
+		MailManager m = new MailManager("it12126@lehre.dhbw-stuttgart.de", "Yy9m7NRc");
+		TextView text = ((TextView)findViewById(R.id.text));
+		try {
+			for (Message eachMessage : m.getMessagesFromTo(1, 20)) {
+				text.append(eachMessage.getSubject() + "\n");
+			}
+		} catch (MessagingException ex) {
+			
+		}
+//		receive();
 	}
 	
 	public void send() {

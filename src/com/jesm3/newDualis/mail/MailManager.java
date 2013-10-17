@@ -8,23 +8,19 @@ import java.io.*;
 
 public class MailManager
 {
-	private final String prefKey = "oldKeyCount";
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
 	private final int port = 993;
 
-	private Context context;
 	private String username;
 	private String password;
 	private Session session;
 	private Store store;
 	private Folder folder;
-	private int oldMailCount;
 	
 	private ArrayList<Message> messages;
 	
-	public MailManager(Context aContext, String aUsername, String aPassword)
+	public MailManager(String aUsername, String aPassword)
 	{
-		this.context = aContext;
 		this.username = aUsername;
 		this.password = aPassword;
 		init();
@@ -52,11 +48,6 @@ public class MailManager
 			folder = store.getDefaultFolder();
 			folder = folder.getFolder("INBOX");
 
-			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-			if (thePrefs.contains(prefKey)) {
-				oldMailCount = thePrefs.getInt(prefKey, 0);
-			}
-			
 			try {
 				folder.open(Folder.READ_WRITE);
 			} catch (MessagingException ex) {
@@ -106,17 +97,17 @@ public class MailManager
 		return -1;
 	}
 
-	public int getPort()
+	private int getPort()
 	{
 		return port;
 	}
 
-	public String getHost()
+	private String getHost()
 	{
 		return host;
 	}
 
-	public String getUsername()
+	private String getUsername()
 	{
 		return username;
 	}
@@ -138,10 +129,6 @@ public class MailManager
 		return folder;
 	}
 	
-	private Context getContext() {
-		return context;
-	}
-
 	class PassAuthenticator extends Authenticator
 	{
 		String userName;
