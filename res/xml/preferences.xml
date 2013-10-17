@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory 
+        android:title="Kategorie 1"
+        android:key="pref_key_storage_settings">
+	    <CheckBoxPreference 
+	        android:key="pref_key_check1"
+	        android:title="CheckBox 1"
+	        android:defaultValue="true"
+	        android:summary="Das ist die Summary" />
+	    <ListPreference 
+	        android:key="pref_key_list1"
+	        android:title="List"
+	        android:entries="@array/mail_dummy"
+	        android:entryValues="@array/mail_dummy"
+	        android:summary="Das ist die Summary" />
+	        />
+	    <EditTextPreference 
+	        android:key="pref_key_prefstring1"
+	        android:title="String"
+	        android:dependency="pref_key_check1"
+	        android:summary="Das ist die Summary" /> />
+    </PreferenceCategory>
+    <PreferenceCategory 
+        android:title="Kategorie 2"
+        android:key="pref_key_storage_settings">
+	    <CheckBoxPreference 
+	        android:key="pref_key_check2"
+	        android:title="CheckBox 2"
+	        android:defaultValue="true"
+	        android:summary="Das ist die Summary" />
+	    <ListPreference 
+	        android:key="pref_key_list2"
+	        android:title="List"
+	        android:entries="@array/mail_dummy"
+	        android:entryValues="@array/mail_dummy"
+	        android:summary="Das ist die Summary" />
+	        />
+	    <EditTextPreference 
+	        android:key="pref_key_prefstring2"
+	        android:title="String"
+	        android:summary="Das ist die Summary" /> />
+	        
+	    <PreferenceScreen 
+	        android:title="Synchronisation"
+	        android:summary="alles Einstellungen zur Synchronisation"
+	        >
+	        <PreferenceCategory 
+		        android:title="Kategorie 1"
+		        android:key="pref_key_storage_settings">
+			    <CheckBoxPreference 
+			        android:key="pref_key_checksync"
+			        android:title="CheckBox Sync"
+			        android:defaultValue="true"
+			        android:summary="Das ist die Summary" />
+			    <ListPreference 
+			        android:key="pref_key_listsync"
+			        android:title="List Sync"
+			        android:entries="@array/mail_dummy"
+			        android:entryValues="@array/mail_dummy"
+			        android:summary="Das ist die Summary" />
+			        />
+			    <EditTextPreference 
+			        android:key="pref_key_prefstringsync"
+			        android:title="String Sync"
+			        android:dependency="pref_key_checksync"
+			        android:summary="Das ist die Summary" /> />
+		    </PreferenceCategory>
+	    </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -5,11 +5,22 @@
     <string name="app_name">yourDualis</string>
     <string name="pdf">PDF</string>
     <string name="xls">XLS</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_logout">Logout</string>
     <string name="eintragen_">Eintragen:</string>
     <string name="dozent">Dozent</string>
     <string name="uhrzeit">Uhrzeit</string>
     <string name="vorlesungsname">Vorlesungsname</string>
     <string name="kalenderwoche">Kalenderwoche</string>
     <string name="semesterplan">Semesterplan</string>
+    <string name="title_section1">Stundenplan</string>
+    <string name="title_section2">Semesterplan</string>
+    <string name="title_section3">Noten</string>
+    <string name="title_section4">Mail</string>
+    <string name="title_section5">Dozent</string>
+    <string name="title_settings_section1">Synchronisation</string>
+    <string name="title_settings_section2">Benachrichtigungen</string>
+    <string name="title_settings_section3">Mail</string>
+    <string name="app_settings">Einstellungen</string>
 
 </resources>
