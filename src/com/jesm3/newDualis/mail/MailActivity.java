@@ -151,7 +151,6 @@ public class MailActivity extends Activity
 			}
 			for (Message eachMessage : folder.getMessages()) {
 				text.append(eachMessage.getSubject()+"\n");
-				eachMessage.get
 			}
 			folder.close(false);
 			store.close();

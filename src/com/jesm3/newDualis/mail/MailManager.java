@@ -20,7 +20,7 @@ public class MailManager
 	private Folder folder;
 	private int oldMailCount;
 	
-	private HashMap<Message, Boolean> messages;
+	private ArrayList<Message> messages;
 	
 	public MailManager(Context aContext, String aUsername, String aPassword)
 	{
@@ -63,10 +63,7 @@ public class MailManager
 				folder.open(Folder.READ_ONLY);
 			}
 			
-			messages = new HashMap<Message, Boolean>();
-			for (Message eachMessage : folder.getMessages()) {
-				messages.put(eachMessage, eachMessage.getFlags().contains(Flags.Flag.SEEN));
-			}
+			messages = new ArrayList<Message>(Arrays.asList(folder.getMessages()));
 		}
 		catch (Exception ex)
 		{
@@ -76,28 +73,15 @@ public class MailManager
 	}
 
 	public void sync() {
-		if (getNewMessageCount() > 0) {
-			
+		if (getMessageCount() > messages.size()) {
+			messages.addAll(getMessagesFromTo(messages.size()+1, getMessageCount()));
 		}
 	}
 	
-	public ArrayList<Message> getNewMessages()
-	{
-		ArrayList<Message> newMessages = new ArrayList<Message>();
-		try {
-			if (getNewMessageCount() > 0) {
-				newMessages = getMessagesFromTo(messages.size(), getFolder().getNewMessageCount());
-			}
-		} catch (MessagingException ex) {
-			
-		}
-		return newMessages;
-	}
-
 	public ArrayList<Message> getMessagesFromTo(int from, int to)
 	{
 		try {
-			return new ArrayList<Message>(Arrays.asList(getFolder().getMessages(from, to));
+			return new ArrayList<Message>(Arrays.asList(getFolder().getMessages(from, to)));
 		} catch (MessagingException ex) {
 			
 		}
@@ -105,11 +89,21 @@ public class MailManager
 	}
 	
 	public int getMessageCount() {
-		
+		try {
+			return getFolder().getMessageCount();
+		} catch (MessagingException ex) {
+			
+		}
+		return -1;
 	}
 	
 	public int getNewMessageCount() {
-		return getFolder().getMessageCount() > messages.size()
+		try {
+			return getFolder().getNewMessageCount();
+		} catch (MessagingException ex) {
+
+		}
+		return -1;
 	}
 
 	public int getPort()
