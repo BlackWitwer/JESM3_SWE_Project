@@ -64,10 +64,22 @@ public class SettingsFragment extends PreferenceFragment implements
 	public static final String KEY_PREF_VIBRATION = "pref_key_vibration";
 
 	
+	/**
+	 * Umwandlungsmap
+	 */
 	private HashMap<String,String> convertMinutes;
+	/**
+	 * Umwandlungsmap
+	 */
 	private HashMap<String,String> convertMinutesSync;
+	/**
+	 * Umwandlungsmap
+	 */
 	private HashMap<String,String> convertConnection;
 	
+	/* (non-Javadoc)
+	 * @see android.preference.PreferenceFragment#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,6 +91,9 @@ public class SettingsFragment extends PreferenceFragment implements
 	}
 	
 
+	/**
+	 * Initialisiert die Map für die Anzeige der Intervalle.
+	 */
 	private void initConnectionMap() {
 		convertConnection = new HashMap<String, String>();
 		
@@ -87,7 +102,9 @@ public class SettingsFragment extends PreferenceFragment implements
         convertConnection.put("2", "Mobil/WLAN");
 	}
 
-
+	/**
+	 * Initialisiert die Map für die Anzeige der Intervalle.
+	 */
 	private void initConversionMap() {
 		convertMinutes = new HashMap<String, String>();
         convertMinutes.put("0","einmalig");
@@ -106,6 +123,9 @@ public class SettingsFragment extends PreferenceFragment implements
 	}
 
 
+	/**
+	 * Setzt die  Summaries für die Einstellungen.
+	 */
 	private void loadValues() {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		Preference  sync_onoff = findPreference(KEY_PREF_SYNC_ONOFF);
@@ -174,11 +194,17 @@ public class SettingsFragment extends PreferenceFragment implements
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
+	 */
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		loadValues();
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Fragment#onResume()
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -186,6 +212,9 @@ public class SettingsFragment extends PreferenceFragment implements
 				.registerOnSharedPreferenceChangeListener(this);
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Fragment#onPause()
+	 */
 	@Override
 	public void onPause() {
 		super.onPause();

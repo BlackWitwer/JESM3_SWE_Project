@@ -13,8 +13,14 @@ import android.widget.EditText;
 
 public class LoginActivity extends Activity{
 	
+	/**
+	 * Variable für die ActionBar
+	 */
 	ActionBar actionBar;
 	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,6 +28,10 @@ public class LoginActivity extends Activity{
 		actionBar = getActionBar();
 	}
 
+	/**
+	 * Mehtode für den Login. Wird vom "Login"-Button aufgerufen. 
+	 * @param v 
+	 */
 	public void login(View v) {
     	EditText theUser = (EditText) findViewById(R.id.name);
     	EditText thePW = (EditText) findViewById(R.id.passwort);

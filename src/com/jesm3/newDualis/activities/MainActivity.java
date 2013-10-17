@@ -73,6 +73,9 @@ public class MainActivity extends FragmentActivity {
 
     
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onBackPressed()
+	 */
 	@Override
 	public void onBackPressed() {
 		if (doubleClicked) {
@@ -209,6 +212,9 @@ public class MainActivity extends FragmentActivity {
         
     }
     
+    /**
+     * Startet die Login-Activity, beendet die Main-Activity und versteckt die ActionBar.
+     */
     public void logout() {
     	startActivity(new Intent(this, LoginActivity.class));
     	finish();

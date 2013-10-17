@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 public class SettingsActivity extends FragmentActivity{
+	/** (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// Display the fragment as the main content.
+		// Den Hauptcontent durch das Fragment ersetzen.
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
