@@ -1,72 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory 
-        android:title="Kategorie 1"
-        android:key="pref_key_storage_settings">
-	    <CheckBoxPreference 
-	        android:key="pref_key_check1"
-	        android:title="CheckBox 1"
-	        android:defaultValue="true"
-	        android:summary="Das ist die Summary" />
-	    <ListPreference 
-	        android:key="pref_key_list1"
-	        android:title="List"
-	        android:entries="@array/mail_dummy"
-	        android:entryValues="@array/mail_dummy"
-	        android:summary="Das ist die Summary" />
+    <PreferenceCategory
+        android:key="pref_key_synchronisation_cat"
+        android:title="@string/synchronisation" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_sync_onoff"
+            android:title="@string/synchronisation" />
+        <ListPreference
+            android:entries="@array/sync_entries"
+            android:entryValues="@array/notification_values"
+            android:key="pref_key_intervall_sync"
+            android:title="@string/synchronisationsintervall"
+            android:dependency="pref_key_sync_onoff" />
+		<CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_gcal_sync_onoff"
+            android:dependency="pref_key_sync_onoff"
+            android:title="@string/google_kalender" />
+		<CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_mail_sync_onoff"
+            android:dependency="pref_key_sync_onoff"
+            android:title="@string/mail" />
+        <ListPreference
+            android:entries="@array/sync_entries"
+            android:entryValues="@array/notification_values"
+            android:key="pref_key_intervall_mail"
+            android:title="@string/mailsynchronisationsintervall"
+            android:dependency="pref_key_mail_sync_onoff" />
+        <ListPreference
+            android:entries="@array/connection_entries"
+            android:entryValues="@array/connection_values"
+            android:key="pref_key_connection"
+            android:dependency="pref_key_sync_onoff"
+            android:title="@string/netzwerkeinstellungen" />
 	        />
-	    <EditTextPreference 
-	        android:key="pref_key_prefstring1"
-	        android:title="String"
-	        android:dependency="pref_key_check1"
-	        android:summary="Das ist die Summary" /> />
+ />
     </PreferenceCategory>
-    <PreferenceCategory 
-        android:title="Kategorie 2"
-        android:key="pref_key_storage_settings">
-	    <CheckBoxPreference 
-	        android:key="pref_key_check2"
-	        android:title="CheckBox 2"
-	        android:defaultValue="true"
-	        android:summary="Das ist die Summary" />
-	    <ListPreference 
-	        android:key="pref_key_list2"
-	        android:title="List"
-	        android:entries="@array/mail_dummy"
-	        android:entryValues="@array/mail_dummy"
-	        android:summary="Das ist die Summary" />
-	        />
-	    <EditTextPreference 
-	        android:key="pref_key_prefstring2"
-	        android:title="String"
-	        android:summary="Das ist die Summary" /> />
-	        
-	    <PreferenceScreen 
-	        android:title="Synchronisation"
-	        android:summary="alles Einstellungen zur Synchronisation"
-	        >
-	        <PreferenceCategory 
-		        android:title="Kategorie 1"
-		        android:key="pref_key_storage_settings">
-			    <CheckBoxPreference 
-			        android:key="pref_key_checksync"
-			        android:title="CheckBox Sync"
-			        android:defaultValue="true"
-			        android:summary="Das ist die Summary" />
-			    <ListPreference 
-			        android:key="pref_key_listsync"
-			        android:title="List Sync"
-			        android:entries="@array/mail_dummy"
-			        android:entryValues="@array/mail_dummy"
-			        android:summary="Das ist die Summary" />
-			        />
-			    <EditTextPreference 
-			        android:key="pref_key_prefstringsync"
-			        android:title="String Sync"
-			        android:dependency="pref_key_checksync"
-			        android:summary="Das ist die Summary" /> />
-		    </PreferenceCategory>
-	    </PreferenceScreen>
+    <PreferenceCategory
+        android:key="pref_key_notifications_cat"
+        android:title="@string/benachrichtigungen" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_notif_onoff"
+            android:title="@string/benachrichtigungen" />
+        <ListPreference
+            android:entries="@array/notification_entries"
+            android:entryValues="@array/notification_values"
+            android:key="pref_key_notif_intervall"
+            android:title="@string/benachrichtigungsintervall"
+            android:dependency="pref_key_notif_onoff" />
+	        />        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_sound"
+            android:title="@string/sound"
+            android:dependency="pref_key_notif_onoff" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_vibration"
+            android:summary="@string/vibration_on"
+            android:title="@string/vibration"
+            android:dependency="pref_key_notif_onoff" />
+ />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -6,8 +6,13 @@ import com.jesm3.newDualis.R;
 
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.provider.ContactsContract.CommonDataKinds.Event;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 
@@ -46,15 +53,46 @@ public class MainActivity extends FragmentActivity {
      */
     ActionBar actionBar;
 
+	private boolean doubleClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         actionBar = getActionBar();
         actionBar.hide();
-        setContentView(R.layout.login_main);
+        setContentView(R.layout.activity_main);
+		// Create the adapter that will return a fragment for each of the three
+		// primary sections of the app.
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		
+		// Set up the ViewPager with the sections adapter.
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+		actionBar.show();
     }
 
-    @Override
+    
+
+	@Override
+	public void onBackPressed() {
+		if (doubleClicked) {
+			super.onBackPressed();
+			return;
+		}
+		this.doubleClicked = true;
+		Toast.makeText(this, "Nochmal klicken um die App zu schlieﬂen...", Toast.LENGTH_SHORT).show();
+		new Handler().postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				doubleClicked = false;
+			}
+		}, 2000);
+	}
+
+
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -72,9 +110,15 @@ public class MainActivity extends FragmentActivity {
     		default:
     			return super.onOptionsItemSelected(item);
     	}
+    
     }
 
-    /**
+    @Override
+	protected void onPause() {
+		super.onPause();
+	}
+
+	/**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
@@ -163,30 +207,11 @@ public class MainActivity extends FragmentActivity {
             return rootView;
         }
         
-        
     }
     
-    public void login(View v) {
-    	EditText theUser = (EditText) findViewById(R.id.name);
-    	EditText thePW = (EditText) findViewById(R.id.passwort);
-//    	if ("Manu".equals(theUser.getText().toString()) && "asdf".equals(thePW.getText().toString())) {
-    		setContentView(R.layout.activity_main);
-    		// Create the adapter that will return a fragment for each of the three
-    		// primary sections of the app.
-    		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-    		
-    		// Set up the ViewPager with the sections adapter.
-    		mViewPager = (ViewPager) findViewById(R.id.pager);
-    		mViewPager.setAdapter(mSectionsPagerAdapter);
-//    	} else {
-//    		TextView label = (TextView) findViewById(R.id.error_label);
-//    		label.setVisibility(View.VISIBLE);
-    		actionBar.show();
-//    	}
-	}
-    
     public void logout() {
-    	setContentView(R.layout.login_main);
+    	startActivity(new Intent(this, LoginActivity.class));
+    	finish();
     	actionBar.hide();
 	}
 

@@ -2,7 +2,7 @@
 <resources>
     <string-array name="unis_array">
         <item>Stuttgart</item>
-        <item>Mannheim</item>
         <item>Horb</item>
+        <item>Mannheim</item>
     </string-array>
 </resources>

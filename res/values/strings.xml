@@ -22,5 +22,28 @@
     <string name="title_settings_section2">Benachrichtigungen</string>
     <string name="title_settings_section3">Mail</string>
     <string name="app_settings">Einstellungen</string>
+    <string name="app_login">Login</string>
+    <string name="synchronisation">Synchronisation</string>
+    <string name="sync_on">Die Synchronisation ist eingeschaltet</string>
+    <string name="sync_off">Die Synchronisation ist ausgeschaltet</string>
+    <string name="synchronisationsintervall">Synchronisationsintervall</string>
+    <string name="gcal_sync_on">Die Synchronisation mit dem Google-Kalender ist eingeschaltet</string>
+    <string name="gcal_sync_off">Die Synchronisation mit dem Google-Kalender ist ausgeschaltet</string>
+    <string name="mail_sync_on">Die Mail-Synchronisation ist eingeschaltet</string>
+    <string name="mail_sync_off">Die Mail-Synchronisation ist ausgeschaltet</string>
+    <string name="google_kalender">Google-Kalender</string>
+    <string name="mail">Mail</string>
+    <string name="mailsynchronisationsintervall">Mailsynchronisationsintervall</string>
+    <string name="netzwerkeinstellungen">Netzwerkeinstellungen</string>
+    <string name="benachrichtigungen">Benachrichtigungen</string>
+    <string name="notif_on">Benachrichtigungen sind eingeschaltet</string>
+    <string name="notif_off">Benachrichtigungen sind ausgeschaltet</string>
+    <string name="benachrichtigungsintervall">Benachrichtigungsintervall</string>
+    <string name="sound_on">Ton ist eingeschaltet</string>
+    <string name="sound_off">Ton ist ausgeschaltet</string>
+    <string name="sound">Ton</string>
+    <string name="vibration_on">Vibration ist eingeschaltet</string>
+    <string name="vibration_off">Vibration ist ausgeschaltet</string>
+    <string name="vibration">Vibration</string>
 
 </resources>
