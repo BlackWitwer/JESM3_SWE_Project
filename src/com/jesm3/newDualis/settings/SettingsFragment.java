@@ -103,7 +103,7 @@ public class SettingsFragment extends PreferenceFragment implements
 	}
 
 	/**
-	 * Initialisiert die Map für die Anzeige der Intervalle.
+	 * Initialisiert die Maps für die Anzeige der Intervalle.
 	 */
 	private void initConversionMap() {
 		convertMinutes = new HashMap<String, String>();
@@ -111,13 +111,14 @@ public class SettingsFragment extends PreferenceFragment implements
         convertMinutes.put("5","5 Min");
         convertMinutes.put("15","15 Min");
         convertMinutes.put("30","30 Min");
-        convertMinutes.put("60","1 Stunden");
+        convertMinutes.put("60","1 Stunde");
         convertMinutes.put("120","2 Stunden");
         convertMinutes.put("360","6 Stunden");
         convertMinutes.put("720","12 Stunden");
         convertMinutes.put("1440","1 Tag");
         convertMinutes.put("10080","7 Tage");
         convertMinutes.put("302400","1 Monat");
+        
         convertMinutesSync = (HashMap<String, String>) convertMinutes.clone();
         convertMinutesSync.put("0", "manuell");
 	}

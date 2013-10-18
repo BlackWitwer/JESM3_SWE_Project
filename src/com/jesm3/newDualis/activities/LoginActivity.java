@@ -8,8 +8,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class LoginActivity extends Activity{
 	
@@ -26,6 +30,20 @@ public class LoginActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login_main);
 		actionBar = getActionBar();
+	
+		final EditText passwortField = (EditText) findViewById(R.id.passwort);
+		OnEditorActionListener listener2 = new OnEditorActionListener() {
+			
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				 boolean handled = false;
+			     if (actionId == EditorInfo.IME_ACTION_DONE) {
+			    	 login(v);
+			         handled = true;
+			        }
+			     return handled;
+			}
+		};
+		passwortField.setOnEditorActionListener(listener2);
 	}
 
 	/**
