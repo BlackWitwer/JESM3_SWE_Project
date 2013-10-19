@@ -20,7 +20,7 @@ public class MailActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+//        setContentView(R.layout.main);
 
 		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
 		StrictMode.ThreadPolicy policy = new StrictMode.
@@ -29,19 +29,19 @@ public class MailActivity extends Activity
 		//-----------------------------------
 		
 		MailManager m = new MailManager(new User("it12126@lehre.dhbw-stuttgart.de", "Yy9m7NRc"));
-		TextView text = ((TextView)findViewById(R.id.text));
-		try {
-			for (Message eachMessage : m.getMessagesFromTo(1, 20)) {
-				text.append(eachMessage.getSubject() + "\n");
-			}
-		} catch (MessagingException ex) {
-			
-		}
+//		TextView text = ((TextView)findViewById(R.id.text));
+//		try {
+//			for (Message eachMessage : m.getMessagesFromTo(1, 20)) {
+//				text.append(eachMessage.getSubject() + "\n");
+//			}
+//		} catch (MessagingException ex) {
+//			
+//		}
 //		receive();
 	}
 	
 	public void send() {
-		TextView text = ((TextView)findViewById(R.id.text));
+//		TextView text = ((TextView)findViewById(R.id.text));
 		// Recipient's email ID needs to be mentioned.
 			String to = "basti.wahl92@gmail.com";
 
@@ -82,7 +82,7 @@ public class MailActivity extends Activity
 
 			// Send message
 			Transport.send(message);
-			text.append("Sent message");
+//			text.append("Sent message");
 			System.out.println("Sent message successfully....");
 		}catch (MessagingException mex) {
 			mex.printStackTrace();
@@ -91,7 +91,7 @@ public class MailActivity extends Activity
 	}
 
 	public void receive() {
-		TextView text = ((TextView)findViewById(R.id.text));
+//		TextView text = ((TextView)findViewById(R.id.text));
 		/*
 		 * Demo app that exercises the Message interfaces.
 		 * Show information about and contents of messages.
@@ -150,8 +150,8 @@ public class MailActivity extends Activity
 				folder.open(Folder.READ_ONLY);
 			}
 			int totalMessages = folder.getMessageCount();
-			text.append("Total Messages: " + totalMessages);
-			text.append("Check");
+//			text.append("Total Messages: " + totalMessages);
+//			text.append("Check");
 			if (totalMessages == 0)
 			{
 				System.out.println("Empty folder");
@@ -160,7 +160,7 @@ public class MailActivity extends Activity
 				store.close();
 			}
 			for (Message eachMessage : folder.getMessages()) {
-				text.append(eachMessage.getSubject()+"\n");
+//				text.append(eachMessage.getSubject()+"\n");
 			}
 			folder.close(false);
 			store.close();
