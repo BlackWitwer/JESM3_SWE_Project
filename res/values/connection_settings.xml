@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="connection_entries">
+        <item>nur WLAN</item>
+        <item>nur mobiles Internet</item>
+        <item>Mobil/WLAN</item>
+    </string-array>
+    <string-array name="connection_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

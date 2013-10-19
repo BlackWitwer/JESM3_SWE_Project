@@ -106,7 +106,7 @@ public class MailActivity extends Activity
 
 			String posteingang_host = "lehre-mail.dhbw-stuttgart.de";
 			String benutzerName = "it12126@lehre.dhbw-stuttgart.de";
-			String password = "Yy9m7NRc";
+			String password = "";
 			int port = 993;
 
 			Properties props = new Properties();

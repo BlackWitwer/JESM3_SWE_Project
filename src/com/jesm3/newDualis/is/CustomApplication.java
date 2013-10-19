@@ -1,15 +1,18 @@
 package com.jesm3.newDualis.is;
 
-import android.app.*;
+import android.app.Application;
+import android.content.Intent;
+
+import com.jesm3.newDualis.activities.LoginActivity;
+import com.jesm3.newDualis.activities.MainActivity;
 
 public class CustomApplication extends Application {
 
 	private Backend backend;
-	private User user;
+	private UserManager userManager;
 
 	@Override
 	public void onCreate() {
-//		startActivity(new Intent(this, LoginActivity.class);
 		super.onCreate();
 	}
 	
@@ -20,7 +23,10 @@ public class CustomApplication extends Application {
 		return backend;
 	}
 	
-	public User getUser() {
-		return user;
+	public UserManager getUserManager() {
+		if (userManager == null) {
+			userManager = new UserManager(getApplicationContext());
+		}
+		return userManager;
 	}
 }
