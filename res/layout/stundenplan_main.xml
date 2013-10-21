@@ -11,7 +11,8 @@
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_above="@id/update_stupla" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -559,8 +560,8 @@
 
                         <LinearLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_marginBottom="2dp"
                             android:layout_marginLeft="2dp"
                             android:layout_marginRight="2dp"
                             android:layout_marginTop="2dp"
@@ -576,63 +577,6 @@
                                 android:text="Samstag"
                                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView34"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView37"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView36"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView44"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView43"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView42"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
                         </LinearLayout>
                     </TableRow>
                 </TableLayout>
@@ -640,5 +584,13 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/update_stupla"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Aktualisieren" />
 
 </RelativeLayout>

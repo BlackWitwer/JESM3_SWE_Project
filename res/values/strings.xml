@@ -29,9 +29,15 @@
     <string name="synchronisationsintervall">Synchronisationsintervall</string>
     <string name="gcal_sync_on">Die Synchronisation mit dem Google-Kalender ist eingeschaltet</string>
     <string name="gcal_sync_off">Die Synchronisation mit dem Google-Kalender ist ausgeschaltet</string>
+    <string name="stupla_sync_on">Die Synchronisation des Stundenplans ist eingeschaltet</string>
+    <string name="stupla_sync_off">Die Synchronisation des Stundenplans ist ausgeschaltet</string>
+    <string name="noten_sync_on">Die Synchronisation der Noten ist eingeschaltet</string>
+    <string name="noten_sync_off">Die Synchronisation der Noten ist ausgeschaltet</string>
     <string name="mail_sync_on">Die Mail-Synchronisation ist eingeschaltet</string>
     <string name="mail_sync_off">Die Mail-Synchronisation ist ausgeschaltet</string>
     <string name="google_kalender">Google-Kalender</string>
+    <string name="noten">Noten</string>
+    <string name="stupla">Stundenplan</string>
     <string name="mail">Mail</string>
     <string name="mailsynchronisationsintervall">Mailsynchronisationsintervall</string>
     <string name="netzwerkeinstellungen">Netzwerkeinstellungen</string>
