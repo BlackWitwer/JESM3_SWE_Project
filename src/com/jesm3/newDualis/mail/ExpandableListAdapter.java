@@ -1,22 +1,12 @@
 package com.jesm3.newDualis.mail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-
-import android.content.Context;
-import android.graphics.Typeface;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.TextView;
-
-import com.jesm3.newDualis.R;
+import android.content.*;
+import android.graphics.*;
+import android.view.*;
+import android.widget.*;
+import com.jesm3.newDualis.*;
+import java.util.*;
+import javax.mail.*;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -56,13 +46,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView txtListChild = (TextView) convertView
                 .findViewById(R.id.listItem);
  
-        try {
-			txtListChild.setText(child.getContent().toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}
+//        try {
+ //TODO Mail Content reinschreiben
+			txtListChild.setText("Hallo Manu");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (MessagingException e) {
+//			e.printStackTrace();
+//		}
         return convertView;
     }
  
@@ -99,6 +90,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         TextView lblListHeader = (TextView) convertView
                 .findViewById(R.id.listHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
+		lblListHeader.setTextColor(Color.BLACK);
         try {
 			lblListHeader.setText(theMessage.getSubject());
 		} catch (MessagingException e) {

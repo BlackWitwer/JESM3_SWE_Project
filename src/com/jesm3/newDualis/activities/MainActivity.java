@@ -1,28 +1,20 @@
 package com.jesm3.newDualis.activities;
 
-import java.util.Locale;
+import android.app.*;
+import android.content.*;
+import android.os.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.view.*;
+import android.widget.*;
+import com.jesm3.newDualis.*;
+import com.jesm3.newDualis.is.*;
+import com.jesm3.newDualis.mail.*;
+import java.util.*;
 
-import android.app.ActionBar;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ExpandableListView;
-import android.widget.Toast;
-
-import com.jesm3.newDualis.R;
-import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
-import com.jesm3.newDualis.mail.MailManager;
 
 public class MainActivity extends FragmentActivity {
 
@@ -63,6 +55,12 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		actionBar.show();
 		
+		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread NetzwerkaktivitÃ¤ten zu verwenden.
+		StrictMode.ThreadPolicy policy = new StrictMode.
+			ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		//-----------------------------------
+		
 //		initMailView();
     }
 
@@ -78,7 +76,7 @@ public class MainActivity extends FragmentActivity {
 			return;
 		}
 		this.doubleClicked = true;
-		Toast.makeText(this, "Nochmal klicken um die App zu schließen...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Nochmal klicken um die App zu schlieï¿½en...", Toast.LENGTH_SHORT).show();
 		new Handler().postDelayed(new Runnable() {
 			
 			@Override
@@ -193,7 +191,14 @@ public class MainActivity extends FragmentActivity {
             	break;
             case 4:
             	rootView = inflater.inflate(R.layout.mail_main, container, false);
-            	break;
+   ExpandableListAdapter listAdapter;
+   ExpandableListView expListView;
+   expListView = (ExpandableListView) rootView.findViewById(R.id.mailExpandView);
+   MailManager manager = new MailManager(((CustomApplication)getActivity().getApplication()).getUserManager().getUser());
+   listAdapter = new ExpandableListAdapter(getActivity(), manager.getMessagesFromTo(1, 30));
+
+   expListView.setAdapter(listAdapter);
+				break;
             case 5:
             	rootView = inflater.inflate(R.layout.dozent_main, container, false);
             	break;
