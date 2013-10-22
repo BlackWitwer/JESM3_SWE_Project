@@ -92,6 +92,7 @@ public class MailActivity extends Activity
 
 	public void receive() {
 //		TextView text = ((TextView)findViewById(R.id.text));
+
 		/*
 		 * Demo app that exercises the Message interfaces.
 		 * Show information about and contents of messages.
