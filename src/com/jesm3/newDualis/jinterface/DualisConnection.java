@@ -43,7 +43,7 @@ public class DualisConnection {
 		loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
 
 		//Zweiter Aufruf zum Ã¼bertragen der Benutzerdaten.
-		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","heruzkt3rz");
+		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","EUERPW");
 		HttpResponse loginResponse = httpClient.execute(loginPost);
 
 		// BISHER ArrayOutOfBoundException bei falschen Logindaten da nicht existierender Header abgefragt wird
@@ -56,19 +56,19 @@ public class DualisConnection {
 		HttpResponse secondRedirectResponse = httpClient.execute(secondRedirect);
 		HttpEntity redirectEntity = secondRedirectResponse.getEntity();
 		
-		//Parse Hauptmenülinks von Startseite
+		//Parse Hauptmenï¿½links von Startseite
 		getMainMenuLinks(EntityUtils.toString(redirectEntity));
 		
 		//Erfolgreich eingeloggt.
 	}
 	
-	//Parse Hauptmenülinks von Startseite
+	//Parse Hauptmenï¿½links von Startseite
 	public void getMainMenuLinks(String startPageContent){
 		mlinks = new DualisLinks();
 		mlinks.setStundenPlan(dparse.parseLink(startPageContent, ".link000028"));
 	}
 	
-	// Geht zur Monatsübersicht und parst den Stundenplan
+	// Geht zur Monatsï¿½bersicht und parst den Stundenplan
 	public void loadStundenplan() {
 		String stundenplanContent = getPage("https://dualis.dhbw.de" + mlinks.getStundenPlan());
 
@@ -78,7 +78,7 @@ public class DualisConnection {
 		String vorlesungen = dparse.parseMonth(monatsansichtContent);
 	}
 	
-	// Läd Seite ohne HTML Code zurückzugeben
+	// Lï¿½d Seite ohne HTML Code zurï¿½ckzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);
 		try {
@@ -90,7 +90,7 @@ public class DualisConnection {
 		}
 	}
 	
-	// Läd Seite und gibt deren HTML Code als String zurück
+	// Lï¿½d Seite und gibt deren HTML Code als String zurï¿½ck
 	public String getPage(String url) {
 		String pageContent = "";
 		try {
@@ -106,7 +106,7 @@ public class DualisConnection {
 		return pageContent;
 	}
 
-	// Generiert POST für Login
+	// Generiert POST fï¿½r Login
 	public HttpPost generateLoginPost(String user, String pw){
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("usrname", user));
