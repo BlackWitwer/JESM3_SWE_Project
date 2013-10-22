@@ -2,6 +2,7 @@ package com.jesm3.newDualis.activities;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.Html;
@@ -58,11 +59,18 @@ public class MainActivity extends Activity {
 			dcon = new DualisConnection(this);
 			dcon.login();  // Dualis Login
 			dcon.loadStundenplan();  // Stundenplan laden
+//			exit();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	public void exit(){
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+	}
 	// In rechte Textview posten
 	public void appendToRightTV(String aText){
 		((TextView) findViewById(R.id.textViewRight)).setText(aText);

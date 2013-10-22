@@ -46,8 +46,7 @@ public class DualisConnection {
 		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","heruzkt3rz");
 		HttpResponse loginResponse = httpClient.execute(loginPost);
 
-		// BISHER NULLPOINTEREXCEPTION bei falschen Logindaten
-		
+		// BISHER ArrayOutOfBoundException bei falschen Logindaten da nicht existierender Header abgefragt wird
 		//Erster Redirect der aus dem Header des zweiten Response gelesen wird. Im Value stehen vor dem Link noch ein "0; URL=" deshalb substring 7.
 		HttpGet firstRedirect = new HttpGet("https://dualis.dhbw.de" + loginResponse.getHeaders("REFRESH")[0].getValue().substring(7));
 		HttpResponse firstRedirectResponse = httpClient.execute(firstRedirect);
@@ -67,7 +66,7 @@ public class DualisConnection {
 	//Parse Hauptmenülinks von Startseite
 	public void getMainMenuLinks(String startPageContent){
 		mlinks = new DualisLinks();
-		mlinks.setStundenPlan(dparse.parseLink(startPageContent, R.raw.stundenplan_link));
+		mlinks.setStundenPlan(dparse.parseLink(startPageContent, ".link000028"));
 	}
 	
 	// Geht zur Monatsübersicht und parst den Stundenplan
@@ -75,12 +74,12 @@ public class DualisConnection {
 		String stundenplanContent = getPage("https://dualis.dhbw.de" + mlinks.getStundenPlan());
 		main.appendTimestamp("Wechsel zur Stundenplanseite");
 
-		String parseLink = dparse.parseLink(stundenplanContent, R.raw.monatsansicht_link);
+		String parseLink = dparse.parseLink(stundenplanContent, ".link000031");
 		String monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
 		main.appendTimestamp("Wechsel zur Monatsansicht");
 		main.appendToLeftTV(monatsansichtContent);
 
-		String vorlesungen = dparse.parseHtml(monatsansichtContent);
+		String vorlesungen = dparse.parseMonth(monatsansichtContent);
 		main.appendTimestamp("Parse Vorlesungen");
 		main.appendToRightTV(vorlesungen);
 	}
