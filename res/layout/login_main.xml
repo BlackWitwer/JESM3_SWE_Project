@@ -84,10 +84,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Standort" />
+                    android:text="@string/standort" />
 
                 <Spinner
-                    android:id="@+id/spinner1"
+                    android:id="@+id/spinner_standort"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/unis_array"

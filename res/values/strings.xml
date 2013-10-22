@@ -51,5 +51,13 @@
     <string name="vibration_on">Vibration ist eingeschaltet</string>
     <string name="vibration_off">Vibration ist ausgeschaltet</string>
     <string name="vibration">Vibration</string>
+    <string name="montag">Montag</string>
+    <string name="dienstag">Dienstag</string>
+    <string name="mittwoch">Mittwoch</string>
+    <string name="donnerstag">Donnerstag</string>
+    <string name="freitag">Freitag</string>
+    <string name="samstag">Samstag</string>
+    <string name="standort">Standort</string>
+    <string name="aktualisieren">Aktualisieren</string>
 
 </resources>

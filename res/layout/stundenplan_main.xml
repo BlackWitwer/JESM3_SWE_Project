@@ -12,577 +12,165 @@
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/update_stupla" >
+        android:layout_above="@id/update_stupla"
+        android:layout_alignParentTop="true" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <LinearLayout
-                android:id="@+id/linearLayout1"
+            <TextView
+                android:id="@+id/stupla_kalenderwoche"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TableLayout
+                android:id="@+id/stupla_table"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_weight="1"
+                android:background="#000000" >
 
-                <TextView
-                    android:id="@+id/textView1"
+                <TableRow
+                    android:id="@+id/tableRow1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Kalenderwoche 41"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:layout_height="wrap_content" >
 
-                <TableLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="#000000" >
-
-                    <TableRow
-                        android:id="@+id/tableRow1"
+                    <LinearLayout
+                        android:id="@+id/lay_montag"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/TextView07"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
+                            android:text="@string/montag"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/TextView07"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Montag"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView03"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView06"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView05"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView02"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView01"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView04"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView50"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView49"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView48"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginRight="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
-
-                            <TextView
-                                android:id="@+id/textView10"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Dienstag"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/error_label"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/textView3"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/textView4"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView21"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView23"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView22"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView47"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView46"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView45"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow3"
+                    <LinearLayout
+                        android:id="@+id/lay_dienstag"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/textView10"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
+                            android:text="@string/dienstag"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
+                </TableRow>
 
-                            <TextView
-                                android:id="@+id/TextView24"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Mittwoch"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TableRow
+                    android:id="@+id/tableRow3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView17"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView20"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView19"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView16"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView15"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView18"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView30"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView29"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView28"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="0dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginRight="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
-
-                            <TextView
-                                android:id="@+id/TextView14"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Donnerstag"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView10"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView13"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView12"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView09"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView08"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView11"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView27"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView26"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView25"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/tableRow4"
+                    <LinearLayout
+                        android:id="@+id/lay_mittwoch"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/TextView24"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="2dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
+                            android:text="@string/mittwoch"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/TextView38"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Freitag"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
+                    <LinearLayout
+                        android:id="@+id/lay_donnerstag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView33"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView32"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView35"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:background="#DDDDDD"
-                                android:orientation="vertical" >
-
-                                <TextView
-                                    android:id="@+id/TextView41"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="08:15 - 09:45 Uhr" />
-
-                                <TextView
-                                    android:id="@+id/TextView40"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Formale Sprachen und Automaten" />
-
-                                <TextView
-                                    android:id="@+id/TextView39"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hr. Schwinn" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/TextView14"
                             android:layout_width="wrap_content"
-                            android:layout_height="fill_parent"
-                            android:layout_marginBottom="2dp"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginRight="2dp"
-                            android:layout_marginTop="2dp"
-                            android:layout_weight="1"
-                            android:background="#FFFFFF"
-                            android:orientation="vertical" >
+                            android:layout_height="wrap_content"
+                            android:text="@string/donnerstag"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
+                </TableRow>
 
-                            <TextView
-                                android:id="@+id/TextView31"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Samstag"
-                                android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TableRow
+                    android:id="@+id/tableRow4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
-                        </LinearLayout>
-                    </TableRow>
-                </TableLayout>
-            </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/lay_freitag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
 
+                        <TextView
+                            android:id="@+id/TextView38"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/freitag"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lay_samstag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_marginBottom="2dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:background="#FFFFFF"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/TextView31"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/samstag"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
+                </TableRow>
+            </TableLayout>
         </LinearLayout>
+
     </ScrollView>
 
     <Button
@@ -591,6 +179,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Aktualisieren" />
+        android:text="@string/aktualisieren" />
 
 </RelativeLayout>

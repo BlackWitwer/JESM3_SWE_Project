@@ -1,14 +1,18 @@
 package com.jesm3.newDualis.activities;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.stupla.Stundenplan;
+import com.jesm3.newDualis.stupla.Vorlesung;
 
 
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -28,6 +32,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,8 +80,6 @@ public class MainActivity extends FragmentActivity {
 		actionBar.show();
     }
 
-    
-
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onBackPressed()
 	 */
@@ -83,7 +90,7 @@ public class MainActivity extends FragmentActivity {
 			return;
 		}
 		this.doubleClicked = true;
-		Toast.makeText(this, "Nochmal klicken um die App zu schließen...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Nochmal klicken um die App zu schlieï¿½en...", Toast.LENGTH_SHORT).show();
 		new Handler().postDelayed(new Runnable() {
 			
 			@Override
@@ -173,6 +180,10 @@ public class MainActivity extends FragmentActivity {
      * displays dummy text.
      */
     public static class DummySectionFragment extends Fragment {
+    	
+    	private Stundenplan stupla;
+    	private ArrayList<Note> noten;
+    	
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -181,6 +192,129 @@ public class MainActivity extends FragmentActivity {
 
         public DummySectionFragment() {
         }
+        
+        private void setLecturesOnGUI(View aContainer) {
+        	TextView kw = (TextView) aContainer.findViewById(R.id.stupla_kalenderwoche);
+    		LinearLayout lay_montag = (LinearLayout) aContainer.findViewById(R.id.lay_montag);
+    		LinearLayout lay_dienstag = (LinearLayout) aContainer.findViewById(R.id.lay_dienstag);
+    		LinearLayout lay_mittwoch = (LinearLayout) aContainer.findViewById(R.id.lay_mittwoch);
+    		LinearLayout lay_donnerstag = (LinearLayout) aContainer.findViewById(R.id.lay_donnerstag);
+    		LinearLayout lay_freitag = (LinearLayout) aContainer.findViewById(R.id.lay_freitag);
+    		LinearLayout lay_samstag = (LinearLayout) aContainer.findViewById(R.id.lay_samstag);
+    		TableLayout tab_all = (TableLayout) aContainer.findViewById(R.id.stupla_table);
+    		
+    		generateDay(stupla.getMontag(), lay_montag);
+    		generateDay(stupla.getDienstag(), lay_dienstag);
+    		generateDay(stupla.getMittwoch(), lay_mittwoch);
+    		generateDay(stupla.getDonnerstag(), lay_donnerstag);
+    		generateDay(stupla.getFreitag(), lay_freitag);
+    		generateDay(stupla.getSamstag(), lay_samstag);
+    		kw.setText("Kalenderwoche " + stupla.getKalenderwoche());
+    		
+    	}
+        
+        private void initializeLectures() {
+    		stupla = new Stundenplan();
+    		stupla.setKalenderwoche("41");
+    		
+    		stupla.addMontag(new Vorlesung(
+    				"09:00", 
+    				"12:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addMontag(new Vorlesung(
+    				"13:30", 
+    				"16:00", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		
+    		stupla.addDienstag(new Vorlesung(
+    				"09:00", 
+    				"12:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addDienstag(new Vorlesung(
+    				"13:30", 
+    				"16:00", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addDienstag(new Vorlesung(
+    				"16:30", 
+    				"17:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		
+    		stupla.addMittwoch(new Vorlesung(
+    				"09:00", 
+    				"12:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addMittwoch(new Vorlesung(
+    				"13:30", 
+    				"16:00", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addMittwoch(new Vorlesung(
+    				"16:30", 
+    				"17:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		
+    		stupla.addDonnerstag(new Vorlesung(
+    				"09:00", 
+    				"12:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addDonnerstag(new Vorlesung(
+    				"13:30", 
+    				"16:00", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		
+    		stupla.addFreitag(new Vorlesung(
+    				"09:00", 
+    				"12:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addFreitag(new Vorlesung(
+    				"13:30", 
+    				"16:00", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    		stupla.addFreitag(new Vorlesung(
+    				"16:30", 
+    				"17:30", 
+    				"Rentschler", 
+    				"Software Engineering"));
+    	}
+    	
+    	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
+    		for(Vorlesung eachLecture : aDayList ) {
+    			LinearLayout subLayout = new LinearLayout(getActivity());
+    			TextView zeit = new TextView(getActivity());
+    			TextView dozent= new TextView(getActivity());
+    			TextView name= new TextView(getActivity());
+    			
+    			subLayout.setOrientation(LinearLayout.VERTICAL);
+    			if (aLayout.getChildCount() % 2 == 0) {
+    				subLayout.setBackgroundColor(Color.WHITE);
+    			} else {
+    				subLayout.setBackgroundColor(Color.LTGRAY);
+    			}
+    			subLayout.setWeightSum(1);
+    			
+    			zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
+    			subLayout.addView(zeit);
+    			
+    			name.setText(eachLecture.getName());
+    			subLayout.addView(name);
+    			
+    			dozent.setText(eachLecture.getDozent());
+    			subLayout.addView(dozent);
+    			
+    			aLayout.addView(subLayout);
+    		}
+    	}
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -189,12 +323,18 @@ public class MainActivity extends FragmentActivity {
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
             case 1:
             	rootView = inflater.inflate(R.layout.stundenplan_main, container, false);
+            	initializeLectures();
+            	setLecturesOnGUI(rootView);
+            	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
             	break;
             case 2:
             	rootView = inflater.inflate(R.layout.semesterplan_main, container, false);
             	break;
             case 3:
             	rootView = inflater.inflate(R.layout.noten_main, container, false);
+            	initializeMarks();
+            	setMarksOnGui(rootView);
+            	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
             	break;
             case 4:
             	rootView = inflater.inflate(R.layout.mail_main, container, false);
@@ -209,6 +349,35 @@ public class MainActivity extends FragmentActivity {
             
             return rootView;
         }
+
+		private void setMarksOnGui(View aContainer) {
+			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
+			
+			for(Note eachMark : noten) {
+				TableRow row = new TableRow(getActivity());
+				TextView fach = new TextView(getActivity());
+				TextView note = new TextView(getActivity());
+				TextView credits = new TextView(getActivity());
+				fach.setText(eachMark.getName());
+				note.setText(eachMark.getNote());
+				credits.setText(eachMark.getCredits());
+				
+				fach.setBackgroundColor(Color.WHITE);
+				note.setBackgroundColor(Color.WHITE);
+				credits.setBackgroundColor(Color.WHITE);
+				
+				row.addView(fach);
+				row.addView(note);
+				row.addView(credits);
+				lay_table.addView(row);
+			}
+		}
+
+		private void initializeMarks() {
+			noten = new ArrayList<Note>();
+//			noten.add(new Note("Mathe", "2", "6"));
+			
+		}
         
     }
     
