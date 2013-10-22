@@ -15,13 +15,15 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
 
 public class LoginActivity extends Activity{
 	
 	/**
-	 * Variable für die ActionBar
+	 * Variable fï¿½r die ActionBar
 	 */
 	ActionBar actionBar;
 	
@@ -49,21 +51,25 @@ public class LoginActivity extends Activity{
 		passwortField.setOnEditorActionListener(listener2);
 		
 		User theUser = ((CustomApplication)getApplication()).getUserManager().loadUserData();
-		if (theUser != null &&
-			((CustomApplication)getApplication()).getUserManager().login(theUser.getUsername(), theUser.getPassword(), false)) {
+		if (theUser != null 
+		&& ((CustomApplication)getApplication()).getUserManager().login(theUser.getUsername(), theUser.getPassword(), false)) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
 	}
 
 	/**
-	 * Mehtode für den Login. Wird vom "Login"-Button aufgerufen. 
+	 * Mehtode fï¿½r den Login. Wird vom "Login"-Button aufgerufen. 
 	 * @param v
 	 */
 	public void login(View v) {
     	EditText theUser = (EditText) findViewById(R.id.name);
+		String theUsername = theUser.getText().toString();
+		if (!theUsername.contains("@")) {
+			theUsername = theUsername + "@lehre.dhbw-" + ((Spinner)findViewById(R.id.spinner1)).getSelectedItem().toString() + ".de";
+		}
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);
-    	if (((CustomApplication)getApplication()).getUserManager().login(theUser.getText().toString(), thePW.getText().toString(), theSaveFlag.isChecked())) {
+    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
     		startActivity(new Intent(this, MainActivity.class));
     		finish();
     	} else {
