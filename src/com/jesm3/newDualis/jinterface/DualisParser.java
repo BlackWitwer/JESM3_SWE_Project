@@ -72,8 +72,10 @@ public class DualisParser {
 			String uhrzeitVon=splitTime[0].trim();
 			String uhrzeitBis=splitTime[1].trim();
 			String dozent="???";
+			String datum = "DD.MM.YYYY";
+			String raum = splitTitle[1].trim();  // STG-RB41-4.14-TINF "-TINF" notwendig??
 			String name=splitTitle[2].trim();
-			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent, name);
+			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent, name, datum, raum);
 			vorlesungen.add(dayv);
 		}
 		return vorlesungen;

@@ -5,6 +5,8 @@ public class Vorlesung {
 	private String UhrzeitBis;
 	private String Dozent;
 	private String Name;
+	private String Datum;
+	private String Raum;
 	/**
 	 * Kostruktor
 	 * 
@@ -14,14 +16,32 @@ public class Vorlesung {
 	 * @param name Name der Vorlesung.
 	 */
 	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
-			String name) {
+			String name, String datum, String raum) {
 		super();
 		UhrzeitVon = uhrzeitVon;
 		UhrzeitBis = uhrzeitBis;
 		Dozent = dozent;
 		Name = name;
+		Datum = datum;
+		Raum = raum;
 	}
 	
+	public String getDatum() {
+		return Datum;
+	}
+
+	public void setDatum(String datum) {
+		Datum = datum;
+	}
+
+	public String getRaum() {
+		return Raum;
+	}
+
+	public void setRaum(String raum) {
+		Raum = raum;
+	}
+
 	/**
 	 * @return the uhrzeitVon
 	 */

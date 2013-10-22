@@ -43,7 +43,7 @@ public class DualisConnection {
 		loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
 
 		//Zweiter Aufruf zum übertragen der Benutzerdaten.
-		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","heruzkt3rz");
+		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","EUERPW");
 		HttpResponse loginResponse = httpClient.execute(loginPost);
 
 		// BISHER ArrayOutOfBoundException bei falschen Logindaten da nicht existierender Header abgefragt wird
