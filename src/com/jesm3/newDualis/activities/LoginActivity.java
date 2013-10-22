@@ -1,21 +1,23 @@
 package com.jesm3.newDualis.activities;
 
+import java.util.ArrayList;
+
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity.SectionsPagerAdapter;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.User;
+import com.jesm3.newDualis.jinterface.DualisConnection;
+import com.jesm3.newDualis.stupla.Stundenplan;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.*;
 
@@ -60,7 +62,7 @@ public class LoginActivity extends Activity{
 	 * Mehtode f�r den Login. Wird vom "Login"-Button aufgerufen. 
 	 * @param v
 	 */
-	public void login(View v) {
+	public void login(View v) {	    
     	EditText theUser = (EditText) findViewById(R.id.name);
 		String theUsername = theUser.getText().toString();
 		if (!theUsername.contains("@")) {
@@ -68,12 +70,26 @@ public class LoginActivity extends Activity{
 		}
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);
-    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
-    		startActivity(new Intent(this, MainActivity.class));
-    		finish();
-    	} else {
-    		TextView label = (TextView) findViewById(R.id.error_label);
-    		label.setVisibility(View.VISIBLE);
-    	}
+    	
+    	loginlol("it12018@lehre.dhbw-stuttgart.de",thePW.getText().toString());
+    	
+//    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
+//    		startActivity(new Intent(this, MainActivity.class));
+//    		finish();
+//    	} else {
+//    		TextView label = (TextView) findViewById(R.id.error_label);
+//    		label.setVisibility(View.VISIBLE);
+//    	}
+	}
+	
+	public void loginlol(String u, String pw){
+        //Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
+        StrictMode.ThreadPolicy policy = new StrictMode.
+                        ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        //-----------------------------------
+		DualisConnection con = new DualisConnection();
+    	con.login("it12018@lehre.dhbw-stuttgart.de","EUERPW");
+    	ArrayList<Stundenplan> std = con.loadStundenplan();
 	}
 }

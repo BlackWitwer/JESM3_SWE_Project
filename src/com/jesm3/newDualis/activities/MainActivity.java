@@ -9,12 +9,14 @@ import android.view.*;
 import android.widget.*;
 import com.jesm3.newDualis.*;
 import com.jesm3.newDualis.is.*;
+import com.jesm3.newDualis.jinterface.DualisConnection;
 import com.jesm3.newDualis.mail.*;
 import java.util.*;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.stupla.Stundenplan;
 
 public class MainActivity extends FragmentActivity {
 
@@ -37,6 +39,7 @@ public class MainActivity extends FragmentActivity {
      * Die ActionBar
      */
     ActionBar actionBar;
+
 
 	private boolean doubleClicked;
 

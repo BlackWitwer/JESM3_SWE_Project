@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
+import com.jesm3.newDualis.stupla.Stundenplan;
 
 import android.text.Html;
 import android.widget.TextView;
@@ -27,39 +28,44 @@ import android.widget.TextView;
 public class DualisConnection {
 
 	private DefaultHttpClient httpClient;
-	private MainActivity main;
 	private DualisParser dparse;
 	private DualisLinks mlinks;
 	
-	public DualisConnection(MainActivity mainActivity){
+	public DualisConnection(){
 		httpClient = new DefaultHttpClient();
-		this.main = mainActivity;
-		dparse = new DualisParser(mainActivity.getResources());  //Initialisiere Parser
+		dparse = new DualisParser();
 	}
 	
 	
-	public void login() throws IOException {
-		//Erster Seitenaufruf um das Cookie zu bekommen.
-		loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
+	public void login(String user, String pw){
+		try {
+			//Erster Seitenaufruf um das Cookie zu bekommen.
+			loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
 
-		//Zweiter Aufruf zum Ã¼bertragen der Benutzerdaten.
-		HttpPost loginPost = generateLoginPost("it12018@lehre.dhbw-stuttgart.de","EUERPW");
-		HttpResponse loginResponse = httpClient.execute(loginPost);
+			//Zweiter Aufruf zum Ã¼bertragen der Benutzerdaten.
+			HttpPost loginPost = generateLoginPost(user,pw);
+			HttpResponse loginResponse;
+			loginResponse = httpClient.execute(loginPost);
 
-		// BISHER ArrayOutOfBoundException bei falschen Logindaten da nicht existierender Header abgefragt wird
-		//Erster Redirect der aus dem Header des zweiten Response gelesen wird. Im Value stehen vor dem Link noch ein "0; URL=" deshalb substring 7.
-		HttpGet firstRedirect = new HttpGet("https://dualis.dhbw.de" + loginResponse.getHeaders("REFRESH")[0].getValue().substring(7));
-		HttpResponse firstRedirectResponse = httpClient.execute(firstRedirect);
+			// BISHER ArrayOutOfBoundException bei falschen Logindaten da nicht existierender Header abgefragt wird
+			//Erster Redirect der aus dem Header des zweiten Response gelesen wird. Im Value stehen vor dem Link noch ein "0; URL=" deshalb substring 7.
+			HttpGet firstRedirect = new HttpGet("https://dualis.dhbw.de" + loginResponse.getHeaders("REFRESH")[0].getValue().substring(7));
+			HttpResponse firstRedirectResponse = httpClient.execute(firstRedirect);
 
-		//Zweiter Redirect der aus dem Header des ersten Redirect gelesen wird. Im Value stehen vor dem Link noch ein "0;URL=" deshalb substring 6.
-		HttpGet secondRedirect = new HttpGet("https://dualis.dhbw.de" + firstRedirectResponse.getHeaders("REFRESH")[0].getValue().substring(6));
-		HttpResponse secondRedirectResponse = httpClient.execute(secondRedirect);
-		HttpEntity redirectEntity = secondRedirectResponse.getEntity();
-		
-		//Parse Hauptmenülinks von Startseite
-		getMainMenuLinks(EntityUtils.toString(redirectEntity));
-		
-		//Erfolgreich eingeloggt.
+			//Zweiter Redirect der aus dem Header des ersten Redirect gelesen wird. Im Value stehen vor dem Link noch ein "0;URL=" deshalb substring 6.
+			HttpGet secondRedirect = new HttpGet("https://dualis.dhbw.de" + firstRedirectResponse.getHeaders("REFRESH")[0].getValue().substring(6));
+			HttpResponse secondRedirectResponse = httpClient.execute(secondRedirect);
+			HttpEntity redirectEntity = secondRedirectResponse.getEntity();
+			
+			//Parse Hauptmenülinks von Startseite
+			getMainMenuLinks(EntityUtils.toString(redirectEntity));
+			
+			//Erfolgreich eingeloggt.
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//Parse Hauptmenülinks von Startseite
@@ -69,13 +75,13 @@ public class DualisConnection {
 	}
 	
 	// Geht zur Monatsübersicht und parst den Stundenplan
-	public void loadStundenplan() {
+	public ArrayList<Stundenplan> loadStundenplan() {
 		String stundenplanContent = getPage("https://dualis.dhbw.de" + mlinks.getStundenPlan());
 
 		String parseLink = dparse.parseLink(stundenplanContent, ".link000031");
 		String monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
 
-		String vorlesungen = dparse.parseMonth(monatsansichtContent);
+		return dparse.parseMonth(monatsansichtContent);
 	}
 	
 	// Läd Seite ohne HTML Code zurückzugeben

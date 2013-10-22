@@ -92,7 +92,7 @@ public class Vorlesung {
 	}
 	
 	public String toString(){
-		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent;
+		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent+" am "+Datum+" in "+Raum;
 	}
 
 }

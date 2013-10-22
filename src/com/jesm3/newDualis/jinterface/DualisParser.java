@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -26,14 +27,12 @@ import android.text.Html;
 import android.util.Log;
 
 public class DualisParser {
-	Resources r;
 	
-	public DualisParser(Resources r){
-		this.r = r;
+	public DualisParser(){
 	}
 	
 	// JSoup HTML Parser, schnell aber noch kein Parsing mit xsl files 
-	public String parseMonth(String aContent){
+	public ArrayList<Stundenplan> parseMonth(String aContent){ 
 		ArrayList<Stundenplan> stdl = new ArrayList<Stundenplan>();
 		StundenplanGenerator stdgr = new StundenplanGenerator();
 		Document doc = Jsoup.parse(aContent);
@@ -41,6 +40,7 @@ public class DualisParser {
 		// Siehe auch http://jsoup.org/apidocs/org/jsoup/select/Selector.html
 		Elements weeks = doc.select("tr"); //RAM???
 
+		String datum = "DD.MM.YYYY";
 		for(int i=1;i<weeks.size();i++){
 			Elements days = weeks.get(i).select(".tbMonthDayCell");
 			stdgr = new StundenplanGenerator();
@@ -57,22 +57,26 @@ public class DualisParser {
 			out=out+"Kalenderwoche\n"+stdl.get(i).toString()+"\n\n";
 		}
 		Log.d("parsetest", out.toString());
-		return out;
+		return stdl; 
+		//Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut ausführen und 
+		//mit erstem/letzten Stundenplan mergen
 	}
-	
-	
 	
 	public ArrayList<Vorlesung> generateVorlesungen(Element day){
 		ArrayList<Vorlesung> vorlesungen = new ArrayList<Vorlesung>();
-		Elements link = day.select(".apmntLink");
-		for(int i=0;i<link.size();i++) {
-			String title = link.get(i).attr("title");
+		Elements vlink = day.select(".apmntLink");
+		for(int i=0;i<vlink.size();i++) {
+			String title = vlink.get(i).attr("title");
 			String[] splitTitle = title.split("/");
 			String[] splitTime = splitTitle[0].split("-");
+			Elements atags = day.select("a");
+			String datum = "DD.MM.YYYY";
+			if(atags.size()>0){
+				datum = atags.get(0).attr("title");
+			}//
 			String uhrzeitVon=splitTime[0].trim();
 			String uhrzeitBis=splitTime[1].trim();
 			String dozent="???";
-			String datum = "DD.MM.YYYY";
 			String raum = splitTitle[1].trim();  // STG-RB41-4.14-TINF "-TINF" notwendig??
 			String name=splitTitle[2].trim();
 			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent, name, datum, raum);

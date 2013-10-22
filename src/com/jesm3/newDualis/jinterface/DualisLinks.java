@@ -7,6 +7,7 @@ public class DualisLinks {
 	String stundenPlan;
 	String leistung;
 	String noten;
+	String monatsAnsichtStundenplan;
 	
 	public String getStundenPlan() {
 		return stundenPlan;
@@ -32,6 +33,5 @@ public class DualisLinks {
 	public void setMonatsAnsichtStundenplan(String monatsAnsichtStundenplan) {
 		this.monatsAnsichtStundenplan = monatsAnsichtStundenplan;
 	}
-	String monatsAnsichtStundenplan;
 	
 }
