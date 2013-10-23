@@ -54,7 +54,7 @@ public class DualisConnection {
 			loginResponse = httpClient.execute(loginPost);
 			
 			//Ist die Zweite Seite leer bis auf die Standard Html Konstrukte war der Login erfolgreich.
-			if (EntityUtils.toString(loginResponse.getEntity()).length() < 50) {
+			if (EntityUtils.toString(loginResponse.getEntity()).length() < 100) {
 				return true;
 			}
 		} catch (ClientProtocolException e) {

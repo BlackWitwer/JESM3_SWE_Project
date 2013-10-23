@@ -55,10 +55,15 @@ public class LoginActivity extends Activity{
 		passwortField.setOnEditorActionListener(listener2);
 		
 		User theUser = ((CustomApplication)getApplication()).getUserManager().loadUserData();
-		if (theUser != null 
-		&& ((CustomApplication)getApplication()).getUserManager().login(theUser.getUsername(), theUser.getPassword(), false)) {
+		if (theUser != null) {
 			startActivity(new Intent(this, MainActivity.class));
 		}
+		
+		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
+				StrictMode.ThreadPolicy policy = new StrictMode.
+					ThreadPolicy.Builder().permitAll().build();
+				StrictMode.setThreadPolicy(policy);
+		//-----------------------------------
 	}
 
 	/**
@@ -74,25 +79,12 @@ public class LoginActivity extends Activity{
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);
     	
-    	loginlol("it12018@lehre.dhbw-stuttgart.de",thePW.getText().toString());
-    	
-//    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
-//    		startActivity(new Intent(this, MainActivity.class));
-//    		finish();
-//    	} else {
-//    		TextView label = (TextView) findViewById(R.id.error_label);
-//    		label.setVisibility(View.VISIBLE);
-//    	}
-	}
-	
-	public void loginlol(String u, String pw){
-        //Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
-        StrictMode.ThreadPolicy policy = new StrictMode.
-                        ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        //-----------------------------------
-		DualisConnection con = new DualisConnection();
-    	con.login(new User("it12018@lehre.dhbw-stuttgart.de","EUERPW"));
-    	ArrayList<Stundenplan> std = con.loadStundenplan();
+    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
+    		startActivity(new Intent(this, MainActivity.class));
+    		finish();
+    	} else {
+    		TextView label = (TextView) findViewById(R.id.error_label);
+    		label.setVisibility(View.VISIBLE);
+    	}
 	}
 }

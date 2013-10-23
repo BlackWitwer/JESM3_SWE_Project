@@ -74,6 +74,22 @@ public class MailManager {
 		}
 	}
 
+	public void getMessagesFromTo(final int from, final int to, final MailListener aListener) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (int i = from; i <= to; i++) {
+					try {
+						aListener.mailReceived(getFolder().getMessage(i));
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+	
 	public ArrayList<Message> getMessagesFromTo(int from, int to) {
 		try {
 			return new ArrayList<Message>(Arrays.asList(getFolder()
