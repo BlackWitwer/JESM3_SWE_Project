@@ -1,6 +1,7 @@
 package com.jesm3.newDualis.activities;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.mail.Message;
@@ -212,36 +213,7 @@ public class MainActivity extends FragmentActivity {
 			case 4:
 				rootView = inflater.inflate(R.layout.mail_main, container,
 						false);
-				MailManager manager = new MailManager(
-						((CustomApplication) getActivity().getApplication())
-								.getUserManager().getUser());
-//				final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-//						new ArrayList<Message>());
-				final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-						manager.getMessagesFromTo(1, 40));
-				final ExpandableListView expListView;
-				expListView = (ExpandableListView) rootView
-						.findViewById(R.id.mailExpandView);
-				expListView.setAdapter(listAdapter);
-//				manager.getMessagesFromTo(1,40, new MailListener() {
-//					@Override
-//					public void mailReceived(Message aMail) {
-//						listAdapter.addMessage(aMail);						
-//					}
-//				});
-				expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-					
-					private int lastExpand = -1;
-					
-					@Override
-					public void onGroupExpand(int groupPosition) {
-						if (lastExpand > -1) {
-							expListView.collapseGroup(lastExpand);
-						}
-						lastExpand = groupPosition;
-					}
-				});
-				
+				initMailView(rootView);
 				break;
 			case 5:
 				rootView = inflater.inflate(R.layout.dozent_main, container,
@@ -256,23 +228,46 @@ public class MainActivity extends FragmentActivity {
 			return rootView;
 		}
 
-	}
-
-	/**
-	 * Initialisiert die ExpandableListView der Mailansicht.
-	 */
-	public void initMailView() {
-		ExpandableListAdapter listAdapter;
-		ExpandableListView expListView;
-
-		expListView = (ExpandableListView) findViewById(R.id.mailExpandView);
-		MailManager manager = new MailManager(
-				((CustomApplication) getApplication()).getUserManager()
-						.getUser());
-		listAdapter = new ExpandableListAdapter(this,
-				manager.getMessagesFromTo(1, 30));
-
-		expListView.setAdapter(listAdapter);
+		/**
+		 * Initialisiert die ExpandableListView der Mailansicht.
+		 */
+		public void initMailView(View aView) {
+			//TODO Mailmanager auslagern könnte performance verbessern.
+			MailManager manager = new MailManager(
+					((CustomApplication) getActivity().getApplication())
+							.getUserManager().getUser());
+			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
+					new ArrayList<Message>());
+			final ExpandableListView expListView;
+			expListView = (ExpandableListView) aView
+					.findViewById(R.id.mailExpandView);
+			expListView.setAdapter(listAdapter);
+			manager.getMessagesFromTo(1,40, new MailListener() {
+				@Override
+				public void mailReceived(List<Message> someMails) {
+					listAdapter.addAllMessages(someMails);
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							listAdapter.notifyDataSetChanged();
+						}
+					});
+				}
+			});
+			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
+				
+				private int lastExpand = -1;
+				
+				@Override
+				public void onGroupExpand(int groupPosition) {
+					if (lastExpand > -1 && lastExpand != groupPosition) {
+						expListView.collapseGroup(lastExpand);
+					}
+					lastExpand = groupPosition;
+				}
+			});
+		}
 	}
 
 	/**

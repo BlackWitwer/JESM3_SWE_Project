@@ -2,6 +2,7 @@ package com.jesm3.newDualis.mail;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.mail.BodyPart;
 import javax.mail.Flags.Flag;
@@ -141,6 +142,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	public void addMessage(Message aMessage) {
 		messageList.add(aMessage);
+	}
+	
+	public void addAllMessages (Collection<Message> someMessages) {
+		messageList.addAll(someMessages);
 	}
 
 	/**

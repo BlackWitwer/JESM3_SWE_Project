@@ -2,6 +2,7 @@ package com.jesm3.newDualis.mail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -19,15 +20,24 @@ public class MailManager {
 	private final int port = 993;
 
 	private User user;
-	private Session session;
-	private Store store;
 	private Folder folder;
 
-	private ArrayList<Message> messages;
+	private HashMap<Integer, Message> messageIdMap;
+
+	private boolean loggedIn = false;
 
 	public MailManager(User aUser) {
 		this.user = aUser;
-		init();
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				init();
+				loggedIn = true;
+			}
+		}).start();
+
 	}
 
 	private void init() {
@@ -44,10 +54,10 @@ public class MailManager {
 					"javax.net.ssl.SSLSocketFactory");
 			props.setProperty("mail.imaps.socketFactory.fallback", "false");
 
-			session = Session.getInstance(props, new PassAuthenticator(
+			Session session = Session.getInstance(props, new PassAuthenticator(
 					getUsername(), getPassword()));
 
-			store = session.getStore("imaps");
+			Store store = session.getStore("imaps");
 			store.connect();
 
 			folder = store.getDefaultFolder();
@@ -59,37 +69,47 @@ public class MailManager {
 				folder.open(Folder.READ_ONLY);
 			}
 
-			messages = new ArrayList<Message>(Arrays.asList(folder
-					.getMessages()));
+			messageIdMap = new HashMap<Integer, Message>();
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
 		}
 	}
 
-	public void sync() {
-		if (getMessageCount() > messages.size()) {
-			messages.addAll(getMessagesFromTo(messages.size() + 1,
-					getMessageCount()));
-		}
-	}
+	// public void sync() {
+	// if (getMessageCount() > messages.size()) {
+	// messages.addAll(getMessagesFromTo(messages.size() + 1,
+	// getMessageCount()));
+	// }
+	// }
 
-	public void getMessagesFromTo(final int from, final int to, final MailListener aListener) {
+	public void getMessagesFromTo(final int from, final int to,
+			final MailListener aListener) {
 		new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				for (int i = from; i <= to; i++) {
-					try {
-						aListener.mailReceived(getFolder().getMessage(i));
-					} catch (MessagingException e) {
-						e.printStackTrace();
+				while (!loggedIn) {
+				}
+				try {
+					int temp = to > getFolder().getMessageCount() ? getFolder()
+							.getMessageCount() : to;
+							
+					ArrayList<Message> theMessageList = new ArrayList<Message>();
+					for (int i = from; i <= temp; i++) {
+						if (!messageIdMap.containsKey(i)) {
+							messageIdMap.put(i, getFolder().getMessage(i));
+						}
+						theMessageList.add(messageIdMap.get(i));
 					}
+					aListener.mailReceived(theMessageList);
+				} catch (MessagingException e) {
+					e.printStackTrace();
 				}
 			}
 		}).start();
 	}
-	
+
 	public ArrayList<Message> getMessagesFromTo(int from, int to) {
 		try {
 			return new ArrayList<Message>(Arrays.asList(getFolder()
@@ -135,14 +155,6 @@ public class MailManager {
 
 	private String getPassword() {
 		return user.getPassword();
-	}
-
-	private Store getStore() {
-		return store;
-	}
-
-	private Session getSession() {
-		return session;
 	}
 
 	private Folder getFolder() {
