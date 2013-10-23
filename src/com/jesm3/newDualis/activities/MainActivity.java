@@ -249,18 +249,17 @@ public class MainActivity extends FragmentActivity {
 
 		expListView.setAdapter(listAdapter);
 	}
-
-	/**
-	 * Startet die Login-Activity, beendet die Main-Activity und versteckt die
-	 * ActionBar.
-	 */
-	public void logout() {
-		((CustomApplication) getApplication()).getUserManager().logout();
-		startActivity(new Intent(this, LoginActivity.class));
-		finish();
-		actionBar.hide();
+    
+    /**
+     * Startet die Login-Activity, beendet die Main-Activity und versteckt die ActionBar.
+     */
+    public void logout() {
+    	((CustomApplication)getApplication()).getUserManager().logout();
+    	startActivity(new Intent(this, LoginActivity.class));
+    	finish();
+    	actionBar.hide();
 	}
-
+    
 	public void showSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
 	}

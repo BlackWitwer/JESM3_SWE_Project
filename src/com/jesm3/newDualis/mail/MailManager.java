@@ -1,8 +1,18 @@
 package com.jesm3.newDualis.mail;
 
-import com.jesm3.newDualis.is.*;
-import java.util.*;
-import javax.mail.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Store;
+
+import com.jesm3.newDualis.is.User;
 
 public class MailManager {
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
@@ -48,7 +58,6 @@ public class MailManager {
 			} catch (MessagingException ex) {
 				folder.open(Folder.READ_ONLY);
 			}
-
 			messages = new ArrayList<Message>(Arrays.asList(folder
 					.getMessages()));
 		} catch (Exception ex) {
