@@ -58,6 +58,7 @@ public class MailManager {
 			} catch (MessagingException ex) {
 				folder.open(Folder.READ_ONLY);
 			}
+
 			messages = new ArrayList<Message>(Arrays.asList(folder
 					.getMessages()));
 		} catch (Exception ex) {
