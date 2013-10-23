@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
+import com.jesm3.newDualis.is.User;
 import com.jesm3.newDualis.stupla.Stundenplan;
 
 import android.text.Html;
@@ -36,14 +37,41 @@ public class DualisConnection {
 		dparse = new DualisParser();
 	}
 	
-	
-	public void login(String user, String pw){
+	/**
+	 * PrÃ¼ft ob die Benutzerdaten korrekt sind.
+	 * TODO PrÃ¼fen ob ein vorheriger check der Logindaten mit einem richtigen Login zum Konflickt fÃ¼hrt.
+	 * @param aUser
+	 * @return
+	 */
+	public boolean simpleLoginCheck(User aUser) {
 		try {
 			//Erster Seitenaufruf um das Cookie zu bekommen.
 			loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
 
 			//Zweiter Aufruf zum Ã¼bertragen der Benutzerdaten.
-			HttpPost loginPost = generateLoginPost(user,pw);
+			HttpPost loginPost = generateLoginPost(aUser.getUsername(), aUser.getPassword());
+			HttpResponse loginResponse;
+			loginResponse = httpClient.execute(loginPost);
+			
+			//Ist die Zweite Seite leer bis auf die Standard Html Konstrukte war der Login erfolgreich.
+			if (EntityUtils.toString(loginResponse.getEntity()).length() < 50) {
+				return true;
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public void login(User aUser){
+		try {
+			//Erster Seitenaufruf um das Cookie zu bekommen.
+			loadPage("https://dualis.dhbw.de/scripts/mgrqcgi?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000001,-N000324,-Awelcome");
+
+			//Zweiter Aufruf zum Ã¼bertragen der Benutzerdaten.
+			HttpPost loginPost = generateLoginPost(aUser.getUsername(), aUser.getPassword());
 			HttpResponse loginResponse;
 			loginResponse = httpClient.execute(loginPost);
 
@@ -57,7 +85,7 @@ public class DualisConnection {
 			HttpResponse secondRedirectResponse = httpClient.execute(secondRedirect);
 			HttpEntity redirectEntity = secondRedirectResponse.getEntity();
 			
-			//Parse Hauptmenülinks von Startseite
+			//Parse Hauptmenï¿½links von Startseite
 			getMainMenuLinks(EntityUtils.toString(redirectEntity));
 			
 			//Erfolgreich eingeloggt.
@@ -68,13 +96,13 @@ public class DualisConnection {
 		}
 	}
 	
-	//Parse Hauptmenülinks von Startseite
+	//Parse Hauptmenï¿½links von Startseite
 	public void getMainMenuLinks(String startPageContent){
 		mlinks = new DualisLinks();
 		mlinks.setStundenPlan(dparse.parseLink(startPageContent, ".link000028"));
 	}
 	
-	// Geht zur Monatsübersicht und parst den Stundenplan
+	// Geht zur Monatsï¿½bersicht und parst den Stundenplan
 	public ArrayList<Stundenplan> loadStundenplan() {
 		String stundenplanContent = getPage("https://dualis.dhbw.de" + mlinks.getStundenPlan());
 
@@ -84,7 +112,7 @@ public class DualisConnection {
 		return dparse.parseMonth(monatsansichtContent);
 	}
 	
-	// Läd Seite ohne HTML Code zurückzugeben
+	// Lï¿½d Seite ohne HTML Code zurï¿½ckzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);
 		try {
@@ -96,7 +124,7 @@ public class DualisConnection {
 		}
 	}
 	
-	// Läd Seite und gibt deren HTML Code als String zurück
+	// Lï¿½d Seite und gibt deren HTML Code als String zurï¿½ck
 	public String getPage(String url) {
 		String pageContent = "";
 		try {
@@ -112,7 +140,7 @@ public class DualisConnection {
 		return pageContent;
 	}
 
-	// Generiert POST für Login
+	// Generiert POST fï¿½r Login
 	public HttpPost generateLoginPost(String user, String pw){
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("usrname", user));

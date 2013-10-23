@@ -89,7 +89,7 @@ public class LoginActivity extends Activity{
         StrictMode.setThreadPolicy(policy);
         //-----------------------------------
 		DualisConnection con = new DualisConnection();
-    	con.login("it12018@lehre.dhbw-stuttgart.de","EUERPW");
+    	con.login(new User("it12018@lehre.dhbw-stuttgart.de","EUERPW"));
     	ArrayList<Stundenplan> std = con.loadStundenplan();
 	}
 }
