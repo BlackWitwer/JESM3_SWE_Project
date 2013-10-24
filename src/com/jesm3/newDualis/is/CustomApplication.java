@@ -25,7 +25,7 @@ public class CustomApplication extends Application {
 	
 	public UserManager getUserManager() {
 		if (userManager == null) {
-			userManager = new UserManager(getApplicationContext());
+			userManager = new UserManager(this);
 		}
 		return userManager;
 	}
