@@ -5,48 +5,46 @@ package com.jesm3.newDualis.stupla;
 
 import java.util.ArrayList;
 
-public class Stundenplan {
+public class Wochenplan {
 	/**
-	 * Alle Vorlesungen für Montag.
+	 * Alle Vorlesungen fï¿½r Montag.
 	 */
 	ArrayList<Vorlesung> montag;
 	/**
-	 * Alle Vorlesungen für Dienstag.
+	 * Alle Vorlesungen fï¿½r Dienstag.
 	 */
 	ArrayList<Vorlesung> dienstag;
 	/**
-	 * Alle Vorlesungen für Mittwoch.
+	 * Alle Vorlesungen fï¿½r Mittwoch.
 	 */
 	ArrayList<Vorlesung> mittwoch;
 	/**
-	 * Alle Vorlesungen für Donnerstag.
+	 * Alle Vorlesungen fï¿½r Donnerstag.
 	 */
 	ArrayList<Vorlesung> donnerstag;
 	/**
-	 * Alle Vorlesungen für Freitag.
+	 * Alle Vorlesungen fï¿½r Freitag.
 	 */
 	ArrayList<Vorlesung> freitag;
 	/**
-	 * Alle Vorlesungen für Samstag.
+	 * Alle Vorlesungen fï¿½r Samstag.
 	 */
 	ArrayList<Vorlesung> samstag;
 	
 	String kalenderwoche;
 	
-	
-	public Stundenplan () {
+	public Wochenplan () {
 		montag = new ArrayList<Vorlesung>();
 		dienstag = new ArrayList<Vorlesung>();
 		mittwoch = new ArrayList<Vorlesung>();
 		donnerstag = new ArrayList<Vorlesung>();
 		freitag = new ArrayList<Vorlesung>();
 		samstag = new ArrayList<Vorlesung>();
-		
 	}
 	
 	
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addMontag(Vorlesung aVorlesung) {
 		montag.add(aVorlesung);
@@ -69,35 +67,35 @@ public class Stundenplan {
 
 
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addDienstag(Vorlesung aVorlesung) {
 		dienstag.add(aVorlesung);
 	}
 
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addMittwoch(Vorlesung aVorlesung) {
 		mittwoch.add(aVorlesung);
 	}
 
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addDonnerstag(Vorlesung aVorlesung) {
 		donnerstag.add(aVorlesung);
 	}
 
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addFreitag(Vorlesung aVorlesung) {
 		freitag.add(aVorlesung);
 	}
 
 	/**
-	 * Fügt dem Tag eine Vorlesung hinzu.
+	 * Fï¿½gt dem Tag eine Vorlesung hinzu.
 	 */
 	public void addSamstag(Vorlesung aVorlesung) {
 		samstag.add(aVorlesung);

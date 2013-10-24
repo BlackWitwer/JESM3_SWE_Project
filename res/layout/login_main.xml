@@ -14,10 +14,9 @@
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:layout_weight="2"
             android:src="@drawable/icon" />
 
         <TableLayout
@@ -42,11 +41,10 @@
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:ems="10"
                     android:imeOptions="actionNext"
-                    android:maxLines="1" />
-
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </TableRow>
 
             <TableRow
@@ -66,12 +64,11 @@
                     android:id="@+id/passwort"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
                     android:ems="10"
+                    android:imeOptions="actionDone"
                     android:inputType="textPassword"
-                    android:maxLines="1" />
-
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </TableRow>
 
             <TableRow

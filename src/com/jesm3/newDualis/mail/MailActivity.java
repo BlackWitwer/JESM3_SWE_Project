@@ -26,7 +26,6 @@ public class MailActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
 		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
 		StrictMode.ThreadPolicy policy = new StrictMode.
@@ -35,7 +34,6 @@ public class MailActivity extends Activity
 		//-----------------------------------
 		
 		
-		TextView text = ((TextView)findViewById(R.id.text));
 		/*
 		 * Demo app that exercises the Message interfaces.
 		 * Show information about and contents of messages.
@@ -99,8 +97,6 @@ public class MailActivity extends Activity
 				folder.open(Folder.READ_ONLY);
 			}
 			int totalMessages = folder.getMessageCount();
-			text.append("Total Messages: " + totalMessages);
-			text.append("Check");
 			if (totalMessages == 0)
 			{
 				System.out.println("Empty folder");
@@ -109,7 +105,6 @@ public class MailActivity extends Activity
 				store.close();
 			}
 			for (Message eachMessage : folder.getMessages()) {
-				text.append(eachMessage.getSubject()+"\n");
 			}
 			folder.close(false);
 			store.close();

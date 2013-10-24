@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.jesm3.newDualis.R;
-import com.jesm3.newDualis.stupla.Stundenplan;
+import com.jesm3.newDualis.stupla.VorlesungsplanManager;
+import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Vorlesung;
 
 
 import android.app.ActionBar;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +26,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -90,7 +95,7 @@ public class MainActivity extends FragmentActivity {
 			return;
 		}
 		this.doubleClicked = true;
-		Toast.makeText(this, "Nochmal klicken um die App zu schlie�en...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, R.string.app_close, Toast.LENGTH_SHORT).show();
 		new Handler().postDelayed(new Runnable() {
 			
 			@Override
@@ -126,6 +131,45 @@ public class MainActivity extends FragmentActivity {
     @Override
 	protected void onPause() {
 		super.onPause();
+	}
+    
+    /* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onNewIntent(android.content.Intent)
+	 */
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+
+	public void addNotification(View v) {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	    Notification myNotification = new Notification(R.drawable.icon, "Notification!", System.currentTimeMillis());
+	    Context context = getApplicationContext();
+	    String notificationTitle = "Exercise of Notification!";
+	    String notificationText = "http://android-er.blogspot.com/";
+	    Intent myIntent = new Intent(this, MainActivity.class);
+	    PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0,   myIntent, Intent.FILL_IN_ACTION);
+	    myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+	    myNotification.setLatestEventInfo(context, notificationTitle, notificationText, pendingIntent);
+	    notificationManager.notify(1, myNotification);
+		
+		
+//    	Intent intent = new Intent(this, MainActivity.class);
+//        PendingIntent pi = PendingIntent.getActivity(this, 0,intent, 0);
+//    	
+//    	NotificationCompat.Builder mBuilder =
+//    	        new NotificationCompat.Builder(this)
+//    	        .setSmallIcon(R.drawable.icon)
+//    	        .setContentTitle("Neue Mail")
+//    	        .setContentText("Sie haben 1 neue Mail erhalten!");
+//    	
+//    	Notification note = mBuilder.build();
+//    	note.setLatestEventInfo(this, "New Email", "Unread Conversation", pi);
+//    	note.flags |= Notification.FLAG_AUTO_CANCEL;
+//    	
+//    	NotificationManager mNotificationManager =
+//    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//    	mNotificationManager.notify(1, mBuilder.build());
 	}
 
 	/**
@@ -181,7 +225,7 @@ public class MainActivity extends FragmentActivity {
      */
     public static class DummySectionFragment extends Fragment {
     	
-    	private Stundenplan stupla;
+    	private Wochenplan stupla;
     	private ArrayList<Note> noten;
     	
         /**
@@ -201,7 +245,6 @@ public class MainActivity extends FragmentActivity {
     		LinearLayout lay_donnerstag = (LinearLayout) aContainer.findViewById(R.id.lay_donnerstag);
     		LinearLayout lay_freitag = (LinearLayout) aContainer.findViewById(R.id.lay_freitag);
     		LinearLayout lay_samstag = (LinearLayout) aContainer.findViewById(R.id.lay_samstag);
-    		TableLayout tab_all = (TableLayout) aContainer.findViewById(R.id.stupla_table);
     		
     		generateDay(stupla.getMontag(), lay_montag);
     		generateDay(stupla.getDienstag(), lay_dienstag);
@@ -214,78 +257,7 @@ public class MainActivity extends FragmentActivity {
     	}
         
         private void initializeLectures() {
-    		stupla = new Stundenplan();
-    		stupla.setKalenderwoche("41");
-    		
-    		stupla.addMontag(new Vorlesung(
-    				"09:00", 
-    				"12:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addMontag(new Vorlesung(
-    				"13:30", 
-    				"16:00", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		
-    		stupla.addDienstag(new Vorlesung(
-    				"09:00", 
-    				"12:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addDienstag(new Vorlesung(
-    				"13:30", 
-    				"16:00", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addDienstag(new Vorlesung(
-    				"16:30", 
-    				"17:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		
-    		stupla.addMittwoch(new Vorlesung(
-    				"09:00", 
-    				"12:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addMittwoch(new Vorlesung(
-    				"13:30", 
-    				"16:00", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addMittwoch(new Vorlesung(
-    				"16:30", 
-    				"17:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		
-    		stupla.addDonnerstag(new Vorlesung(
-    				"09:00", 
-    				"12:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addDonnerstag(new Vorlesung(
-    				"13:30", 
-    				"16:00", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		
-    		stupla.addFreitag(new Vorlesung(
-    				"09:00", 
-    				"12:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addFreitag(new Vorlesung(
-    				"13:30", 
-    				"16:00", 
-    				"Rentschler", 
-    				"Software Engineering"));
-    		stupla.addFreitag(new Vorlesung(
-    				"16:30", 
-    				"17:30", 
-    				"Rentschler", 
-    				"Software Engineering"));
+    		stupla = new VorlesungsplanManager().getWochenplan(41);
     	}
     	
     	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
@@ -352,33 +324,55 @@ public class MainActivity extends FragmentActivity {
 
 		private void setMarksOnGui(View aContainer) {
 			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
+			addRow("Fach", "Note", "Credits", lay_table);
 			
 			for(Note eachMark : noten) {
-				TableRow row = new TableRow(getActivity());
-				TextView fach = new TextView(getActivity());
-				TextView note = new TextView(getActivity());
-				TextView credits = new TextView(getActivity());
-				fach.setText(eachMark.getName());
-				note.setText(eachMark.getNote());
-				credits.setText(eachMark.getCredits());
-				
-				fach.setBackgroundColor(Color.WHITE);
-				note.setBackgroundColor(Color.WHITE);
-				credits.setBackgroundColor(Color.WHITE);
-				
-				row.addView(fach);
-				row.addView(note);
-				row.addView(credits);
-				lay_table.addView(row);
+				addRow(eachMark.getName(), eachMark.getNote(), eachMark.getCredits(), lay_table);
 			}
+			
+		}
+		
+		public void addRow(String aVal1, String aVal2, String aVal3, TableLayout aLayout) {
+			TableRow row = new TableRow(getActivity());
+			TextView fach = new TextView(getActivity());
+			TextView note = new TextView(getActivity());
+			TextView credits = new TextView(getActivity());
+			fach.setText(aVal1);
+			note.setText(aVal2);
+			credits.setText(aVal3);
+			
+			fach.setBackgroundColor(Color.WHITE);
+			note.setBackgroundColor(Color.WHITE);
+			credits.setBackgroundColor(Color.WHITE);
+			
+			row.addView(fach);
+			row.addView(note);
+			row.addView(credits);
+			
+		    TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+		    llp.setMargins(4, 4, 4, 4); // llp.setMargins(left, top, right, bottom);
+		    llp.weight = 5;
+		    fach.setLayoutParams(llp);
+		    llp.weight = 1;
+		    note.setLayoutParams(llp);
+		    llp.weight = 1;
+		    credits.setLayoutParams(llp);
+			fach.setEms(20);
+			note.setEms(10);
+			credits.setEms(10);
+			aLayout.addView(row);
 		}
 
 		private void initializeMarks() {
 			noten = new ArrayList<Note>();
-//			noten.add(new Note("Mathe", "2", "6"));
+			noten.add(new Note("Angewantde Mathematik", "2.1", "6"));
+			noten.add(new Note("Software Enineering", "1.0", "6"));
+			noten.add(new Note("Datenbanken I", "2.8", "8"));
+			noten.add(new Note("Rechnerarchitekturen", "3.8", "5"));
+			noten.add(new Note("Formale Sprachen und Automaten", "5.0", "8"));
+			noten.add(new Note("Netztechnik", "3.5", "6"));
 			
 		}
-        
     }
     
     /**

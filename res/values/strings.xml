@@ -59,5 +59,6 @@
     <string name="samstag">Samstag</string>
     <string name="standort">Standort</string>
     <string name="aktualisieren">Aktualisieren</string>
+    <string name="app_close">Nochmal klicken um die App zu schließen...</string>
 
 </resources>
