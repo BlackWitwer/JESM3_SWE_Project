@@ -7,7 +7,12 @@ import java.util.Locale;
 import javax.mail.Message;
 
 import android.app.ActionBar;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -22,8 +27,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TableRow.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jesm3.newDualis.R;
@@ -31,6 +41,9 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
+import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.VorlesungsplanManager;
+import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class MainActivity extends FragmentActivity {
 
@@ -130,6 +143,45 @@ public class MainActivity extends FragmentActivity {
 	protected void onPause() {
 		super.onPause();
 	}
+	
+	    /* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onNewIntent(android.content.Intent)
+	 */
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+	}
+
+	public void addNotification(View v) {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+	    Notification myNotification = new Notification(R.drawable.icon, "Notification!", System.currentTimeMillis());
+	    Context context = getApplicationContext();
+	    String notificationTitle = "Exercise of Notification!";
+	    String notificationText = "http://android-er.blogspot.com/";
+	    Intent myIntent = new Intent(this, MainActivity.class);
+	    PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0,   myIntent, Intent.FILL_IN_ACTION);
+	    myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+	    myNotification.setLatestEventInfo(context, notificationTitle, notificationText, pendingIntent);
+	    notificationManager.notify(1, myNotification);
+		
+		
+//    	Intent intent = new Intent(this, MainActivity.class);
+//        PendingIntent pi = PendingIntent.getActivity(this, 0,intent, 0);
+//    	
+//    	NotificationCompat.Builder mBuilder =
+//    	        new NotificationCompat.Builder(this)
+//    	        .setSmallIcon(R.drawable.icon)
+//    	        .setContentTitle("Neue Mail")
+//    	        .setContentText("Sie haben 1 neue Mail erhalten!");
+//    	
+//    	Notification note = mBuilder.build();
+//    	note.setLatestEventInfo(this, "New Email", "Unread Conversation", pi);
+//    	note.flags |= Notification.FLAG_AUTO_CANCEL;
+//    	
+//    	NotificationManager mNotificationManager =
+//    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//    	mNotificationManager.notify(1, mBuilder.build());
+	}
 
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -183,6 +235,10 @@ public class MainActivity extends FragmentActivity {
 	 * displays dummy text.
 	 */
 	public static class DummySectionFragment extends Fragment {
+	
+	    private Wochenplan stupla;
+    	private ArrayList<Note> noten;
+	
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -192,6 +248,57 @@ public class MainActivity extends FragmentActivity {
 		public DummySectionFragment() {
 		}
 
+		private void setLecturesOnGUI(View aContainer) {
+        	TextView kw = (TextView) aContainer.findViewById(R.id.stupla_kalenderwoche);
+    		LinearLayout lay_montag = (LinearLayout) aContainer.findViewById(R.id.lay_montag);
+    		LinearLayout lay_dienstag = (LinearLayout) aContainer.findViewById(R.id.lay_dienstag);
+    		LinearLayout lay_mittwoch = (LinearLayout) aContainer.findViewById(R.id.lay_mittwoch);
+    		LinearLayout lay_donnerstag = (LinearLayout) aContainer.findViewById(R.id.lay_donnerstag);
+    		LinearLayout lay_freitag = (LinearLayout) aContainer.findViewById(R.id.lay_freitag);
+    		LinearLayout lay_samstag = (LinearLayout) aContainer.findViewById(R.id.lay_samstag);
+    		
+    		generateDay(stupla.getMontag(), lay_montag);
+    		generateDay(stupla.getDienstag(), lay_dienstag);
+    		generateDay(stupla.getMittwoch(), lay_mittwoch);
+    		generateDay(stupla.getDonnerstag(), lay_donnerstag);
+    		generateDay(stupla.getFreitag(), lay_freitag);
+    		generateDay(stupla.getSamstag(), lay_samstag);
+    		kw.setText("Kalenderwoche " + stupla.getKalenderwoche());
+    		
+    	}
+        
+        private void initializeLectures() {
+    		stupla = new VorlesungsplanManager().getWochenplan(41);
+    	}
+    	
+    	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
+    		for(Vorlesung eachLecture : aDayList ) {
+    			LinearLayout subLayout = new LinearLayout(getActivity());
+    			TextView zeit = new TextView(getActivity());
+    			TextView dozent= new TextView(getActivity());
+    			TextView name= new TextView(getActivity());
+    			
+    			subLayout.setOrientation(LinearLayout.VERTICAL);
+    			if (aLayout.getChildCount() % 2 == 0) {
+    				subLayout.setBackgroundColor(Color.WHITE);
+    			} else {
+    				subLayout.setBackgroundColor(Color.LTGRAY);
+    			}
+    			subLayout.setWeightSum(1);
+    			
+    			zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
+    			subLayout.addView(zeit);
+    			
+    			name.setText(eachLecture.getName());
+    			subLayout.addView(name);
+    			
+    			dozent.setText(eachLecture.getDozent());
+    			subLayout.addView(dozent);
+    			
+    			aLayout.addView(subLayout);
+    		}
+    	}
+    	
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -201,6 +308,9 @@ public class MainActivity extends FragmentActivity {
 			case 1:
 				rootView = inflater.inflate(R.layout.stundenplan_main,
 						container, false);
+				initializeLectures();
+            	setLecturesOnGUI(rootView);
+            	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
 			case 2:
 				rootView = inflater.inflate(R.layout.semesterplan_main,
@@ -209,6 +319,9 @@ public class MainActivity extends FragmentActivity {
 			case 3:
 				rootView = inflater.inflate(R.layout.noten_main, container,
 						false);
+				initializeMarks();
+            	setMarksOnGui(rootView);
+            	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
 			case 4:
 				rootView = inflater.inflate(R.layout.mail_main, container,
@@ -226,6 +339,58 @@ public class MainActivity extends FragmentActivity {
 			}
 
 			return rootView;
+		}
+		
+		private void setMarksOnGui(View aContainer) {
+			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
+			addRow("Fach", "Note", "Credits", lay_table);
+			
+			for(Note eachMark : noten) {
+				addRow(eachMark.getName(), eachMark.getNote(), eachMark.getCredits(), lay_table);
+			}
+			
+		}
+		
+		public void addRow(String aVal1, String aVal2, String aVal3, TableLayout aLayout) {
+			TableRow row = new TableRow(getActivity());
+			TextView fach = new TextView(getActivity());
+			TextView note = new TextView(getActivity());
+			TextView credits = new TextView(getActivity());
+			fach.setText(aVal1);
+			note.setText(aVal2);
+			credits.setText(aVal3);
+			
+			fach.setBackgroundColor(Color.WHITE);
+			note.setBackgroundColor(Color.WHITE);
+			credits.setBackgroundColor(Color.WHITE);
+			
+			row.addView(fach);
+			row.addView(note);
+			row.addView(credits);
+			
+		    TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+		    llp.setMargins(4, 4, 4, 4); // llp.setMargins(left, top, right, bottom);
+		    llp.weight = 5;
+		    fach.setLayoutParams(llp);
+		    llp.weight = 1;
+		    note.setLayoutParams(llp);
+		    llp.weight = 1;
+		    credits.setLayoutParams(llp);
+			fach.setEms(20);
+			note.setEms(10);
+			credits.setEms(10);
+			aLayout.addView(row);
+		}
+
+		private void initializeMarks() {
+			noten = new ArrayList<Note>();
+			noten.add(new Note("Angewantde Mathematik", "2.1", "6"));
+			noten.add(new Note("Software Enineering", "1.0", "6"));
+			noten.add(new Note("Datenbanken I", "2.8", "8"));
+			noten.add(new Note("Rechnerarchitekturen", "3.8", "5"));
+			noten.add(new Note("Formale Sprachen und Automaten", "5.0", "8"));
+			noten.add(new Note("Netztechnik", "3.5", "6"));
+			
 		}
 
 		/**

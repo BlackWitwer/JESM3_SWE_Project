@@ -74,7 +74,7 @@ public class LoginActivity extends Activity{
     	EditText theUser = (EditText) findViewById(R.id.name);
 		String theUsername = theUser.getText().toString().trim();
 		if (!theUsername.contains("@")) {
-			theUsername = theUsername + "@lehre.dhbw-" + ((Spinner)findViewById(R.id.spinner1)).getSelectedItem().toString() + ".de";
+			theUsername = theUsername + "@lehre.dhbw-" + ((Spinner)findViewById(R.id.spinner_standort)).getSelectedItem().toString() + ".de";
 		}
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);

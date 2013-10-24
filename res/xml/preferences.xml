@@ -13,11 +13,21 @@
             android:key="pref_key_intervall_sync"
             android:title="@string/synchronisationsintervall"
             android:dependency="pref_key_sync_onoff" />
-		<CheckBoxPreference
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_stupla_sync_onoff"
+            android:dependency="pref_key_sync_onoff"
+            android:title="@string/stupla" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_key_gcal_sync_onoff"
             android:dependency="pref_key_sync_onoff"
             android:title="@string/google_kalender" />
+		<CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_key_noten_sync_onoff"
+            android:dependency="pref_key_sync_onoff"
+            android:title="@string/noten" />
 		<CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_key_mail_sync_onoff"

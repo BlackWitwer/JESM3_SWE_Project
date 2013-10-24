@@ -25,6 +25,22 @@ public class Vorlesung {
 		Datum = datum;
 		Raum = raum;
 	}
+	/**
+	 * Kostruktor
+	 * 
+	 * @param uhrzeitVon Beginn der Vorlesung.
+	 * @param uhrzeitBis ende der Vorlesung.
+	 * @param dozent Name des Dozenten.
+	 * @param name Name der Vorlesung.
+	 */
+	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
+			String name) {
+		super();
+		UhrzeitVon = uhrzeitVon;
+		UhrzeitBis = uhrzeitBis;
+		Dozent = dozent;
+		Name = name;
+	}
 	
 	public String getDatum() {
 		return Datum;
@@ -94,5 +110,4 @@ public class Vorlesung {
 	public String toString(){
 		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent+" am "+Datum+" in "+Raum;
 	}
-
 }
