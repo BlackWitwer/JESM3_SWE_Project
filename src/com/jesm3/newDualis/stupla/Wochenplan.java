@@ -9,31 +9,31 @@ public class Wochenplan {
 	/**
 	 * Alle Vorlesungen f�r Montag.
 	 */
-	ArrayList<Vorlesung> montag;
+	private ArrayList<Vorlesung> montag;
 	/**
 	 * Alle Vorlesungen f�r Dienstag.
 	 */
-	ArrayList<Vorlesung> dienstag;
+	private ArrayList<Vorlesung> dienstag;
 	/**
 	 * Alle Vorlesungen f�r Mittwoch.
 	 */
-	ArrayList<Vorlesung> mittwoch;
+	private ArrayList<Vorlesung> mittwoch;
 	/**
 	 * Alle Vorlesungen f�r Donnerstag.
 	 */
-	ArrayList<Vorlesung> donnerstag;
+	private ArrayList<Vorlesung> donnerstag;
 	/**
 	 * Alle Vorlesungen f�r Freitag.
 	 */
-	ArrayList<Vorlesung> freitag;
+	private ArrayList<Vorlesung> freitag;
 	/**
 	 * Alle Vorlesungen f�r Samstag.
 	 */
-	ArrayList<Vorlesung> samstag;
-	
-	String kalenderwoche;
-	
-	public Wochenplan () {
+	private ArrayList<Vorlesung> samstag;
+
+	private int kalenderwoche;
+
+	public Wochenplan() {
 		montag = new ArrayList<Vorlesung>();
 		dienstag = new ArrayList<Vorlesung>();
 		mittwoch = new ArrayList<Vorlesung>();
@@ -41,8 +41,7 @@ public class Wochenplan {
 		freitag = new ArrayList<Vorlesung>();
 		samstag = new ArrayList<Vorlesung>();
 	}
-	
-	
+
 	/**
 	 * F�gt dem Tag eine Vorlesung hinzu.
 	 */
@@ -53,18 +52,17 @@ public class Wochenplan {
 	/**
 	 * @return the kalenderwoche
 	 */
-	public String getKalenderwoche() {
+	public int getKalenderwoche() {
 		return kalenderwoche;
 	}
 
-
 	/**
-	 * @param kalenderwoche the kalenderwoche to set
+	 * @param kalenderwoche
+	 *            the kalenderwoche to set
 	 */
-	public void setKalenderwoche(String kalenderwoche) {
+	public void setKalenderwoche(int kalenderwoche) {
 		this.kalenderwoche = kalenderwoche;
 	}
-
 
 	/**
 	 * F�gt dem Tag eine Vorlesung hinzu.
@@ -100,7 +98,6 @@ public class Wochenplan {
 	public void addSamstag(Vorlesung aVorlesung) {
 		samstag.add(aVorlesung);
 	}
-
 
 	/**
 	 * @return the montag
@@ -143,7 +140,25 @@ public class Wochenplan {
 	public ArrayList<Vorlesung> getSamstag() {
 		return samstag;
 	}
-	
-	
+
+	public String toString() {
+		String sMontag = "Montag:\n" + dayToString(montag) + "\n";
+		String sDienstag = "Dienstag:\n" + dayToString(dienstag) + "\n";
+		String sMittwoch = "Mittwoch:\n" + dayToString(mittwoch) + "\n";
+		String sDonnerstag = "Donnerstag:\n" + dayToString(donnerstag) + "\n";
+		String sFreitag = "Freitag:\n" + dayToString(freitag) + "\n";
+		String sSamstag = "Samstag:\n" + dayToString(samstag) + "\n";
+		String stundenplan = sMontag + sDienstag + sMittwoch + sDonnerstag
+				+ sFreitag + sSamstag;
+		return stundenplan;
+	}
+
+	public String dayToString(ArrayList<Vorlesung> al) {
+		String day = "";
+		for (int i = 0; i < al.size(); i++) {
+			day = day + al.get(i) + "\n";
+		}
+		return day;
+	}
 
 }

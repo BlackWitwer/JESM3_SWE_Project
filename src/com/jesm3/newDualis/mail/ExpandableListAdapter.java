@@ -61,6 +61,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		TextView txtListChild = (TextView) convertView
 				.findViewById(R.id.listItem);
+		txtListChild.setText("");
 		try {
 			Multipart multipart = (Multipart) child.getContent();
 			for (int i = 0; i < multipart.getCount(); i++) {

@@ -268,7 +268,7 @@ public class MainActivity extends FragmentActivity {
     	}
         
         private void initializeLectures() {
-    		stupla = new VorlesungsplanManager().getWochenplan(41);
+    		stupla = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager().getWochenplan(40);
     	}
     	
     	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {

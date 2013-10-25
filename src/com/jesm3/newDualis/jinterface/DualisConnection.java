@@ -20,8 +20,9 @@ import org.apache.http.util.EntityUtils;
 
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
+import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
-import com.jesm3.newDualis.stupla.Stundenplan;
+import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
 import android.widget.TextView;
@@ -31,10 +32,12 @@ public class DualisConnection {
 	private DefaultHttpClient httpClient;
 	private DualisParser dparse;
 	private DualisLinks mlinks;
+	private Backend backend;
 
-	public DualisConnection() {
+	public DualisConnection(Backend aBackend) {
 		httpClient = new DefaultHttpClient();
 		dparse = new DualisParser();
+		this.backend = aBackend;
 	}
 
 	/**
@@ -125,7 +128,7 @@ public class DualisConnection {
 	}
 
 	// Geht zur Monats�bersicht und parst den Stundenplan
-	public ArrayList<Stundenplan> loadStundenplan() {
+	public ArrayList<Wochenplan> loadStundenplan() {
 		String stundenplanContent = getPage("https://dualis.dhbw.de"
 				+ mlinks.getStundenPlan());
 
@@ -133,6 +136,9 @@ public class DualisConnection {
 		String monatsansichtContent = getPage("https://dualis.dhbw.de"
 				+ parseLink);
 
+		for (Wochenplan eachWoche : dparse.parseMonth(monatsansichtContent)) {
+			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
+		}
 		return dparse.parseMonth(monatsansichtContent);
 	}
 

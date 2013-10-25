@@ -19,8 +19,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.jesm3.newDualis.stupla.Stundenplan;
 import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.content.res.Resources;
 import android.text.Html;
@@ -32,8 +32,8 @@ public class DualisParser {
 	}
 	
 	// JSoup HTML Parser, schnell aber noch kein Parsing mit xsl files 
-	public ArrayList<Stundenplan> parseMonth(String aContent){ 
-		ArrayList<Stundenplan> stdl = new ArrayList<Stundenplan>();
+	public ArrayList<Wochenplan> parseMonth(String aContent){ 
+		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
 		StundenplanGenerator stdgr = new StundenplanGenerator();
 		Document doc = Jsoup.parse(aContent);
 		
@@ -58,7 +58,7 @@ public class DualisParser {
 		}
 		Log.d("parsetest", out.toString());
 		return stdl; 
-		//Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut ausführen und 
+		//Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut ausfï¿½hren und 
 		//mit erstem/letzten Stundenplan mergen
 	}
 	

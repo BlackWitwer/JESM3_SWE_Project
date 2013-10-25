@@ -7,7 +7,6 @@ import com.jesm3.newDualis.activities.MainActivity.SectionsPagerAdapter;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.User;
 import com.jesm3.newDualis.jinterface.DualisConnection;
-import com.jesm3.newDualis.stupla.Stundenplan;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -54,16 +53,17 @@ public class LoginActivity extends Activity{
 		};
 		passwortField.setOnEditorActionListener(listener2);
 		
+		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
+		StrictMode.ThreadPolicy policy = new StrictMode.
+				ThreadPolicy.Builder().permitAll().build();
+		StrictMode.setThreadPolicy(policy);
+		//-----------------------------------
+		
 		User theUser = ((CustomApplication)getApplication()).getUserManager().loadUserData();
 		if (theUser != null) {
 			startActivity(new Intent(this, MainActivity.class));
+			finish();
 		}
-		
-		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
-				StrictMode.ThreadPolicy policy = new StrictMode.
-					ThreadPolicy.Builder().permitAll().build();
-				StrictMode.setThreadPolicy(policy);
-		//-----------------------------------
 	}
 
 	/**
