@@ -40,10 +40,10 @@ public class UserManager {
 	
 	private boolean login(User aUser, boolean aPersistantFlag, boolean anOnlineFlag) {
 		//TODO auf checkLogin() umstellen sobald Sync funktioniert.
-		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
-		if (getUser() == null && (app.getBackend().login(aUser))) {
+		 if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
+//		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getCon().loadStundenplan();
+//			app.getBackend().getCon().loadStundenplan();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.mail.BodyPart;
+import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -29,7 +30,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	private Context context;
 	private ArrayList<Message> messageList;
 	private boolean textIsHtml = false;
-	private int expandedGroupPosition = -1;
 
 	public ExpandableListAdapter(Context context,
 			ArrayList<Message> someMessages) {
@@ -63,17 +63,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.listItem);
 		txtListChild.setText("");
 		try {
-			Multipart multipart = (Multipart) child.getContent();
-			for (int i = 0; i < multipart.getCount(); i++) {
-				BodyPart body = multipart.getBodyPart(i);
-				txtListChild.append(Html.fromHtml(getText(body)+""));
+			Object theContent = child.getContent();
+			if (child.getContentType().contains("text/plain")) {
+				txtListChild.setText(theContent.toString());
+			} else {
+				Multipart multipart = (Multipart) theContent;
+//				getText((Part) multipart);
+				for (int i = 0; i < multipart.getCount(); i++) {
+					BodyPart body = multipart.getBodyPart(i);
+					txtListChild.append(Html.fromHtml(getText(body)+""));
+				}
 			}
-			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -118,7 +121,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.listDate);
 
 		try {
-			if (!theMessage.getFlags().contains(Flag.SEEN)) {
+			lblListSubject.setTextColor(Color.BLACK);
+			if (!theMessage.getFlags().contains(Flags.Flag.SEEN)) {
 				lblListSubject.setTextColor(Color.BLUE);
 			}
 			lblListSubject.setText(theMessage.getSubject());

@@ -21,7 +21,7 @@ public class MailManager {
 
 	private User user;
 	private Folder folder;
-
+	
 	private HashMap<Integer, Message> messageIdMap;
 
 	private boolean loggedIn = false;
@@ -29,6 +29,7 @@ public class MailManager {
 	public MailManager(User aUser) {
 		this.user = aUser;
 
+		// Login im Thread um ein hängen zu vermeiden.
 		new Thread(new Runnable() {
 
 			@Override
@@ -37,7 +38,6 @@ public class MailManager {
 				loggedIn = true;
 			}
 		}).start();
-
 	}
 
 	private void init() {
@@ -76,65 +76,101 @@ public class MailManager {
 		}
 	}
 
-	// public void sync() {
-	// if (getMessageCount() > messages.size()) {
-	// messages.addAll(getMessagesFromTo(messages.size() + 1,
-	// getMessageCount()));
-	// }
-	// }
+	/**
+	 * Sucht nach ungelesenen Nachrichten. Sind welche vorhanden werden so viele Nachrichten geladen wir ungelesene vorhanden sind.
+	 * Damit werden auf jedenfall die neuesten ungelesenen geladen.
+	 * @return true, wenn ungelesenen Nachrichten vorhanden sind. Ansonsten false.
+	 */
+	public boolean sync() {
+		try {
+			if (getFolder().getUnreadMessageCount() > 0) {
+				getMessagesFromTo(getMessageCount()-getFolder().getUnreadMessageCount(), getMessageCount());
+				return true;
+			}
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
+	/**
+	 * Benutzt die getMessagesFromTo Methode in einem Thread und gibt bei Fertigstellung die Mails per Listener zurück.
+	 * @param from untere Grenze.
+	 * @param to obere Grenze.
+	 * @param aListener Rückgabe Listener.
+	 */
 	public void getMessagesFromTo(final int from, final int to,
 			final MailListener aListener) {
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				while (!loggedIn) {
-				}
-				try {
-					int temp = to > getFolder().getMessageCount() ? getFolder()
-							.getMessageCount() : to;
-							
-					ArrayList<Message> theMessageList = new ArrayList<Message>();
-					for (int i = from; i <= temp; i++) {
-						if (!messageIdMap.containsKey(i)) {
-							messageIdMap.put(i, getFolder().getMessage(i));
-						}
-						theMessageList.add(messageIdMap.get(i));
-					}
-					aListener.mailReceived(theMessageList);
-				} catch (MessagingException e) {
-					e.printStackTrace();
-				}
+				aListener.mailReceived(getMessagesFromTo(from, to));
 			}
 		}).start();
 	}
 
+	/**
+	 * Läd alle Nachrichten aus dem Postfach die sich in dem angegebenen Bereich befinden inklusive der Grenzen. Die Nachrichten
+	 * werden in einer Map gespeichert, sollten sie nochmals gebraucht werden. Mit der Ausführung wird auf einen erfolgreichen Login
+	 * gewartet.
+	 * @param from untere Grenze.
+	 * @param to obere Grenze.
+	 * @return Liste der Nachrichten innerhalb der Grenzen.
+	 */
 	public ArrayList<Message> getMessagesFromTo(int from, int to) {
+		while (!loggedIn) {
+		}
+		
 		try {
-			return new ArrayList<Message>(Arrays.asList(getFolder()
-					.getMessages(from, to)));
-		} catch (MessagingException ex) {
+			int temp = to > getFolder().getMessageCount() ? getFolder()
+					.getMessageCount() : to;
 
+			ArrayList<Message> theMessageList = new ArrayList<Message>();
+			for (int i = from; i <= temp; i++) {
+				if (!messageIdMap.containsKey(i)) {
+					messageIdMap.put(i, getFolder().getMessage(i));
+				}
+				theMessageList.add(messageIdMap.get(i));
+			}
+			return theMessageList;
+		} catch (MessagingException e) {
+			e.printStackTrace();
 		}
 		return new ArrayList<Message>();
+	}
+
+	/**
+	 * Gibt die Angegebene Anzahl von Nachrichten zurück. Angefangen bei der Neuesten.
+	 * @param anAmount die Anzahl.
+	 * @return Liste der Nachrichten.
+	 */
+	public ArrayList<Message> getLatestMessages(int anAmount) {
+		if (anAmount > getMessageCount()) {
+			return getMessagesFromTo(1, getMessageCount());
+		}
+		return getMessagesFromTo(getMessageCount() - anAmount,
+				getMessageCount());
+	}
+
+	/**
+	 * Gibt die Angegebene Anzahl von Nachrichten zurück. Angefangen bei der Neuesten. Wird in einem extra Thread ausgeführt.
+	 * Ergebnis wird per Listener zurückgegeben.
+	 * @param anAmount die Anzahl.
+	 * @return Liste der Nachrichten.
+	 */
+	public void getLatestMessages(int anAmount, MailListener aListener) {
+		if (anAmount > getMessageCount()) {
+			getMessagesFromTo(1, getMessageCount(), aListener);
+		} else {
+			getMessagesFromTo(getMessageCount() - anAmount, getMessageCount(),
+					aListener);
+		}
 	}
 
 	public int getMessageCount() {
 		try {
 			return getFolder().getMessageCount();
-		} catch (MessagingException ex) {
-
-		}
-		return -1;
-	}
-
-	/**
-	 * Gibt die Anzahl der ungelesenen Nachrichten zurück.
-	 */
-	public int getNewMessageCount() {
-		try {
-			return getFolder().getNewMessageCount();
 		} catch (MessagingException ex) {
 
 		}
@@ -161,7 +197,7 @@ public class MailManager {
 		return folder;
 	}
 
-	class PassAuthenticator extends Authenticator {
+	private class PassAuthenticator extends Authenticator {
 		String userName;
 		String password;
 
