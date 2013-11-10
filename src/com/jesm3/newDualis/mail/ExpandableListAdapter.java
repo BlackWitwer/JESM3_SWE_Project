@@ -26,10 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.jesm3.newDualis.R;
 
@@ -37,8 +34,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private ArrayList<Message> messageList;
+
+	//Diese Variablen ändern sich für jede Messgae.
 	private boolean textIsHtml = false;
-	private Part attachmentPart;
+	private ArrayList<Part> attachmentList;
 
 	public ExpandableListAdapter(Context context,
 			ArrayList<Message> someMessages) {
@@ -68,66 +67,64 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			convertView = infalInflater.inflate(R.layout.list_item, null);
 		}
 
-		TextView txtListChild = (TextView) convertView
-				.findViewById(R.id.listItem);
-		txtListChild.setText("");
+		TextView txtListChild = (TextView) convertView.findViewById(R.id.listItem);
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
+
 		try {
-			String plainText = "";
-			String htmlText = "";
-			Object theContent = child.getContent();
-			if (child.getContentType().contains("text/plain")) {
-				plainText = theContent.toString();
-			} else if (child.getContentType().contains("text/html")) {
-				htmlText = theContent.toString();
+			attachmentList = new ArrayList<Part>();
+			String theText = getText(child);
+			if (textIsHtml) {
+				view.loadData(theText, "text/html; charset=UTF-8", null);
+				view.setVisibility(View.VISIBLE);
+				txtListChild.setVisibility(View.GONE);
 			} else {
-				Multipart multipart = (Multipart) theContent;
-				for (int i = 0; i < multipart.getCount(); i++) {
-					BodyPart body = multipart.getBodyPart(i);
-					String data = getText(body);
-					if (textIsHtml) {
-						htmlText = htmlText + data;
-					} else {
-						plainText = plainText + data;
-					}
-				}
+				txtListChild.setText(theText);
+				view.setVisibility(View.GONE);
+				txtListChild.setVisibility(View.VISIBLE);
 			}
-			view.loadData(htmlText + "", "text/html; charset=UTF-8", null);
-			txtListChild.setText(plainText);
-			
+
+			LinearLayout layout = (LinearLayout)convertView.findViewById(R.id.attachmentBar);
+
+			for (Part eachPart : attachmentList) {
+				Button theButton = new Button(layout.getContext());
+				theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+				layout.addView(theButton);
+
+				theButton.setText(eachPart.getContentType());
+			}
+
 			//TODO ausbauen. Anhang wird bis jetzt nur als test.pdf gespeichert und kann auch nur als pdf geöffnet werden
-			Button button = (Button)convertView.findViewById(R.id.attachmentButton);
-			if (attachmentPart != null) {
-				final File attachment = new File(convertView.getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-						, "test"
-				+ attachmentPart.getFileName().substring(attachmentPart.getFileName().lastIndexOf(".")));
-				attachment.createNewFile();
-				InputStream is = attachmentPart.getInputStream();
-			    FileOutputStream fos = new FileOutputStream(attachment);
-			    byte[] buf = new byte[4096];
-			    int bytesRead;
-			    while((bytesRead = is.read(buf))!=-1) {
-			        fos.write(buf, 0, bytesRead);
-			    }
-			    fos.close();
-			    
-			    final View tempConverView = convertView;
-			    
-			    button.setOnClickListener(new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent();
-						intent.setAction(android.content.Intent.ACTION_VIEW);
-						intent.setDataAndType(Uri.fromFile(attachment), "application/pdf");
-						tempConverView.getContext().startActivity(intent); 
-					}
-				});
-			    button.setText(attachmentPart.getFileName());
-			} else {
-				button.setVisibility(Button.GONE);
-			}
-			
+//			if (attachmentPart != null) {
+//				final File attachment = new File(convertView.getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+//						, "test"
+//				+ attachmentPart.getFileName().substring(attachmentPart.getFileName().lastIndexOf(".")));
+//				attachment.createNewFile();
+//				InputStream is = attachmentPart.getInputStream();
+//			    FileOutputStream fos = new FileOutputStream(attachment);
+//			    byte[] buf = new byte[4096];
+//			    int bytesRead;
+//			    while((bytesRead = is.read(buf))!=-1) {
+//			        fos.write(buf, 0, bytesRead);
+//			    }
+//			    fos.close();
+//
+//			    final View tempConverView = convertView;
+//
+//			    button.setOnClickListener(new View.OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						Intent intent = new Intent();
+//						intent.setAction(android.content.Intent.ACTION_VIEW);
+//						intent.setDataAndType(Uri.fromFile(attachment), "application/pdf");
+//						tempConverView.getContext().startActivity(intent);
+//					}
+//				});
+//			    button.setText(attachmentPart.getFileName());
+//			} else {
+//				button.setVisibility(Button.GONE);
+//			}
+//
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (MessagingException e) {
@@ -242,11 +239,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				if (s != null)
 					return s;
 			}
-		} else if (p.isMimeType("application/*")) {
-			attachmentPart = p;
-			//application/pdf; name=01_Einleitung.pdf
 		}
-
 		return "";
 	}
 }
