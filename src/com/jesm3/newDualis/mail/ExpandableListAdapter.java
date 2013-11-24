@@ -1,9 +1,6 @@
 package com.jesm3.newDualis.mail;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -71,7 +68,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
 
 		try {
-			attachmentList = new ArrayList<Part>();
+
+			attachmentList = getAttachments(child);
 			String theText = getText(child);
 			if (textIsHtml) {
 				view.loadData(theText, "text/html; charset=UTF-8", null);
@@ -84,47 +82,51 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			}
 
 			LinearLayout layout = (LinearLayout)convertView.findViewById(R.id.attachmentBar);
+			layout.removeAllViews();
 
-			for (Part eachPart : attachmentList) {
+			final View superView = convertView;
+			for (final Part eachPart : attachmentList) {
 				Button theButton = new Button(layout.getContext());
 				theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 				layout.addView(theButton);
 
-				theButton.setText(eachPart.getContentType());
-			}
+				theButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
 
-			//TODO ausbauen. Anhang wird bis jetzt nur als test.pdf gespeichert und kann auch nur als pdf geöffnet werden
-//			if (attachmentPart != null) {
-//				final File attachment = new File(convertView.getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-//						, "test"
-//				+ attachmentPart.getFileName().substring(attachmentPart.getFileName().lastIndexOf(".")));
-//				attachment.createNewFile();
-//				InputStream is = attachmentPart.getInputStream();
-//			    FileOutputStream fos = new FileOutputStream(attachment);
-//			    byte[] buf = new byte[4096];
-//			    int bytesRead;
-//			    while((bytesRead = is.read(buf))!=-1) {
-//			        fos.write(buf, 0, bytesRead);
-//			    }
-//			    fos.close();
-//
-//			    final View tempConverView = convertView;
-//
-//			    button.setOnClickListener(new View.OnClickListener() {
-//
-//					@Override
-//					public void onClick(View v) {
-//						Intent intent = new Intent();
-//						intent.setAction(android.content.Intent.ACTION_VIEW);
-//						intent.setDataAndType(Uri.fromFile(attachment), "application/pdf");
-//						tempConverView.getContext().startActivity(intent);
-//					}
-//				});
-//			    button.setText(attachmentPart.getFileName());
-//			} else {
-//				button.setVisibility(Button.GONE);
-//			}
-//
+						final File attachment;
+						try {
+							attachment = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+									, eachPart.getFileName());
+							attachment.createNewFile();
+
+							InputStream is = eachPart.getInputStream();
+							FileOutputStream fos = new FileOutputStream(attachment);
+							byte[] buf = new byte[4096];
+							int bytesRead;
+							while((bytesRead = is.read(buf))!=-1) {
+								fos.write(buf, 0, bytesRead);
+							}
+							fos.close();
+
+							Intent intent = new Intent();
+							intent.setAction(android.content.Intent.ACTION_VIEW);
+							intent.setDataAndType(Uri.fromFile(attachment), eachPart.getContentType().split(";")[0]);
+							superView.getContext().startActivity(intent);
+
+
+						} catch (MessagingException e) {
+							e.printStackTrace();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+
+					theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (MessagingException e) {
@@ -241,5 +243,52 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			}
 		}
 		return "";
+	}
+
+	public ArrayList<Part> getAttachments(Part aPart) throws MessagingException, IOException {
+		ArrayList<Part> attachments = new ArrayList<Part>();
+
+		if (aPart.isMimeType("multipart/*")) {
+			Multipart mp = (Multipart) aPart.getContent();
+			for (int i = 0; i < mp.getCount(); i++) {
+				attachments.addAll(getAttachments(mp.getBodyPart(i)));
+			}
+		} else if (aPart.isMimeType("application/*")) {
+			attachments.add(aPart);
+		}
+
+		return attachments;
+	}
+
+	public String convertToMinSize (int aSize) {
+		int sizeDimension = 0;
+		int size = aSize;
+		while (size > 1024) {
+			size = size / 1024;
+			sizeDimension++;
+		}
+		String sizeDimensionString;
+		switch (sizeDimension) {
+			case 0:
+				sizeDimensionString = "B";
+				break;
+			case 1:
+				sizeDimensionString = "KB";
+				break;
+			case 2:
+				sizeDimensionString = "MB";
+				break;
+			case 3:
+				sizeDimensionString = "GB";
+				break;
+			case 4:
+				sizeDimensionString = "TB";
+				break;
+			default:
+				sizeDimensionString = "Too Damn High";
+				break;
+		}
+
+		return  size + sizeDimensionString;
 	}
 }
