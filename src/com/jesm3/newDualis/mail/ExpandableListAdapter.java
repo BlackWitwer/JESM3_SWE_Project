@@ -172,7 +172,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.listSubject);
 		TextView lblListDate = (TextView) convertView
 				.findViewById(R.id.listDate);
-
+		TextView lblListAttach = (TextView) convertView
+				.findViewById(R.id.listAttach);
+				
 		try {
 			lblListSubject.setTextColor(Color.BLACK);
 			if (!theMessage.getFlags().contains(Flags.Flag.SEEN)) {
@@ -189,6 +191,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				lblListFrom.setText(theMessage.getFrom()[0].toString());
 			}
 			
+			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);
 			lblListDate.setText(theMessage.getReceivedDate().toLocaleString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
