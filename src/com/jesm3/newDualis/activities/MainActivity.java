@@ -1,6 +1,7 @@
 package com.jesm3.newDualis.activities;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -268,7 +269,8 @@ public class MainActivity extends FragmentActivity {
     	}
         
         private void initializeLectures() {
-    		stupla = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager().getWochenplan(40);
+        	GregorianCalendar cal = new GregorianCalendar();
+    		stupla = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager().getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
     	}
     	
     	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
