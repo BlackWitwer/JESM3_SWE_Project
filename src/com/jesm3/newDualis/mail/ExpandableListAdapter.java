@@ -11,6 +11,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.internet.InternetAddress;
 
 import android.content.Context;
 import android.content.Intent;
@@ -178,7 +179,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				lblListSubject.setTextColor(Color.BLUE);
 			}
 			lblListSubject.setText(theMessage.getSubject());
-			lblListFrom.setText(theMessage.getFrom()[0].toString());
+			
+			String thePersonal = null;
+			if (theMessage.getFrom()[0] instanceof InternetAddress) {
+				thePersonal = ((InternetAddress)theMessage.getFrom()[0]).getPersonal();
+				lblListFrom.setText(thePersonal);
+			}
+			if (thePersonal == null || thePersonal.equals("")) {
+				lblListFrom.setText(theMessage.getFrom()[0].toString());
+			}
+			
 			lblListDate.setText(theMessage.getReceivedDate().toLocaleString());
 		} catch (MessagingException e) {
 			e.printStackTrace();
