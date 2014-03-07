@@ -1,7 +1,10 @@
 package com.jesm3.newDualis.mail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -13,6 +16,8 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 
+import android.content.res.Resources.Theme;
+
 import com.jesm3.newDualis.is.User;
 
 public class MailManager {
@@ -22,7 +27,7 @@ public class MailManager {
 	private User user;
 	private Folder folder;
 	
-	private HashMap<Integer, Message> messageIdMap;
+	private HashMap<Integer, MessageContainer> messageIdMap;
 
 	private boolean loggedIn = false;
 
@@ -69,7 +74,7 @@ public class MailManager {
 				folder.open(Folder.READ_ONLY);
 			}
 
-			messageIdMap = new HashMap<Integer, Message>();
+			messageIdMap = new HashMap<Integer, MessageContainer>();
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
@@ -118,7 +123,7 @@ public class MailManager {
 	 * @param to obere Grenze.
 	 * @return Liste der Nachrichten innerhalb der Grenzen.
 	 */
-	public ArrayList<Message> getMessagesFromTo(int from, int to) {
+	public ArrayList<MessageContainer> getMessagesFromTo(int from, int to) {
 		while (!loggedIn) {
 		}
 		
@@ -126,18 +131,28 @@ public class MailManager {
 			int temp = to > getFolder().getMessageCount() ? getFolder()
 					.getMessageCount() : to;
 
-			ArrayList<Message> theMessageList = new ArrayList<Message>();
+			ArrayList<MessageContainer> theMessageList = new ArrayList<MessageContainer>();
 			for (int i = from; i <= temp; i++) {
 				if (!messageIdMap.containsKey(i)) {
-					messageIdMap.put(i, getFolder().getMessage(i));
+					messageIdMap.put(i, new MessageContainer(getFolder().getMessage(i)));
 				}
 				theMessageList.add(messageIdMap.get(i));
 			}
+			Collections.sort(theMessageList, new Comparator<MessageContainer>() {
+
+				@Override
+				public int compare(MessageContainer lhs, MessageContainer rhs) {
+					return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
+				}
+			});
 			return theMessageList;
 		} catch (MessagingException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return new ArrayList<Message>();
+		
+		return new ArrayList<MessageContainer>();
 	}
 
 	/**
@@ -145,7 +160,7 @@ public class MailManager {
 	 * @param anAmount die Anzahl.
 	 * @return Liste der Nachrichten.
 	 */
-	public ArrayList<Message> getLatestMessages(int anAmount) {
+	public ArrayList<MessageContainer> getLatestMessages(int anAmount) {
 		if (anAmount > getMessageCount()) {
 			return getMessagesFromTo(1, getMessageCount());
 		}
@@ -160,6 +175,9 @@ public class MailManager {
 	 * @return Liste der Nachrichten.
 	 */
 	public void getLatestMessages(int anAmount, MailListener aListener) {
+		while (!loggedIn) {
+		}
+		
 		if (anAmount > getMessageCount()) {
 			getMessagesFromTo(1, getMessageCount(), aListener);
 		} else {
