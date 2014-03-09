@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -16,8 +15,10 @@ import javax.mail.internet.InternetAddress;
 public class MessageContainer {
 	
 	private String from;
+	private String fromComplete;
+	private String to;
 	private String subject;
-	private String date;
+	private Date date;
 	private String text;
 	private boolean attachement;
 	private boolean seen;
@@ -38,10 +39,12 @@ public class MessageContainer {
 		}
 		
 		setSubject(anOriginalMessage.getSubject());
-		setDate(convertDate(anOriginalMessage.getReceivedDate()));
+		setDate(anOriginalMessage.getReceivedDate());
 		setAttachmentList(getAttachments(anOriginalMessage));
 		setAttachement(!getAttachmentList().isEmpty());
 		setSeen(anOriginalMessage.getFlags().contains(Flag.SEEN));
+		setFromComplete(anOriginalMessage.getFrom()[0].toString());
+		setTo(anOriginalMessage.getAllRecipients()[0].toString());
 		
 		originalMessage = anOriginalMessage;
 	}
@@ -183,14 +186,17 @@ public class MessageContainer {
 	/**
 	 * @return the date
 	 */
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 	/**
 	 * @param date the date to set
 	 */
-	private void setDate(String date) {
+	private void setDate(Date date) {
 		this.date = date;
+	}
+	public String getDeltaTime() {
+		return convertDate(getDate());
 	}
 	/**
 	 * @return the attachement
@@ -254,5 +260,27 @@ public class MessageContainer {
 	 */
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public String getFromComplete() {
+		return fromComplete;
+	}
+	
+	public String getTo() {
+		return to;
+	}
+
+	/**
+	 * @param fromComplete the fromComplete to set
+	 */
+	private void setFromComplete(String fromComplete) {
+		this.fromComplete = fromComplete;
+	}
+
+	/**
+	 * @param to the to to set
+	 */
+	private void setTo(String to) {
+		this.to = to;
 	}
 }

@@ -61,9 +61,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.mail_list_item, null);
 		}
-
+		
+		TextView theHeaderFrom = (TextView) convertView.findViewById(R.id.listHeaderFrom);
+		TextView theHeaderTo = (TextView) convertView.findViewById(R.id.listHeaderTo);
+		TextView theHeaderDate = (TextView) convertView.findViewById(R.id.listHeaderDate);
+		
+		theHeaderFrom.setText("Von: " + child.getFrom());
+		theHeaderTo.setText("An: " + child.getTo());
+		theHeaderDate.setText("Datum: " + child.getDate().toString());
+		
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.listItem);
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
+		
 		String theText = child.getText();
 		if (child.isTextIsHtml()) {
 			view.loadData(theText, "text/html; charset=UTF-8", null);
@@ -75,7 +84,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			txtListChild.setVisibility(View.VISIBLE);
 		}
 
-		LinearLayout layout = (LinearLayout)convertView.findViewById(R.id.attachmentBar);
+		LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.attachmentBar);
 		layout.removeAllViews();
 
 		final View superView = convertView;
@@ -181,7 +190,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		if (theMessage.hasAttachement()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
 		}
-		lblListDate.setText(theMessage.getDate());
+		lblListDate.setText(theMessage.getDeltaTime());
 		return convertView;
 	}
 
