@@ -15,11 +15,13 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,35 +98,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			theButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-
-					final File attachment;
-					try {
-						attachment = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-								, eachPart.getFileName());
-						attachment.createNewFile();
-
-						InputStream is = eachPart.getInputStream();
-						FileOutputStream fos = new FileOutputStream(attachment);
-						byte[] buf = new byte[4096];
-						int bytesRead;
-						while((bytesRead = is.read(buf))!=-1) {
-							fos.write(buf, 0, bytesRead);
-						}
-						fos.close();
-
-						Intent intent = new Intent();
-						intent.setAction(android.content.Intent.ACTION_VIEW);
-						intent.setDataAndType(Uri.fromFile(attachment), eachPart.getContentType().split(";")[0]);
-						superView.getContext().startActivity(intent);
-
-
-					} catch (MessagingException e) {
-						e.printStackTrace();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					downloadAttachment(superView, eachPart);					
 				}
 			});
 
@@ -135,6 +109,62 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			}
 		}
 		return convertView;
+	}
+	
+	public void downloadAttachment(final View aView, final Part aPart) {
+		final NotificationManager theNotifyManager =
+		        (NotificationManager) aView.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationCompat.Builder theBuilder = new NotificationCompat.Builder(aView.getContext());
+		theBuilder.setContentTitle("Picture Download")
+		    .setContentText("Download in progress");
+//		    .setSmallIcon(R.drawable.ic_notification);
+		// Start a lengthy operation in a background thread
+		new Thread(
+		    new Runnable() {
+		        @Override
+		        public void run() {
+		        	final File attachment;
+		        	try {
+			            attachment = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+								, aPart.getFileName());
+	
+						InputStream is = aPart.getInputStream();
+						FileOutputStream fos = new FileOutputStream(attachment);
+						byte[] buf = new byte[4096];
+						int bytesRead;
+			            int theI = 0;
+			            int theMaxSize = aPart.getSize();
+			            while((bytesRead = is.read(buf))!=-1) {
+			            	fos.write(buf, 0, bytesRead);
+			            	
+		                    // Sets the progress indicator to a max value, the
+		                    // current completion percentage, and "determinate"
+		                    // state
+		                    theBuilder.setProgress(theMaxSize, theI++*buf.length, false);
+		                    // Displays the progress bar for the first time.
+		                    theNotifyManager.notify(0, theBuilder.build());
+			            }
+			            fos.close();
+	
+						Intent intent = new Intent();
+						intent.setAction(android.content.Intent.ACTION_VIEW);
+						intent.setDataAndType(Uri.fromFile(attachment), aPart.getContentType().split(";")[0]);
+						aView.getContext().startActivity(intent);
+	
+						attachment.createNewFile();
+		        	} catch (IOException e) {
+		        		e.printStackTrace();
+		        	} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+		            // When the loop is finished, updates the notification
+		            theBuilder.setContentText("Download complete")
+		            // Removes the progress bar
+		                    .setProgress(0,0,false);
+		            theNotifyManager.notify(0, theBuilder.build());
+		        }
+		    }
+		).start();
 	}
 
 	@Override
