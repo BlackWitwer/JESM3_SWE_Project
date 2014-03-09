@@ -43,7 +43,7 @@ public class UserManager {
 		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getCon().loadStundenplan();
+			app.getBackend().getConnnection().loadStundenplan();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();

@@ -3,3 +3,4 @@
 /obj
 /libs/*/*.so
 /lint.xml
+/src-gen
