@@ -3,6 +3,7 @@ package com.jesm3.newDualis.activities;
 import java.util.ArrayList;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.activities.MainActivity.SectionsPagerAdapter;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.User;
