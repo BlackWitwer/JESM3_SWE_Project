@@ -29,9 +29,15 @@
     <string name="synchronisationsintervall">Synchronisationsintervall</string>
     <string name="gcal_sync_on">Die Synchronisation mit dem Google-Kalender ist eingeschaltet</string>
     <string name="gcal_sync_off">Die Synchronisation mit dem Google-Kalender ist ausgeschaltet</string>
+    <string name="stupla_sync_on">Die Synchronisation des Stundenplans ist eingeschaltet</string>
+    <string name="stupla_sync_off">Die Synchronisation des Stundenplans ist ausgeschaltet</string>
+    <string name="noten_sync_on">Die Synchronisation der Noten ist eingeschaltet</string>
+    <string name="noten_sync_off">Die Synchronisation der Noten ist ausgeschaltet</string>
     <string name="mail_sync_on">Die Mail-Synchronisation ist eingeschaltet</string>
     <string name="mail_sync_off">Die Mail-Synchronisation ist ausgeschaltet</string>
     <string name="google_kalender">Google-Kalender</string>
+    <string name="noten">Noten</string>
+    <string name="stupla">Stundenplan</string>
     <string name="mail">Mail</string>
     <string name="mailsynchronisationsintervall">Mailsynchronisationsintervall</string>
     <string name="netzwerkeinstellungen">Netzwerkeinstellungen</string>
@@ -45,5 +51,14 @@
     <string name="vibration_on">Vibration ist eingeschaltet</string>
     <string name="vibration_off">Vibration ist ausgeschaltet</string>
     <string name="vibration">Vibration</string>
+    <string name="montag">Montag</string>
+    <string name="dienstag">Dienstag</string>
+    <string name="mittwoch">Mittwoch</string>
+    <string name="donnerstag">Donnerstag</string>
+    <string name="freitag">Freitag</string>
+    <string name="samstag">Samstag</string>
+    <string name="standort">Standort</string>
+    <string name="aktualisieren">Aktualisieren</string>
+    <string name="app_close">Nochmal klicken um die App zu schließen...</string>
 
 </resources>

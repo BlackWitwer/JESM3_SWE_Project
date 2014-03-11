@@ -31,6 +31,14 @@ public class SettingsFragment extends PreferenceFragment implements
 	 */
 	public static final String KEY_PREF_GCAL_SYNC_ONOFF = "pref_key_gcal_sync_onoff";
 	/**
+	 * Checkbox Google-Kalendersynchronisation
+	 */
+	public static final String KEY_PREF_STUPLA_SYNC_ONOFF = "pref_key_stupla_sync_onoff";
+	/**
+	 * Checkbox Google-Kalendersynchronisation
+	 */
+	public static final String KEY_PREF_NOTEN_SYNC_ONOFF = "pref_key_noten_sync_onoff";
+	/**
 	 * Checkbox Mail-Synchronisation
 	 */
 	public static final String KEY_PREF_MAIL_SYNC_ONOFF = "pref_key_mail_sync_onoff";
@@ -92,7 +100,7 @@ public class SettingsFragment extends PreferenceFragment implements
 	
 
 	/**
-	 * Initialisiert die Map für die Anzeige der Intervalle.
+	 * Initialisiert die Map fï¿½r die Anzeige der Intervalle.
 	 */
 	private void initConnectionMap() {
 		convertConnection = new HashMap<String, String>();
@@ -103,7 +111,7 @@ public class SettingsFragment extends PreferenceFragment implements
 	}
 
 	/**
-	 * Initialisiert die Maps für die Anzeige der Intervalle.
+	 * Initialisiert die Maps fï¿½r die Anzeige der Intervalle.
 	 */
 	private void initConversionMap() {
 		convertMinutes = new HashMap<String, String>();
@@ -125,7 +133,7 @@ public class SettingsFragment extends PreferenceFragment implements
 
 
 	/**
-	 * Setzt die  Summaries für die Einstellungen.
+	 * Setzt die  Summaries fï¿½r die Einstellungen.
 	 */
 	private void loadValues() {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -135,6 +143,10 @@ public class SettingsFragment extends PreferenceFragment implements
 		String sync_intervall_val = sharedPref.getString(KEY_PREF_INTERVALL_SYNC, "");
 		Preference  sync_gcal = findPreference(KEY_PREF_GCAL_SYNC_ONOFF);
 		boolean sync_gcal_val = sharedPref.getBoolean(KEY_PREF_GCAL_SYNC_ONOFF, false);
+		Preference  sync_stupla = findPreference(KEY_PREF_STUPLA_SYNC_ONOFF);
+		boolean sync_stupla_val = sharedPref.getBoolean(KEY_PREF_STUPLA_SYNC_ONOFF, false);
+		Preference  sync_noten = findPreference(KEY_PREF_NOTEN_SYNC_ONOFF);
+		boolean sync_noten_val = sharedPref.getBoolean(KEY_PREF_NOTEN_SYNC_ONOFF, false);
 		Preference  sync_mail = findPreference(KEY_PREF_MAIL_SYNC_ONOFF);
 		boolean sync_mail_val = sharedPref.getBoolean(KEY_PREF_MAIL_SYNC_ONOFF, false);
 		Preference  sync_mail_intervall = findPreference(KEY_PREF_INTERVALL_MAIL);
@@ -162,6 +174,18 @@ public class SettingsFragment extends PreferenceFragment implements
 			sync_gcal.setSummary(R.string.gcal_sync_on);
 		} else {
 			sync_gcal.setSummary(R.string.gcal_sync_off);
+		}
+		
+		if (sync_stupla_val) {
+			sync_stupla.setSummary(R.string.stupla_sync_on);
+		} else {
+			sync_stupla.setSummary(R.string.stupla_sync_off);
+		}
+		
+		if (sync_noten_val) {
+			sync_noten.setSummary(R.string.noten_sync_on);
+		} else {
+			sync_noten.setSummary(R.string.noten_sync_off);
 		}
 		
 		if (sync_mail_val) {
