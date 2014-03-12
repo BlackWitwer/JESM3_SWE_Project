@@ -45,8 +45,7 @@ public class SyncService extends Service {
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Toast.makeText(this, "Aktualisierung gestartet", Toast.LENGTH_LONG)
-				.show();
+
 		return Service.START_NOT_STICKY;
 	}
 
