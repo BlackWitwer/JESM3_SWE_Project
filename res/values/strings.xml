@@ -60,5 +60,10 @@
     <string name="standort">Standort</string>
     <string name="aktualisieren">Aktualisieren</string>
     <string name="app_close">Nochmal klicken um die App zu schließen...</string>
+    <string name="name">Name</string>
+    <string name="passwort">Passwort</string>
+    <string name="logindaten_merken">Logindaten merken</string>
+    <string name="falsche_logindaten">Falsche Logindaten</string>
+    <string name="login">Login</string>
 
 </resources>

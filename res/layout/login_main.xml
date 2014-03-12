@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Name" />
+                    android:text="@string/name" />
 
                 <EditText
                     android:id="@+id/name"
@@ -46,8 +46,10 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions"
                     android:maxLines="1"
                     android:singleLine="true" />
+
             </TableRow>
 
             <TableRow
@@ -61,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:singleLine="true"
-                    android:text="Passwort" />
+                    android:text="@string/passwort" />
 
                 <EditText
                     android:id="@+id/passwort"
@@ -100,14 +102,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Logindaten merken" />
+            android:text="@string/logindaten_merken" />
 
         <TextView
             android:id="@+id/error_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Falsche Logindaten"
+            android:text="@string/falsche_logindaten"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/holo_red_light"
             android:visibility="invisible" />
@@ -119,7 +121,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="40dp"
             android:onClick="login"
-            android:text="Login" />
+            android:text="@string/login" />
     </LinearLayout>
 
 </ScrollView>

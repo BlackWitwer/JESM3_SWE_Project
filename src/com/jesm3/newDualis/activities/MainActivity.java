@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.mail.Message;
 
@@ -14,6 +15,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -22,15 +24,20 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
@@ -208,7 +215,7 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
+			// Show 5 total pages.
 			return 5;
 		}
 
@@ -250,7 +257,6 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		private void setLecturesOnGUI(View aContainer) {
-        	TextView kw = (TextView) aContainer.findViewById(R.id.stupla_kalenderwoche);
     		LinearLayout lay_montag = (LinearLayout) aContainer.findViewById(R.id.lay_montag);
     		LinearLayout lay_dienstag = (LinearLayout) aContainer.findViewById(R.id.lay_dienstag);
     		LinearLayout lay_mittwoch = (LinearLayout) aContainer.findViewById(R.id.lay_mittwoch);
@@ -258,19 +264,47 @@ public class MainActivity extends FragmentActivity {
     		LinearLayout lay_freitag = (LinearLayout) aContainer.findViewById(R.id.lay_freitag);
     		LinearLayout lay_samstag = (LinearLayout) aContainer.findViewById(R.id.lay_samstag);
     		
+    		lay_montag.removeAllViews();
+    		lay_dienstag.removeAllViews();
+    		lay_mittwoch.removeAllViews();
+    		lay_donnerstag.removeAllViews();
+    		lay_freitag.removeAllViews();
+    		lay_samstag.removeAllViews();
+    		
     		generateDay(stupla.getMontag(), lay_montag);
     		generateDay(stupla.getDienstag(), lay_dienstag);
     		generateDay(stupla.getMittwoch(), lay_mittwoch);
     		generateDay(stupla.getDonnerstag(), lay_donnerstag);
     		generateDay(stupla.getFreitag(), lay_freitag);
     		generateDay(stupla.getSamstag(), lay_samstag);
-    		kw.setText("Kalenderwoche " + stupla.getKalenderwoche());
     		
     	}
         
-        private void initializeLectures() {
-        	GregorianCalendar cal = new GregorianCalendar();
-    		stupla = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager().getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
+        private void initializeLectures(final View aContainer) {
+        	final GregorianCalendar cal = new GregorianCalendar();
+    		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
+			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
+    		List<Integer> theWochen = new ArrayList<Integer>(theVorlesungsplanManager.getWochenMap().keySet());
+    		Spinner kwSpinner = (Spinner) aContainer.findViewById(R.id.spinner_kalenderwoche);
+    		ArrayAdapter<Integer> theKwAdapter = new ArrayAdapter<Integer>(aContainer.getContext(), android.R.layout.simple_spinner_item, theWochen);
+    		kwSpinner.setAdapter(theKwAdapter);
+    		//XXX MBA Nur bis die Wochenmap gefixt ist...
+    		kwSpinner.setSelection(1);
+    		kwSpinner.setOnItemSelectedListener( new OnItemSelectedListener() {
+
+				@Override
+				public void onItemSelected(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					stupla = theVorlesungsplanManager.getWochenplan(((Integer) arg0.getSelectedItem()).intValue());
+					setLecturesOnGUI(aContainer);
+				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+					// TODO MBA erstmal nichts...
+					
+				}
+			});
     	}
     	
     	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
@@ -310,7 +344,7 @@ public class MainActivity extends FragmentActivity {
 			case 1:
 				rootView = inflater.inflate(R.layout.stundenplan_main,
 						container, false);
-				initializeLectures();
+				initializeLectures(rootView);
             	setLecturesOnGUI(rootView);
             	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
@@ -350,7 +384,6 @@ public class MainActivity extends FragmentActivity {
 			for(Note eachMark : noten) {
 				addRow(eachMark.getName(), eachMark.getNote(), eachMark.getCredits(), lay_table);
 			}
-			
 		}
 		
 		public void addRow(String aVal1, String aVal2, String aVal3, TableLayout aLayout) {
@@ -362,16 +395,21 @@ public class MainActivity extends FragmentActivity {
 			note.setText(aVal2);
 			credits.setText(aVal3);
 			
-			fach.setBackgroundColor(Color.WHITE);
-			note.setBackgroundColor(Color.WHITE);
-			credits.setBackgroundColor(Color.WHITE);
+//			fach.setBackgroundColor(Color.WHITE);
+//			note.setBackgroundColor(Color.WHITE);
+//			credits.setBackgroundColor(Color.WHITE);
+
+			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.cell_shape);
+			fach.setBackgroundDrawable(theBorderDrawable);
+			note.setBackgroundDrawable(theBorderDrawable);
+			credits.setBackgroundDrawable(theBorderDrawable);
 			
 			row.addView(fach);
 			row.addView(note);
 			row.addView(credits);
 			
 		    TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
-		    llp.setMargins(4, 4, 4, 4); // llp.setMargins(left, top, right, bottom);
+//		    llp.setMargins(2, 2, 2, 2); // llp.setMargins(left, top, right, bottom);
 		    llp.weight = 5;
 		    fach.setLayoutParams(llp);
 		    llp.weight = 1;
@@ -381,6 +419,7 @@ public class MainActivity extends FragmentActivity {
 			fach.setEms(20);
 			note.setEms(10);
 			credits.setEms(10);
+			aLayout.setBackgroundDrawable(theBorderDrawable);
 			aLayout.addView(row);
 		}
 
