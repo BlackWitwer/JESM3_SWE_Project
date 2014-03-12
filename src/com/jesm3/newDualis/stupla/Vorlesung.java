@@ -17,7 +17,6 @@ public class Vorlesung {
 	 */
 	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
 			String name, String datum, String raum) {
-		super();
 		UhrzeitVon = uhrzeitVon;
 		UhrzeitBis = uhrzeitBis;
 		Dozent = dozent;
@@ -35,11 +34,11 @@ public class Vorlesung {
 	 */
 	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
 			String name) {
-		super();
-		UhrzeitVon = uhrzeitVon;
-		UhrzeitBis = uhrzeitBis;
-		Dozent = dozent;
-		Name = name;
+		this(uhrzeitVon,uhrzeitBis,dozent,name,"","");
+	}
+	
+	public Vorlesung() {
+		this("","","","");
 	}
 	
 	public String getDatum() {

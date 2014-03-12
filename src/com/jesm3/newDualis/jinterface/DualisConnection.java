@@ -3,6 +3,9 @@ package com.jesm3.newDualis.jinterface;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
@@ -25,6 +28,7 @@ import com.jesm3.newDualis.is.User;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
+import android.util.Log;
 import android.widget.TextView;
 
 public class DualisConnection {
@@ -128,20 +132,69 @@ public class DualisConnection {
 	}
 
 	// Geht zur Monats�bersicht und parst den Stundenplan
-	public ArrayList<Wochenplan> loadStundenplan() {
+	public void loadStundenplan(int weeks) {
 		String stundenplanContent = getPage("https://dualis.dhbw.de"
 				+ mlinks.getStundenPlan());
 
 		String parseLink = dparse.parseLink(stundenplanContent, ".link000031");
 		String monatsansichtContent = getPage("https://dualis.dhbw.de"
 				+ parseLink);
-
-		for (Wochenplan eachWoche : dparse.parseMonth(monatsansichtContent)) {
+		ArrayList<Wochenplan> wl = dparse.parseMonth(monatsansichtContent);
+		int monthsToGo = calcMonthsToGo(weeks);
+		Log.d("parsetest", "Monate die geladen werden müssen: "+monthsToGo);
+		for (int i=0; i<monthsToGo; i++) {
+			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowRight");
+			Log.d("parsetest", "Nächster Monat: "+parseLink);
+			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink); // GEHT AUS IRGENDEINEM GRUND AUF DEN NÄCHSTEN TAG???
+			ArrayList<Wochenplan> wl2 = dparse.parseMonth(monatsansichtContent);
+			Wochenplan mergeWeek = new StundenplanGenerator().mergeWeeks(wl.get(wl.size()-1), wl2.get(0));
+			if(mergeWeek==null){
+				wl.addAll(wl2);
+			}
+			else{
+				wl.remove(wl.size()-1);
+				wl2.remove(0);
+				wl.add(mergeWeek);
+				wl.addAll(wl2);
+			}
+		}
+		
+		for (Wochenplan eachWoche : wl) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
+	}
+	
+	public ArrayList<Wochenplan> getMonatsContent(String link){
+		String monatsansichtContent = getPage("https://dualis.dhbw.de" + link);
 		return dparse.parseMonth(monatsansichtContent);
 	}
+	
+	public int calcMonthsToGo(int weeks){
+		Calendar c = Calendar.getInstance();
+		Date d = new Date();
+		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
+		int actualmonth = d.getMonth();
+		Date tarMonth = addDaysToDate(d,7*weeks);
+		int monthToGo = tarMonth.getMonth();
+		Log.d("parsetest", "Zieldatum: "+tarMonth.toString());
+		if(monthToGo<actualmonth){
+			monthToGo = monthToGo + 12 - actualmonth;
+		}
+		else {
+			monthToGo = monthToGo - actualmonth;
+		}
+		return monthToGo;
+	}
+	public Date addDaysToDate(Date date, int noOfDays) {
+	    Date newDate = new Date(date.getTime());
 
+	    GregorianCalendar calendar = new GregorianCalendar();
+	    calendar.setTime(newDate);
+	    calendar.add(Calendar.DATE, noOfDays);
+	    newDate.setTime(calendar.getTime().getTime());
+
+	    return newDate;
+	}
 	// L�d Seite ohne HTML Code zur�ckzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);

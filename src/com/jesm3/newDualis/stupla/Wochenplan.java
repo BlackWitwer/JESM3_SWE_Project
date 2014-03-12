@@ -10,6 +10,30 @@ public class Wochenplan {
 	 * Alle Vorlesungen f�r Montag.
 	 */
 	private ArrayList<Vorlesung> montag;
+	public void setMontag(ArrayList<Vorlesung> montag) {
+		this.montag = montag;
+	}
+
+	public void setDienstag(ArrayList<Vorlesung> dienstag) {
+		this.dienstag = dienstag;
+	}
+
+	public void setMittwoch(ArrayList<Vorlesung> mittwoch) {
+		this.mittwoch = mittwoch;
+	}
+
+	public void setDonnerstag(ArrayList<Vorlesung> donnerstag) {
+		this.donnerstag = donnerstag;
+	}
+
+	public void setFreitag(ArrayList<Vorlesung> freitag) {
+		this.freitag = freitag;
+	}
+
+	public void setSamstag(ArrayList<Vorlesung> samstag) {
+		this.samstag = samstag;
+	}
+
 	/**
 	 * Alle Vorlesungen f�r Dienstag.
 	 */

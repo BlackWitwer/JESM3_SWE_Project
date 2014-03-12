@@ -46,8 +46,21 @@ public class DualisParser {
 			stdgr = new StundenplanGenerator();
 			for(int j=0;j<days.size();j++){
 				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days.get(j));
+				if (vorlesungen.size()==0){  
+					// Dummyvorlesung wenn Vorlesung in Monat nicht geladen
+					Vorlesung dummy=new Vorlesung();
+					dummy.setDozent("DRFAIL");
+					stdgr.addVorlesung(j, dummy);
+				}
 				for(int k=0;k<vorlesungen.size();k++){
 					stdgr.addVorlesung(j, vorlesungen.get(k));
+				}
+			}
+			for(int j=0;j<6;j++) {
+				if(stdgr.getDays(stdgr.getStd()).get(j).size()==0){ //Prüft ob eine Vorlesung an jedem Tag existiert
+					Vorlesung dummy=new Vorlesung();
+					dummy.setDozent("DRFAIL");
+					stdgr.addVorlesung(j, dummy);
 				}
 			}
 			stdl.add(stdgr.getStd());
@@ -77,7 +90,7 @@ public class DualisParser {
 			String uhrzeitVon=splitTime[0].trim();
 			String uhrzeitBis=splitTime[1].trim();
 			String dozent="???";
-			String raum = splitTitle[1].trim();  // STG-RB41-4.14-TINF "-TINF" notwendig??
+			String raum = splitTitle[1].trim();  // TODO STG-RB41-4.14-TINF "-TINF" notwendig??
 			String name=splitTitle[2].trim();
 			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent, name, datum, raum);
 			vorlesungen.add(dayv);
