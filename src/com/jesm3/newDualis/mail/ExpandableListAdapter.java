@@ -1,38 +1,43 @@
 package com.jesm3.newDualis.mail;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
-import javax.mail.BodyPart;
-import javax.mail.Flags.Flag;
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.internet.InternetAddress;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.text.Html;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
+import android.webkit.WebView;
+import android.widget.*;
 
 import com.jesm3.newDualis.R;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
-	private ArrayList<Message> messageList;
-	private boolean textIsHtml = false;
-	private int expandedGroupPosition = -1;
+	private ArrayList<MessageContainer> messageList;
 
 	public ExpandableListAdapter(Context context,
-			ArrayList<Message> someMessages) {
+			ArrayList<MessageContainer> someMessages) {
 		this.context = context;
 		this.messageList = someMessages;
 	}
@@ -51,33 +56,115 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		final Message child = (Message) getChild(groupPosition, childPosition);
+		final MessageContainer child = (MessageContainer) getChild(groupPosition, childPosition);
 
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.list_item, null);
+			convertView = infalInflater.inflate(R.layout.mail_list_item, null);
+		}
+		
+		TextView theHeaderFrom = (TextView) convertView.findViewById(R.id.listHeaderFrom);
+		TextView theHeaderTo = (TextView) convertView.findViewById(R.id.listHeaderTo);
+		TextView theHeaderDate = (TextView) convertView.findViewById(R.id.listHeaderDate);
+		
+		theHeaderFrom.setText("Von: " + child.getFrom());
+		theHeaderTo.setText("An: " + child.getTo());
+		theHeaderDate.setText("Datum: " + child.getDate().toString());
+		
+		TextView txtListChild = (TextView) convertView.findViewById(R.id.listItem);
+		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
+		
+		String theText = child.getText();
+		if (child.isTextIsHtml()) {
+			view.loadData(theText, "text/html; charset=UTF-8", null);
+			view.setVisibility(View.VISIBLE);
+			txtListChild.setVisibility(View.GONE);
+		} else {
+			txtListChild.setText(theText);
+			view.setVisibility(View.GONE);
+			txtListChild.setVisibility(View.VISIBLE);
 		}
 
-		TextView txtListChild = (TextView) convertView
-				.findViewById(R.id.listItem);
-		txtListChild.setText("");
-		try {
-			Multipart multipart = (Multipart) child.getContent();
-			for (int i = 0; i < multipart.getCount(); i++) {
-				BodyPart body = multipart.getBodyPart(i);
-				txtListChild.append(Html.fromHtml(getText(body)+""));
+		LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.attachmentBar);
+		layout.removeAllViews();
+
+		final View superView = convertView;
+		for (final Part eachPart : child.getAttachmentList()) {
+			Button theButton = new Button(layout.getContext());
+			theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+			layout.addView(theButton);
+
+			theButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					downloadAttachment(superView, eachPart);					
+				}
+			});
+
+			try {
+				theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
+			} catch (MessagingException e) {
+				e.printStackTrace();
 			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 		return convertView;
+	}
+	
+	public void downloadAttachment(final View aView, final Part aPart) {
+		final NotificationManager theNotifyManager =
+		        (NotificationManager) aView.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+		final NotificationCompat.Builder theBuilder = new NotificationCompat.Builder(aView.getContext());
+		theBuilder.setContentTitle("Picture Download")
+		    .setContentText("Download in progress");
+//		    .setSmallIcon(R.drawable.ic_notification);
+		// Start a lengthy operation in a background thread
+		new Thread(
+		    new Runnable() {
+		        @Override
+		        public void run() {
+		        	final File attachment;
+		        	try {
+			            attachment = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+								, aPart.getFileName());
+	
+						InputStream is = aPart.getInputStream();
+						FileOutputStream fos = new FileOutputStream(attachment);
+						byte[] buf = new byte[4096];
+						int bytesRead;
+			            int theI = 0;
+			            int theMaxSize = aPart.getSize();
+			            while((bytesRead = is.read(buf))!=-1) {
+			            	fos.write(buf, 0, bytesRead);
+			            	
+		                    // Sets the progress indicator to a max value, the
+		                    // current completion percentage, and "determinate"
+		                    // state
+		                    theBuilder.setProgress(theMaxSize, theI++*buf.length, false);
+		                    // Displays the progress bar for the first time.
+		                    theNotifyManager.notify(0, theBuilder.build());
+			            }
+			            fos.close();
+	
+						Intent intent = new Intent();
+						intent.setAction(android.content.Intent.ACTION_VIEW);
+						intent.setDataAndType(Uri.fromFile(attachment), aPart.getContentType().split(";")[0]);
+						aView.getContext().startActivity(intent);
+	
+						attachment.createNewFile();
+		        	} catch (IOException e) {
+		        		e.printStackTrace();
+		        	} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+		            // When the loop is finished, updates the notification
+		            theBuilder.setContentText("Download complete")
+		            // Removes the progress bar
+		                    .setProgress(0,0,false);
+		            theNotifyManager.notify(0, theBuilder.build());
+		        }
+		    }
+		).start();
 	}
 
 	@Override
@@ -103,11 +190,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
-		Message theMessage = (Message) getGroup(groupPosition);
+		MessageContainer theMessage = (MessageContainer) getGroup(groupPosition);
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.list_group, null);
+			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
 		}
 
 		TextView lblListFrom = (TextView) convertView
@@ -116,18 +203,24 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.listSubject);
 		TextView lblListDate = (TextView) convertView
 				.findViewById(R.id.listDate);
-
-		try {
-			if (!theMessage.getFlags().contains(Flag.SEEN)) {
-				lblListSubject.setTextColor(Color.BLUE);
-			}
-			lblListSubject.setText(theMessage.getSubject());
-			lblListFrom.setText(theMessage.getFrom()[0].toString());
-			lblListDate.setText(theMessage.getReceivedDate().toLocaleString());
-		} catch (MessagingException e) {
-			e.printStackTrace();
+		TextView lblListAttach = (TextView) convertView
+				.findViewById(R.id.listAttach);
+				
+		//Das Laden der verschiedenen Informationen an dieser Stelle bewirkt das Stockende laden und nachladen
+		//der Mail View. Evt in Containerobjekt auslagern in dem die nötigen Informationen bereits drin sind.
+		//vermindert zwar nicht die Ladezeit aber macht das Laden evt flüssiger.
+		lblListSubject.setTextColor(Color.BLACK);
+		if (!theMessage.isSeen()) {
+			lblListSubject.setTextColor(Color.BLUE);
 		}
-
+		lblListSubject.setText(theMessage.getSubject());
+		
+		lblListFrom.setText(theMessage.getFrom());
+		
+		if (theMessage.hasAttachement()) {
+			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
+		}
+		lblListDate.setText(theMessage.getDeltaTime());
 		return convertView;
 	}
 
@@ -141,52 +234,43 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	public void addMessage(Message aMessage) {
+	public void addMessage(MessageContainer aMessage) {
 		messageList.add(aMessage);
 	}
 	
-	public void addAllMessages (Collection<Message> someMessages) {
+	public void addAllMessages (Collection<MessageContainer> someMessages) {
 		messageList.addAll(someMessages);
 	}
 
-	/**
-	 * Return the primary text content of the message.
-	 */
-	private String getText(Part p) throws MessagingException, IOException {
-		if (p.isMimeType("text/*")) {
-			String s = (String) p.getContent();
-			textIsHtml = p.isMimeType("text/html");
-			return s;
+	public String convertToMinSize (int aSize) {
+		int sizeDimension = 0;
+		int size = aSize;
+		while (size > 1024) {
+			size = size / 1024;
+			sizeDimension++;
+		}
+		String sizeDimensionString;
+		switch (sizeDimension) {
+			case 0:
+				sizeDimensionString = "B";
+				break;
+			case 1:
+				sizeDimensionString = "KB";
+				break;
+			case 2:
+				sizeDimensionString = "MB";
+				break;
+			case 3:
+				sizeDimensionString = "GB";
+				break;
+			case 4:
+				sizeDimensionString = "TB";
+				break;
+			default:
+				sizeDimensionString = "Too Damn High";
+				break;
 		}
 
-		if (p.isMimeType("multipart/alternative")) {
-			// prefer html text over plain text
-			Multipart mp = (Multipart) p.getContent();
-			String text = null;
-			for (int i = 0; i < mp.getCount(); i++) {
-				Part bp = mp.getBodyPart(i);
-				if (bp.isMimeType("text/plain")) {
-					if (text == null)
-						text = getText(bp);
-					continue;
-				} else if (bp.isMimeType("text/html")) {
-					String s = getText(bp);
-					if (s != null)
-						return s;
-				} else {
-					return getText(bp);
-				}
-			}
-			return text;
-		} else if (p.isMimeType("multipart/*")) {
-			Multipart mp = (Multipart) p.getContent();
-			for (int i = 0; i < mp.getCount(); i++) {
-				String s = getText(mp.getBodyPart(i));
-				if (s != null)
-					return s;
-			}
-		}
-
-		return null;
+		return  size + sizeDimensionString;
 	}
 }
