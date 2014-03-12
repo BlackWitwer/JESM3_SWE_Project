@@ -1,9 +1,7 @@
-/**
- * 
- */
 package com.jesm3.newDualis.stupla;
 
 import java.util.ArrayList;
+
 
 public class Wochenplan {
 	/**

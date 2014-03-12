@@ -1,10 +1,23 @@
 package com.jesm3.newDualis.stupla;
 
+import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
+
 public class Vorlesung extends AbstractVorlesung {
 	
 	public enum Requests {
+		/**
+		 * Alle Einträge der Datenbank werden geladen. 
+		 */
 		REQUEST_ALL,
+		
+		/**
+		 * Alle zukünftigen Einträge inklusive des heutigen Tages.
+		 */
 		REQUEST_NEXT,
+		
+		/**
+		 * Alle vergangenen Einträge exklusive des heutigen Tages.
+		 */
 		REQUEST_LAST
 	}
 	

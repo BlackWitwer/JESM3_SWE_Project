@@ -1,19 +1,21 @@
 package com.jesm3.newDualis.persist;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
+import com.jesm3.newDualis.generatedDAO.AbstractVorlesungDao;
+import com.jesm3.newDualis.generatedDAO.DaoMaster;
+import com.jesm3.newDualis.generatedDAO.DaoMaster.DevOpenHelper;
+import com.jesm3.newDualis.generatedDAO.DaoSession;
 import com.jesm3.newDualis.is.CustomApplication;
-import com.jesm3.newDualis.stupla.AbstractVorlesung;
-import com.jesm3.newDualis.stupla.AbstractVorlesungDao;
-import com.jesm3.newDualis.stupla.AbstractVorlesungDao.Properties;
-import com.jesm3.newDualis.stupla.DaoMaster;
 import com.jesm3.newDualis.stupla.Vorlesung;
-import com.jesm3.newDualis.stupla.DaoMaster.DevOpenHelper;
-import com.jesm3.newDualis.stupla.DaoSession;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 
 import de.greenrobot.dao.query.QueryBuilder;
@@ -58,20 +60,52 @@ public class DatabaseManager {
 	 * @return die Menge der Vorlesungen. Eine leere Liste, wenn der Request Type nicht gefunden wird.
 	 */
 	public List<Vorlesung> getVorlesungen(Requests aRequest) {
+		List<Vorlesung> vorlesungsList = createVorlesung(vorlesungDAO.loadAll());
+		List<Vorlesung> removeList = new ArrayList<Vorlesung>();
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat( "dd.MM.yyyy" );
+		Date datumKurs = new Date();
+		long heute = System.currentTimeMillis();
+
 		switch (aRequest) {
 		case REQUEST_ALL:
 			return createVorlesung(vorlesungDAO.loadAll());
+			
+		case REQUEST_NEXT:						
+			for (Vorlesung eachVorlesung : vorlesungsList) {
+				try {
+					datumKurs = dateFormat.parse(eachVorlesung.getDatum());
+					
+					if (datumKurs.getTime() < heute) {
+						removeList.add(eachVorlesung);
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			vorlesungsList.removeAll(removeList);
+			return vorlesungsList;
+			
+		case REQUEST_LAST:			
+			for (Vorlesung eachVorlesung : vorlesungsList) {
+				try {
+					datumKurs = dateFormat.parse(eachVorlesung.getDatum());
+					
+					if (datumKurs.getTime() >= heute) {
+						removeList.add(eachVorlesung);
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			vorlesungsList.removeAll(removeList);
+			return vorlesungsList;
+			
 		default:
 			return new ArrayList<Vorlesung>();
 		}
-	}
-	
-	private <T> List<T> castAll (Class<T> aClass, List aList) {
-		List<T> theList = new ArrayList<T>();
-		for (Object eachObject : aList) {
-			theList.add(aClass.cast(eachObject));
-		}
-		return theList;
 	}
 	
 	private List<Vorlesung> createVorlesung(List<AbstractVorlesung> aList) {
