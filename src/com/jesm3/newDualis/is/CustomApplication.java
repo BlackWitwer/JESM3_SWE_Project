@@ -18,7 +18,7 @@ public class CustomApplication extends Application {
 	
 	public Backend getBackend() {
 		if (backend == null) {
-			backend = new Backend();
+			backend = new Backend(this);
 		}
 		return backend;
 	}

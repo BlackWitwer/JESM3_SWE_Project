@@ -1,33 +1,48 @@
 package com.jesm3.newDualis.is;
 
 import com.jesm3.newDualis.jinterface.DualisConnection;
+import com.jesm3.newDualis.persist.DatabaseManager;
+import com.jesm3.newDualis.stupla.Vorlesung.Requests;
+import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 
 public class Backend {
 // Synchronisationsmanager
-// Filemanager
 	
-	private DualisConnection con;
+	private DatabaseManager dbManager;
+	private DualisConnection connection;
 	private VorlesungsplanManager vorlesungsplanManager;
+	private CustomApplication customApplication;
 	
-	public Backend() {
-		this.con = new DualisConnection(this);
+	public Backend(CustomApplication aCustomApplication) {
+		this.customApplication = aCustomApplication;
+		
+		this.connection = new DualisConnection(this);
 		this.vorlesungsplanManager = new VorlesungsplanManager();
+		this.dbManager = new DatabaseManager(customApplication);
 	}
 	
 	public boolean checkLogin(User aUser) {
-		return con.simpleLoginCheck(aUser);
+		return connection.simpleLoginCheck(aUser);
 	}
 	
 	public boolean login(User aUser) {
-		return con.login(aUser);
+		return connection.login(aUser);
 	}
 
-	public DualisConnection getCon() {
-		return con;
+	public DualisConnection getConnnection() {
+		return connection;
 	}
 	
 	public VorlesungsplanManager getVorlesungsplanManager() {
 		return vorlesungsplanManager;
+	}
+	
+	public DatabaseManager getDbManager() {
+		return dbManager;
+	}
+	
+	public CustomApplication getCustomApplication() {
+		return customApplication;
 	}
 }
