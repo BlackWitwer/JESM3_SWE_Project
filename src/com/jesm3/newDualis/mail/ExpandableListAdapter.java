@@ -2,27 +2,17 @@ package com.jesm3.newDualis.mail;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
-
-import javax.mail.Flags;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.internet.InternetAddress;
-
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +24,10 @@ import com.jesm3.newDualis.R;
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
-	private ArrayList<MessageContainer> messageList;
+	private ArrayList<MailContainer> messageList;
 
 	public ExpandableListAdapter(Context context,
-			ArrayList<MessageContainer> someMessages) {
+			ArrayList<MailContainer> someMessages) {
 		this.context = context;
 		this.messageList = someMessages;
 	}
@@ -56,7 +46,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		final MessageContainer child = (MessageContainer) getChild(groupPosition, childPosition);
+		final MailContainer child = (MailContainer) getChild(groupPosition, childPosition);
 
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
@@ -76,7 +66,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
 		
 		String theText = child.getText();
-		if (child.isTextIsHtml()) {
+		if (child.getHtml()) {
 			view.loadData(theText, "text/html; charset=UTF-8", null);
 			view.setVisibility(View.VISIBLE);
 			txtListChild.setVisibility(View.GONE);
@@ -112,56 +102,76 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	}
 	
 	public void downloadAttachment(final View aView, final Part aPart) {
-		final NotificationManager theNotifyManager =
-		        (NotificationManager) aView.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-		final NotificationCompat.Builder theBuilder = new NotificationCompat.Builder(aView.getContext());
-		theBuilder.setContentTitle("Picture Download")
-		    .setContentText("Download in progress");
-//		    .setSmallIcon(R.drawable.ic_notification);
 		// Start a lengthy operation in a background thread
 		new Thread(
 		    new Runnable() {
 		        @Override
 		        public void run() {
 		        	final File attachment;
-		        	try {
+		        	
+					final NotificationManager theNotifyManager =
+						(NotificationManager) aView.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+					final NotificationCompat.Builder theBuilder = new NotificationCompat.Builder(aView.getContext());
+					
+					try {
+						theBuilder.setContentTitle(aPart.getFileName())
+							.setContentText("Download in progress")
+							.setSmallIcon(R.drawable.icon);
+						
 			            attachment = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 								, aPart.getFileName());
 	
-						InputStream is = aPart.getInputStream();
-						FileOutputStream fos = new FileOutputStream(attachment);
-						byte[] buf = new byte[4096];
-						int bytesRead;
-			            int theI = 0;
-			            int theMaxSize = aPart.getSize();
-			            while((bytesRead = is.read(buf))!=-1) {
-			            	fos.write(buf, 0, bytesRead);
-			            	
-		                    // Sets the progress indicator to a max value, the
-		                    // current completion percentage, and "determinate"
-		                    // state
-		                    theBuilder.setProgress(theMaxSize, theI++*buf.length, false);
-		                    // Displays the progress bar for the first time.
-		                    theNotifyManager.notify(0, theBuilder.build());
-			            }
-			            fos.close();
-	
-						Intent intent = new Intent();
-						intent.setAction(android.content.Intent.ACTION_VIEW);
-						intent.setDataAndType(Uri.fromFile(attachment), aPart.getContentType().split(";")[0]);
-						aView.getContext().startActivity(intent);
-	
-						attachment.createNewFile();
+						if (!attachment.exists()) {
+						
+							InputStream is = aPart.getInputStream();
+							FileOutputStream fos = new FileOutputStream(attachment);
+							byte[] buf = new byte[4096];
+							int bytesRead;
+							int theI = 0;
+							int theMaxSize = aPart.getSize();
+							while((bytesRead = is.read(buf))!=-1) {
+								fos.write(buf, 0, bytesRead);
+								// Sets the progress indicator to a max value, the
+								// current completion percentage, and "determinate"
+								// state
+								theBuilder.setProgress(theMaxSize, theI++*buf.length, false);
+								// Displays the progress bar for the first time.
+								theNotifyManager.notify(0, theBuilder.build());
+							}
+							fos.close();
+							
+							attachment.createNewFile();
+							
+							// When the loop is finished, updates the notification
+							theBuilder.setContentText("Download complete")
+								// Removes the progress bar
+								.setProgress(0,0,false);
+						
+							Intent intent = new Intent();
+							intent.setAction(android.content.Intent.ACTION_VIEW);
+							intent.setDataAndType(Uri.fromFile(attachment), aPart.getContentType().split(";")[0]);	
+								
+							PendingIntent thePendingIntent = PendingIntent.getActivity(	
+								aView.getContext(),
+								0,
+								intent,
+								PendingIntent.FLAG_UPDATE_CURRENT);
+							
+							theBuilder.setContentIntent(thePendingIntent);	
+								
+							theNotifyManager.notify(0, theBuilder.build());
+							
+						} else {
+							Intent intent = new Intent();
+							intent.setAction(android.content.Intent.ACTION_VIEW);
+							intent.setDataAndType(Uri.fromFile(attachment), aPart.getContentType().split(";")[0]);
+							aView.getContext().startActivity(intent);
+						}
 		        	} catch (IOException e) {
 		        		e.printStackTrace();
 		        	} catch (MessagingException e) {
 						e.printStackTrace();
 					}
-		            // When the loop is finished, updates the notification
-		            theBuilder.setContentText("Download complete")
-		            // Removes the progress bar
-		                    .setProgress(0,0,false);
-		            theNotifyManager.notify(0, theBuilder.build());
 		        }
 		    }
 		).start();
@@ -190,7 +200,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
-		MessageContainer theMessage = (MessageContainer) getGroup(groupPosition);
+		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -210,14 +220,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		//der Mail View. Evt in Containerobjekt auslagern in dem die nötigen Informationen bereits drin sind.
 		//vermindert zwar nicht die Ladezeit aber macht das Laden evt flüssiger.
 		lblListSubject.setTextColor(Color.BLACK);
-		if (!theMessage.isSeen()) {
+		if (!theMessage.getSeen()) {
 			lblListSubject.setTextColor(Color.BLUE);
 		}
 		lblListSubject.setText(theMessage.getSubject());
 		
 		lblListFrom.setText(theMessage.getFrom());
 		
-		if (theMessage.hasAttachement()) {
+		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
 		}
 		lblListDate.setText(theMessage.getDeltaTime());
@@ -234,11 +244,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	public void addMessage(MessageContainer aMessage) {
+	public void addMessage(MailContainer aMessage) {
 		messageList.add(aMessage);
 	}
 	
-	public void addAllMessages (Collection<MessageContainer> someMessages) {
+	public void addAllMessages (Collection<MailContainer> someMessages) {
 		messageList.addAll(someMessages);
 	}
 

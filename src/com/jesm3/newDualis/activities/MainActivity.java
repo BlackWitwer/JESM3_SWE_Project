@@ -49,7 +49,7 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
-import com.jesm3.newDualis.mail.MessageContainer;
+import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -441,14 +441,14 @@ public class MainActivity extends FragmentActivity {
 		public void initMailView(final View aView) {
 			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-					new ArrayList<MessageContainer>());
+					new ArrayList<MailContainer>());
 			final ExpandableListView expListView;
 			expListView = (ExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
-				public void mailReceived(List<MessageContainer> someMails) {
+				public void mailReceived(List<MailContainer> someMails) {
 					listAdapter.addAllMessages(someMails);
 					final boolean theEmptyFlag = someMails.isEmpty();
 					getActivity().runOnUiThread(new Runnable() {

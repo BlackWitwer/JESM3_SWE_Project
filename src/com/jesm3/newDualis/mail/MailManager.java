@@ -27,7 +27,7 @@ public class MailManager {
 	private User user;
 	private Folder folder;
 	
-	private HashMap<Integer, MessageContainer> messageIdMap;
+	private HashMap<Integer, MailContainer> messageIdMap;
 
 	private boolean loggedIn = false;
 
@@ -74,7 +74,7 @@ public class MailManager {
 				folder.open(Folder.READ_ONLY);
 			}
 
-			messageIdMap = new HashMap<Integer, MessageContainer>();
+			messageIdMap = new HashMap<Integer, MailContainer>();
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
@@ -123,7 +123,7 @@ public class MailManager {
 	 * @param to obere Grenze.
 	 * @return Liste der Nachrichten innerhalb der Grenzen.
 	 */
-	public ArrayList<MessageContainer> getMessagesFromTo(int from, int to) {
+	public ArrayList<MailContainer> getMessagesFromTo(int from, int to) {
 		while (!loggedIn) {
 		}
 		
@@ -131,17 +131,17 @@ public class MailManager {
 			int temp = to > getFolder().getMessageCount() ? getFolder()
 					.getMessageCount() : to;
 
-			ArrayList<MessageContainer> theMessageList = new ArrayList<MessageContainer>();
+			ArrayList<MailContainer> theMessageList = new ArrayList<MailContainer>();
 			for (int i = from; i <= temp; i++) {
 				if (!messageIdMap.containsKey(i)) {
-					messageIdMap.put(i, new MessageContainer(getFolder().getMessage(i)));
+					messageIdMap.put(i, new MailContainer(getFolder().getMessage(i)));
 				}
 				theMessageList.add(messageIdMap.get(i));
 			}
-			Collections.sort(theMessageList, new Comparator<MessageContainer>() {
+			Collections.sort(theMessageList, new Comparator<MailContainer>() {
 
 				@Override
-				public int compare(MessageContainer lhs, MessageContainer rhs) {
+				public int compare(MailContainer lhs, MailContainer rhs) {
 					return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
 				}
 			});
@@ -152,7 +152,7 @@ public class MailManager {
 			e.printStackTrace();
 		}
 		
-		return new ArrayList<MessageContainer>();
+		return new ArrayList<MailContainer>();
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class MailManager {
 	 * @param anAmount die Anzahl.
 	 * @return Liste der Nachrichten.
 	 */
-	public ArrayList<MessageContainer> getLatestMessages(int anAmount) {
+	public ArrayList<MailContainer> getLatestMessages(int anAmount) {
 		if (anAmount > getMessageCount()) {
 			return getMessagesFromTo(1, getMessageCount());
 		}
