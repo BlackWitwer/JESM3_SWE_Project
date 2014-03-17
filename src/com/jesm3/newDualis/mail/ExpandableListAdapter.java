@@ -33,20 +33,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public Object getChild(int groupPosition, int childPosititon) {
-		return this.messageList.get(groupPosition);
-	}
-
-	@Override
-	public long getChildId(int groupPosition, int childPosition) {
-		return childPosition;
-	}
-
-	@Override
 	public View getChildView(int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		final MailContainer child = (MailContainer) getChild(groupPosition, childPosition);
+		final MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
 
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
@@ -58,15 +48,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		TextView theHeaderTo = (TextView) convertView.findViewById(R.id.listHeaderTo);
 		TextView theHeaderDate = (TextView) convertView.findViewById(R.id.listHeaderDate);
 		
-		theHeaderFrom.setText("Von: " + child.getFrom());
-		theHeaderTo.setText("An: " + child.getTo());
-		theHeaderDate.setText("Datum: " + child.getDate().toString());
+		theHeaderFrom.setText("Von: " + theMail.getFrom());
+		theHeaderTo.setText("An: " + theMail.getTo());
+		theHeaderDate.setText("Datum: " + theMail.getDate().toString());
 		
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.listItem);
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
-		
-		String theText = child.getText();
-		if (child.getHtml()) {
+		String theText = theMail.getText();
+		if (theMail.getHtml()) {
 			view.loadData(theText, "text/html; charset=UTF-8", null);
 			view.setVisibility(View.VISIBLE);
 			txtListChild.setVisibility(View.GONE);
@@ -80,7 +69,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		layout.removeAllViews();
 
 		final View superView = convertView;
-		for (final Part eachPart : child.getAttachmentList()) {
+		for (final Part eachPart : theMail.getAttachmentList()) {
 			Button theButton = new Button(layout.getContext());
 			theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			layout.addView(theButton);
@@ -99,6 +88,53 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			}
 		}
 		return convertView;
+	}	
+	
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
+		if (convertView == null) {
+			LayoutInflater infalInflater = (LayoutInflater) this.context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
+		}
+
+		TextView lblListFrom = (TextView) convertView
+				.findViewById(R.id.listFrom);
+		TextView lblListSubject = (TextView) convertView
+				.findViewById(R.id.listSubject);
+		TextView lblListDate = (TextView) convertView
+				.findViewById(R.id.listDate);
+		TextView lblListAttach = (TextView) convertView
+				.findViewById(R.id.listAttach);
+				
+		//Das Laden der verschiedenen Informationen an dieser Stelle bewirkt das Stockende laden und nachladen
+		//der Mail View. Evt in Containerobjekt auslagern in dem die nötigen Informationen bereits drin sind.
+		//vermindert zwar nicht die Ladezeit aber macht das Laden evt flüssiger.
+		lblListSubject.setTextColor(Color.BLACK);
+		if (!theMessage.getSeen()) {
+			lblListSubject.setTextColor(Color.BLUE);
+		}
+		lblListSubject.setText(theMessage.getSubject());
+		
+		lblListFrom.setText(theMessage.getFrom());
+		
+		if (theMessage.getAttachment()) {
+			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
+		}
+		lblListDate.setText(theMessage.getDeltaTime());
+		return convertView;
+	}
+	
+	@Override
+	public Object getChild(int groupPosition, int childPosititon) {
+		return this.messageList.get(groupPosition);
+	}
+	
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		return childPosition;
 	}
 	
 	public void downloadAttachment(final View aView, final Part aPart) {
@@ -195,43 +231,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public long getGroupId(int groupPosition) {
 		return groupPosition;
-	}
-
-	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
-		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
-		if (convertView == null) {
-			LayoutInflater infalInflater = (LayoutInflater) this.context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
-		}
-
-		TextView lblListFrom = (TextView) convertView
-				.findViewById(R.id.listFrom);
-		TextView lblListSubject = (TextView) convertView
-				.findViewById(R.id.listSubject);
-		TextView lblListDate = (TextView) convertView
-				.findViewById(R.id.listDate);
-		TextView lblListAttach = (TextView) convertView
-				.findViewById(R.id.listAttach);
-				
-		//Das Laden der verschiedenen Informationen an dieser Stelle bewirkt das Stockende laden und nachladen
-		//der Mail View. Evt in Containerobjekt auslagern in dem die nötigen Informationen bereits drin sind.
-		//vermindert zwar nicht die Ladezeit aber macht das Laden evt flüssiger.
-		lblListSubject.setTextColor(Color.BLACK);
-		if (!theMessage.getSeen()) {
-			lblListSubject.setTextColor(Color.BLUE);
-		}
-		lblListSubject.setText(theMessage.getSubject());
-		
-		lblListFrom.setText(theMessage.getFrom());
-		
-		if (theMessage.getAttachment()) {
-			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
-		}
-		lblListDate.setText(theMessage.getDeltaTime());
-		return convertView;
 	}
 
 	@Override

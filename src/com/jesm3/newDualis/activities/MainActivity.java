@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -47,6 +48,7 @@ import android.widget.Toast;
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.mail.MailContainer;
@@ -442,10 +444,11 @@ public class MainActivity extends FragmentActivity {
 			MailManager manager =((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
 					new ArrayList<MailContainer>());
-			final ExpandableListView expListView;
-			expListView = (ExpandableListView) aView
+			final MailExpandableListView expListView;
+			expListView = (MailExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
+			expListView.setOverScrollMode(ListView.OVER_SCROLL_ALWAYS);
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
 				public void mailReceived(List<MailContainer> someMails) {
