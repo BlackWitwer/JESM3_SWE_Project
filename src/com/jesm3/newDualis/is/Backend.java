@@ -1,5 +1,7 @@
 package com.jesm3.newDualis.is;
 
+import java.util.List;
+
 import com.jesm3.newDualis.jinterface.DualisConnection;
 import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
