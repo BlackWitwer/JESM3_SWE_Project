@@ -5,6 +5,7 @@ import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
+import com.jesm3.newDualis.mail.*;
 
 public class Backend {
 // Synchronisationsmanager
@@ -12,6 +13,7 @@ public class Backend {
 	private DatabaseManager dbManager;
 	private DualisConnection connection;
 	private VorlesungsplanManager vorlesungsplanManager;
+	private MailManager mailManager;
 	private CustomApplication customApplication;
 	
 	public Backend(CustomApplication aCustomApplication) {
@@ -44,5 +46,12 @@ public class Backend {
 	
 	public CustomApplication getCustomApplication() {
 		return customApplication;
+	}
+	
+	public MailManager getMailManager() {
+		if (mailManager == null) {
+			mailManager = new MailManager(this, getCustomApplication().getUserManager().getUser());
+		}
+		return mailManager;
 	}
 }

@@ -168,7 +168,7 @@ public class MailContainer extends AbstractMailContainer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//TODO Update auf der Datenbank ausführen, damit der Text persistiert wird.
+			//TODO Update auf der Datenbank ausfï¿½hren, damit der Text persistiert wird.
 		}
 		return super.getText();
 	}

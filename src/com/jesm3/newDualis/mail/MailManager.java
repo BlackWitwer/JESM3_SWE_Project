@@ -1,24 +1,10 @@
 package com.jesm3.newDualis.mail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Properties;
+import com.jesm3.newDualis.is.*;
+import java.io.*;
+import java.util.*;
+import javax.mail.*;
 
-import javax.mail.Authenticator;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
-
-import android.content.res.Resources.Theme;
-
-import com.jesm3.newDualis.is.User;
 
 public class MailManager {
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
@@ -26,14 +12,15 @@ public class MailManager {
 
 	private User user;
 	private Folder folder;
+	private Backend backend;
 	
 	private HashMap<Integer, MailContainer> messageIdMap;
 
 	private boolean loggedIn = false;
 
-	public MailManager(User aUser) {
+	public MailManager(Backend aBackend, User aUser) {
 		this.user = aUser;
-
+		this.backend = aBackend;
 		// Login im Thread um ein hängen zu vermeiden.
 		new Thread(new Runnable() {
 
@@ -75,6 +62,8 @@ public class MailManager {
 			}
 
 			messageIdMap = new HashMap<Integer, MailContainer>();
+			
+			
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
