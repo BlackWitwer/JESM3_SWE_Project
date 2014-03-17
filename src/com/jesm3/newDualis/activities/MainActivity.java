@@ -439,7 +439,7 @@ public class MainActivity extends FragmentActivity {
 		 * Initialisiert die ExpandableListView der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
-			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
+			MailManager manager =((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
 					new ArrayList<MailContainer>());
 			final ExpandableListView expListView;

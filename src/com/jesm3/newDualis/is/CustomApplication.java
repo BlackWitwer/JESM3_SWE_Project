@@ -11,7 +11,6 @@ public class CustomApplication extends Application {
 
 	private Backend backend;
 	private UserManager userManager;
-	private MailManager mailManager;
 
 	@Override
 	public void onCreate() {
@@ -30,12 +29,5 @@ public class CustomApplication extends Application {
 			userManager = new UserManager(this);
 		}
 		return userManager;
-	}
-	
-	public MailManager getMailManager() {
-		if (mailManager == null) {
-			mailManager = new MailManager(getUserManager().getUser());
-		}
-		return mailManager;
 	}
 }
