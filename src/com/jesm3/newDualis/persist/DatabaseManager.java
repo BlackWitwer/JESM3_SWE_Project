@@ -19,6 +19,8 @@ import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 
 import de.greenrobot.dao.query.QueryBuilder;
+import com.jesm3.newDualis.mail.*;
+import com.jesm3.newDualis.generatedDAO.*;
 
 public class DatabaseManager {
 	
@@ -27,6 +29,7 @@ public class DatabaseManager {
 	private DaoSession sessionDAO;
 	
 	private AbstractVorlesungDao vorlesungDAO;
+	private AbstractMailContainerDao mailDAO;
 	
 	private Context context;
 	
@@ -43,6 +46,7 @@ public class DatabaseManager {
 		sessionDAO = masterDAO.newSession();
 		
 		vorlesungDAO = sessionDAO.getAbstractVorlesungDao();
+		mailDAO = sessionDAO.getAbstractMailContainerDao();
 	}
 	
 	public Vorlesung insertVorlesung(Vorlesung aVorlesung) {
@@ -116,6 +120,11 @@ public class DatabaseManager {
 		}
 		
 		return theResultList;
+	}
+	
+	public MailContainer insertMail (MailContainer aMail) {
+		mailDAO.insert(aMail);
+		return aMail;
 	}
 	
 	public DaoMaster getMaster() {

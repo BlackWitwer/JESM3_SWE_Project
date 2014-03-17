@@ -63,7 +63,6 @@ public class MailManager {
 
 			messageIdMap = new HashMap<Integer, MailContainer>();
 			
-			
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
