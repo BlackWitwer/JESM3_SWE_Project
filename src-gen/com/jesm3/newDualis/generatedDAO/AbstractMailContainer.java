@@ -16,7 +16,7 @@ public class AbstractMailContainer {
     private Boolean attachment;
     private Boolean seen;
     private Boolean html;
-    private Integer messageNumber;
+    private Long uId;
 
     public AbstractMailContainer() {
     }
@@ -25,7 +25,7 @@ public class AbstractMailContainer {
         this.id = id;
     }
 
-    public AbstractMailContainer(Long id, String from, String fromComplete, String to, String subject, String text, java.util.Date date, Boolean attachment, Boolean seen, Boolean html, Integer messageNumber) {
+    public AbstractMailContainer(Long id, String from, String fromComplete, String to, String subject, String text, java.util.Date date, Boolean attachment, Boolean seen, Boolean html, Long uId) {
         this.id = id;
         this.from = from;
         this.fromComplete = fromComplete;
@@ -36,7 +36,7 @@ public class AbstractMailContainer {
         this.attachment = attachment;
         this.seen = seen;
         this.html = html;
-        this.messageNumber = messageNumber;
+        this.uId = uId;
     }
 
     public Long getId() {
@@ -119,12 +119,12 @@ public class AbstractMailContainer {
         this.html = html;
     }
 
-    public Integer getMessageNumber() {
-        return messageNumber;
+    public Long getUId() {
+        return uId;
     }
 
-    public void setMessageNumber(Integer messageNumber) {
-        this.messageNumber = messageNumber;
+    public void setUId(Long uId) {
+        this.uId = uId;
     }
 
 }

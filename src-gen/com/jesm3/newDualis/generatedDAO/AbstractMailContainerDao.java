@@ -33,7 +33,7 @@ public class AbstractMailContainerDao extends AbstractDao<AbstractMailContainer,
         public final static Property Attachment = new Property(7, Boolean.class, "attachment", false, "ATTACHMENT");
         public final static Property Seen = new Property(8, Boolean.class, "seen", false, "SEEN");
         public final static Property Html = new Property(9, Boolean.class, "html", false, "HTML");
-        public final static Property MessageNumber = new Property(10, Integer.class, "messageNumber", false, "MESSAGE_NUMBER");
+        public final static Property UId = new Property(10, Long.class, "uId", false, "U_ID");
     };
 
 
@@ -59,7 +59,7 @@ public class AbstractMailContainerDao extends AbstractDao<AbstractMailContainer,
                 "'ATTACHMENT' INTEGER," + // 7: attachment
                 "'SEEN' INTEGER," + // 8: seen
                 "'HTML' INTEGER," + // 9: html
-                "'MESSAGE_NUMBER' INTEGER);"); // 10: messageNumber
+                "'U_ID' INTEGER);"); // 10: uId
     }
 
     /** Drops the underlying database table. */
@@ -123,9 +123,9 @@ public class AbstractMailContainerDao extends AbstractDao<AbstractMailContainer,
             stmt.bindLong(10, html ? 1l: 0l);
         }
  
-        Integer messageNumber = entity.getMessageNumber();
-        if (messageNumber != null) {
-            stmt.bindLong(11, messageNumber);
+        Long uId = entity.getUId();
+        if (uId != null) {
+            stmt.bindLong(11, uId);
         }
     }
 
@@ -149,7 +149,7 @@ public class AbstractMailContainerDao extends AbstractDao<AbstractMailContainer,
             cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0, // attachment
             cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0, // seen
             cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0, // html
-            cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10) // messageNumber
+            cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10) // uId
         );
         return entity;
     }
@@ -167,7 +167,7 @@ public class AbstractMailContainerDao extends AbstractDao<AbstractMailContainer,
         entity.setAttachment(cursor.isNull(offset + 7) ? null : cursor.getShort(offset + 7) != 0);
         entity.setSeen(cursor.isNull(offset + 8) ? null : cursor.getShort(offset + 8) != 0);
         entity.setHtml(cursor.isNull(offset + 9) ? null : cursor.getShort(offset + 9) != 0);
-        entity.setMessageNumber(cursor.isNull(offset + 10) ? null : cursor.getInt(offset + 10));
+        entity.setUId(cursor.isNull(offset + 10) ? null : cursor.getLong(offset + 10));
      }
     
     /** @inheritdoc */

@@ -67,7 +67,7 @@ public class MailManager {
 			messageIdMap = new HashMap<Integer, MailContainer>();
 			
 			for (MailContainer eachMail : backend.getDbManager().getMailContainer()) {
-				messageIdMap.put(eachMail.getMessageNumber(), eachMail);
+//				messageIdMap.put(eachMail.get, eachMail);
 			}
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
@@ -126,9 +126,12 @@ public class MailManager {
 					.getMessageCount() : to;
 
 			ArrayList<MailContainer> theMessageList = new ArrayList<MailContainer>();
+			Message theMessage;
 			for (int i = from; i <= temp; i++) {
 				if (!messageIdMap.containsKey(i)) {
-					messageIdMap.put(i, new MailContainer(getFolder().getMessage(i)));
+					theMessage  = getFolder().getMessage(i);
+					long theUID = idFolder.getUID(theMessage);
+					messageIdMap.put(i, new MailContainer(theMessage, theUID));
 				}
 				theMessageList.add(messageIdMap.get(i));
 			}
@@ -141,8 +144,6 @@ public class MailManager {
 			});
 			return theMessageList;
 		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
