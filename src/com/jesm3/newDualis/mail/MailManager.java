@@ -13,6 +13,7 @@ public class MailManager {
 	private User user;
 	private Folder folder;
 	private Backend backend;
+	private UIDFolder idFolder;
 	
 	private HashMap<Integer, MailContainer> messageIdMap;
 
@@ -55,6 +56,8 @@ public class MailManager {
 			folder = store.getDefaultFolder();
 			folder = folder.getFolder("INBOX");
 
+			idFolder = (UIDFolder) folder;
+			
 			try {
 				folder.open(Folder.READ_WRITE);
 			} catch (MessagingException ex) {
@@ -63,6 +66,9 @@ public class MailManager {
 
 			messageIdMap = new HashMap<Integer, MailContainer>();
 			
+			for (MailContainer eachMail : backend.getDbManager().getMailContainer()) {
+				messageIdMap.put(eachMail.getMessageNumber(), eachMail);
+			}
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
@@ -174,6 +180,10 @@ public class MailManager {
 		}
 	}
 
+	public Collection<MailContainer> getCachedMails() {
+		return messageIdMap.values();
+	}
+	
 	public int getMessageCount() {
 		try {
 			return getFolder().getMessageCount();
