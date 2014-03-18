@@ -47,6 +47,7 @@ public class DualisDaoGenerator {
 		theMail.addBooleanProperty("attachment");
 		theMail.addBooleanProperty("seen");
 		theMail.addBooleanProperty("html");
+		theMail.addIntProperty("messageNumber");
 		theMail.addLongProperty("uId");
 	}
 }
