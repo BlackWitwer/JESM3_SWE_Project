@@ -34,6 +34,7 @@
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/lay_buttons"
         android:layout_below="@id/linlay_kw" >
 
         <LinearLayout
@@ -145,6 +146,7 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/lay_buttons"
         style="android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -160,15 +162,6 @@
             android:layout_marginBottom="14dp"
             android:onClick="updateStupla"
             android:text="@string/aktualisieren" />
-
-        <Button
-            android:id="@+id/export_pdf"
-            style="android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
-            android:onClick="exportSemesterplan"
-            android:text="@string/export_pdf" />
 
     </LinearLayout>
 

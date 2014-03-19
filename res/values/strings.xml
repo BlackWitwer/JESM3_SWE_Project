@@ -69,5 +69,6 @@
     <string name="ok">Ok</string>
     <string name="semesterplan_export">Semesterplan-Export (PDF)</string>
     <string name="export_pdf">Export (PDF)</string>
+    <string name="dhbw_logo">DHBW-Logo</string>
 
 </resources>
