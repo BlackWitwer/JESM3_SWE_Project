@@ -78,6 +78,7 @@ public class MainActivity extends FragmentActivity {
 	ActionBar actionBar;
 
 	private boolean doubleClicked;
+	private SyncService mBoundSyncService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,17 +90,18 @@ public class MainActivity extends FragmentActivity {
 
 					@Override
 					public void onServiceDisconnected(ComponentName name) {
-						// TODO Auto-generated method stub
-
+						mBoundSyncService = null;
 					}
 
 					@Override
 					public void onServiceConnected(ComponentName name,
 							IBinder service) {
-						// TODO Auto-generated method stub
+						mBoundSyncService = ((SyncService.LocalBinder) service)
+								.getService();
 
 					}
 				}, 0);
+
 		actionBar = getActionBar();
 		actionBar.hide();
 		setContentView(R.layout.activity_main);
@@ -216,6 +218,15 @@ public class MainActivity extends FragmentActivity {
 		// NotificationManager mNotificationManager =
 		// (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		// mNotificationManager.notify(1, mBuilder.build());
+	}
+
+	/**
+	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
+	 */
+	public void updateStupla(View v) {
+		// TODO MJI hier soll der Stundenplan aktualisiert werden.
+		mBoundSyncService.startSync();
+
 	}
 
 	/**
