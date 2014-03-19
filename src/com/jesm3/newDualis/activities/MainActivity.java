@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.mail.Message;
 
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -49,12 +50,13 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
+import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
 import com.jesm3.newDualis.mail.MessageContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -191,6 +193,21 @@ public class MainActivity extends FragmentActivity {
 //    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 //    	mNotificationManager.notify(1, mBuilder.build());
 	}
+	
+	/**
+	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
+	 */
+	public void updateStupla(View v) {
+		//TODO MJI hier soll der Stundenplan aktualisiert werden.
+	}
+	
+	/**
+	 * Die Funktion, welche vom Export (PDF) Button aufgerufen wird.
+	 */
+	public void exportSemesterplan(View v) {
+		SemesterplanExportDialog theDialog = new SemesterplanExportDialog();
+		theDialog.show(getFragmentManager(), "ExportDialog");
+	}
 
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -216,8 +233,8 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			// Show 5 total pages.
-			return 5;
+			// Show 4 total pages.
+			return 4;
 		}
 
 		@Override
@@ -227,12 +244,10 @@ public class MainActivity extends FragmentActivity {
 			case 0:
 				return getString(R.string.title_section1).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
-			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
-			case 3:
+			case 2:
 				return getString(R.string.title_section4).toUpperCase(l);
-			case 4:
+			case 3:
 				return getString(R.string.title_section5).toUpperCase(l);
 			}
 			return null;
@@ -271,6 +286,34 @@ public class MainActivity extends FragmentActivity {
     		lay_donnerstag.removeAllViews();
     		lay_freitag.removeAllViews();
     		lay_samstag.removeAllViews();
+    		
+    		TextView text_montag = new TextView(aContainer.getContext());
+    		TextView text_dienstag = new TextView(aContainer.getContext());
+    		TextView text_mittwoch = new TextView(aContainer.getContext());
+    		TextView text_donnerstag = new TextView(aContainer.getContext());
+    		TextView text_freitag = new TextView(aContainer.getContext());
+    		TextView text_samstag = new TextView(aContainer.getContext());
+    		
+    		text_montag.setText("Montag");
+    		text_dienstag.setText("Dienstag");
+    		text_mittwoch.setText("Mittwoch");
+    		text_donnerstag.setText("Donnerstag");
+    		text_freitag.setText("Freitag");
+    		text_samstag.setText("Samstag");
+    		
+    		text_montag.setTextAppearance(lay_montag.getContext(), android.R.style.TextAppearance_Medium);
+    		text_dienstag.setTextAppearance(lay_dienstag.getContext(), android.R.style.TextAppearance_Medium);
+    		text_mittwoch.setTextAppearance(lay_mittwoch.getContext(), android.R.style.TextAppearance_Medium);
+    		text_donnerstag.setTextAppearance(lay_donnerstag.getContext(), android.R.style.TextAppearance_Medium);
+    		text_freitag.setTextAppearance(lay_freitag.getContext(), android.R.style.TextAppearance_Medium);
+    		text_samstag.setTextAppearance(lay_samstag.getContext(), android.R.style.TextAppearance_Medium);
+    		
+    		lay_montag.addView(text_montag);
+    		lay_dienstag.addView(text_dienstag);
+    		lay_mittwoch.addView(text_mittwoch);
+    		lay_donnerstag.addView(text_donnerstag);
+    		lay_freitag.addView(text_freitag);
+    		lay_samstag.addView(text_samstag);
     		
     		generateDay(stupla.getMontag(), lay_montag);
     		generateDay(stupla.getDienstag(), lay_dienstag);
@@ -350,22 +393,18 @@ public class MainActivity extends FragmentActivity {
             	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
 			case 2:
-				rootView = inflater.inflate(R.layout.semesterplan_main,
-						container, false);
-				break;
-			case 3:
 				rootView = inflater.inflate(R.layout.noten_main, container,
 						false);
 				initializeMarks();
-            	setMarksOnGui(rootView);
-            	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+				setMarksOnGui(rootView);
+				rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
-			case 4:
+			case 3:
 				rootView = inflater.inflate(R.layout.mail_main, container,
 						false);
 				initMailView(rootView);
 				break;
-			case 5:
+			case 4:
 				rootView = inflater.inflate(R.layout.dozent_main, container,
 						false);
 				break;
@@ -491,5 +530,17 @@ public class MainActivity extends FragmentActivity {
 
 	public void showSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));
+	}
+
+	@Override
+	public void onDialogPositiveClick(SemesterplanExportDialog dialog) {
+		// TODO MBA/Zeitdieb Semesterplan Export anstoßen hier
+		Log.d("TestMBA", "Pos" + dialog.getmSelectedItems());
+	}
+
+	@Override
+	public void onDialogNegativeClick(SemesterplanExportDialog dialog) {
+		// Nichts tun
+		
 	}
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="Ant-Test" default="main" basedir=".">
+  <!-- Sets variables which can later be used. -->
+  <!-- The value of a property is accessed via ${} -->
+  <property name="test.dir" location="test" />
+
+  <!-- Deletes the existing directory-->
+  <target name="clean">
+    <delete dir="${test.dir}" />
+  </target>
+
+  <!-- Creates the directory-->
+  <target name="makedir">
+    <mkdir dir="${test.dir}" />
+  </target>
+
+  <!-- Compiles the java code (including the usage of library for JUnit -->
+  <target name="run" depends="clean, makedir">
+      
+    <java fork="true" failonerror="yes" classname="com.jesm3.newDualis.mail.Snippet">
+    </java>
+
+  </target>
+
+  <target name="main" depends="run">
+    <description>Main target</description>
+  </target>
+  
+</project> 

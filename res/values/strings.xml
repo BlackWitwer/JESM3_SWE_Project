@@ -65,5 +65,9 @@
     <string name="logindaten_merken">Logindaten merken</string>
     <string name="falsche_logindaten">Falsche Logindaten</string>
     <string name="login">Login</string>
+    <string name="abbrechen">Abbrechen</string>
+    <string name="ok">Ok</string>
+    <string name="semesterplan_export">Semesterplan-Export (PDF)</string>
+    <string name="export_pdf">Export (PDF)</string>
 
 </resources>
