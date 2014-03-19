@@ -143,6 +143,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		case R.id.action_settings:
 			showSettings();
 			return true;
+		case R.id.action_export:
+			SemesterplanExportDialog theDialog = new SemesterplanExportDialog();
+			theDialog.show(getFragmentManager(), "ExportDialog");
+			return true;
 		case R.id.action_logout:
 			logout();
 			return true;
@@ -201,14 +205,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 */
 	public void updateStupla(View v) {
 		//TODO MJI hier soll der Stundenplan aktualisiert werden.
-	}
-	
-	/**
-	 * Die Funktion, welche vom Export (PDF) Button aufgerufen wird.
-	 */
-	public void exportSemesterplan(View v) {
-		SemesterplanExportDialog theDialog = new SemesterplanExportDialog();
-		theDialog.show(getFragmentManager(), "ExportDialog");
 	}
 
 	/**
@@ -356,7 +352,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     		for(Vorlesung eachLecture : aDayList ) {
     			LinearLayout subLayout = new LinearLayout(getActivity());
     			TextView zeit = new TextView(getActivity());
-    			TextView dozent= new TextView(getActivity());
+//    			FIXME Dozent noch nicht implementiert
+//    			TextView dozent= new TextView(getActivity());
     			TextView name= new TextView(getActivity());
     			
     			subLayout.setOrientation(LinearLayout.VERTICAL);
@@ -372,8 +369,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     			name.setText(eachLecture.getName());
     			subLayout.addView(name);
     			
-    			dozent.setText(eachLecture.getDozent());
-    			subLayout.addView(dozent);
+//    			FIXME Dozent noch nicht implementiert
+//    			dozent.setText(eachLecture.getDozent());
+//    			subLayout.addView(dozent);
     			
     			aLayout.addView(subLayout);
     		}
@@ -419,27 +417,28 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		
 		private void setMarksOnGui(View aContainer) {
 			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
-			addRow("Fach", "Note", "Credits", lay_table);
+			addHeaderRow(lay_table);
 			
 			for(Note eachMark : noten) {
 				addRow(eachMark.getName(), eachMark.getNote(), eachMark.getCredits(), lay_table);
 			}
 		}
 		
-		public void addRow(String aVal1, String aVal2, String aVal3, TableLayout aLayout) {
+		public void addHeaderRow(TableLayout aLayout) {
 			TableRow row = new TableRow(getActivity());
 			TextView fach = new TextView(getActivity());
 			TextView note = new TextView(getActivity());
 			TextView credits = new TextView(getActivity());
-			fach.setText(aVal1);
-			note.setText(aVal2);
-			credits.setText(aVal3);
 			
-//			fach.setBackgroundColor(Color.WHITE);
-//			note.setBackgroundColor(Color.WHITE);
-//			credits.setBackgroundColor(Color.WHITE);
+			fach.setText("Fach");
+			note.setText("Note");
+			credits.setText("Credits");
+			
+			fach.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
+			note.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
+			credits.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
 
-			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.cell_shape);
+			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.border);
 			fach.setBackgroundDrawable(theBorderDrawable);
 			note.setBackgroundDrawable(theBorderDrawable);
 			credits.setBackgroundDrawable(theBorderDrawable);
@@ -449,7 +448,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			row.addView(credits);
 			
 		    TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
-//		    llp.setMargins(2, 2, 2, 2); // llp.setMargins(left, top, right, bottom);
 		    llp.weight = 5;
 		    fach.setLayoutParams(llp);
 		    llp.weight = 1;
@@ -459,8 +457,59 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			fach.setEms(20);
 			note.setEms(10);
 			credits.setEms(10);
-			aLayout.setBackgroundDrawable(theBorderDrawable);
 			aLayout.addView(row);
+		}
+		
+		public void addRow(String aVal1, String aVal2, String aVal3, TableLayout aLayout) {
+			// Neue Layouts und Views erstellen...
+			TableRow row = new TableRow(getActivity());
+			TextView fach = new TextView(getActivity());
+			TextView note = new TextView(getActivity());
+			TextView credits = new TextView(getActivity());
+			
+			//Werte setzen...
+			fach.setText(aVal1);
+			note.setText(aVal2);
+			credits.setText(aVal3);
+			
+			// Borders setzen
+			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.border);
+			fach.setBackgroundDrawable(theBorderDrawable);
+			note.setBackgroundDrawable(theBorderDrawable);
+			credits.setBackgroundDrawable(theBorderDrawable);
+			
+			// TextViews in das Layout einfügen...
+			row.addView(fach);
+			row.addView(note);
+			row.addView(credits);
+			
+		    // Layoutparamter setzen...
+			TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+		    llp.weight = 5;
+		    fach.setLayoutParams(llp);
+		    llp.weight = 1;
+		    note.setLayoutParams(llp);
+		    llp.weight = 1;
+		    credits.setLayoutParams(llp);
+			fach.setEms(20);
+			note.setEms(10);
+			credits.setEms(10);
+			
+			// Die fertige TableRow in das parentLayout einfügen...
+			aLayout.addView(row);
+		}
+		
+		
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onResume()
+		 */
+		@Override
+		public void onResume() {
+			super.onResume();
+			//TODO MBA testen 
+			Log.d("DualisGui", "<<<<<<<<<<<App Resumed>>>>>>>>>>>");
+			
 		}
 
 		private void initializeMarks() {

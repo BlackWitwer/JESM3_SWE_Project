@@ -14,11 +14,12 @@
 
         <ImageView
             android:id="@+id/imageView1"
+            android:contentDescription="@string/dhbw_logo"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dip"
             android:layout_gravity="top|center"
             android:layout_weight="1"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             android:src="@drawable/icon" />
 
 
