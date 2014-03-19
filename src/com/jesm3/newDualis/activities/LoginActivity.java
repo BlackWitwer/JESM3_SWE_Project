@@ -3,6 +3,7 @@ package com.jesm3.newDualis.activities;
 import java.util.ArrayList;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.activities.MainActivity.SectionsPagerAdapter;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.User;
@@ -13,7 +14,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;

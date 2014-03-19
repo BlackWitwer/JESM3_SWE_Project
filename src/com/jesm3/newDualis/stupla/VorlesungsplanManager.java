@@ -2,6 +2,8 @@ package com.jesm3.newDualis.stupla;
 
 import java.util.HashMap;
 
+import com.jesm3.newDualis.stupla.Vorlesung.Requests;
+
 public class VorlesungsplanManager {
 	
 	private HashMap<Integer, Wochenplan> wochenMap;
@@ -11,7 +13,7 @@ public class VorlesungsplanManager {
 	}
 	
 	public Wochenplan getWochenplan(int aKalenderwoche) {
-//		Wochenplan stupla = new Wochenplan();
+		Wochenplan stupla = new Wochenplan();
 //		stupla.setKalenderwoche("41");
 //		
 //		stupla.addMontag(new Vorlesung(

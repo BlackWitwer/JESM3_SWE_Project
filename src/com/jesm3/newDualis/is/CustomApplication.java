@@ -5,11 +5,13 @@ import android.content.Intent;
 
 import com.jesm3.newDualis.activities.LoginActivity;
 import com.jesm3.newDualis.activities.MainActivity;
+import com.jesm3.newDualis.mail.MailManager;
 
 public class CustomApplication extends Application {
 
 	private Backend backend;
 	private UserManager userManager;
+	private MailManager mailManager;
 
 	@Override
 	public void onCreate() {
@@ -18,7 +20,7 @@ public class CustomApplication extends Application {
 	
 	public Backend getBackend() {
 		if (backend == null) {
-			backend = new Backend();
+			backend = new Backend(this);
 		}
 		return backend;
 	}
@@ -28,5 +30,12 @@ public class CustomApplication extends Application {
 			userManager = new UserManager(this);
 		}
 		return userManager;
+	}
+	
+	public MailManager getMailManager() {
+		if (mailManager == null) {
+			mailManager = new MailManager(getUserManager().getUser());
+		}
+		return mailManager;
 	}
 }

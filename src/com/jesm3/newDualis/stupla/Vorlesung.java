@@ -1,12 +1,26 @@
 package com.jesm3.newDualis.stupla;
 
-public class Vorlesung {
-	private String UhrzeitVon;
-	private String UhrzeitBis;
-	private String Dozent;
-	private String Name;
-	private String Datum;
-	private String Raum;
+import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
+
+public class Vorlesung extends AbstractVorlesung {
+	
+	public enum Requests {
+		/**
+		 * Alle Einträge der Datenbank werden geladen. 
+		 */
+		REQUEST_ALL,
+		
+		/**
+		 * Alle zukünftigen Einträge inklusive des heutigen Tages.
+		 */
+		REQUEST_NEXT,
+		
+		/**
+		 * Alle vergangenen Einträge exklusive des heutigen Tages.
+		 */
+		REQUEST_LAST
+	}
+	
 	/**
 	 * Kostruktor
 	 * 
@@ -17,12 +31,7 @@ public class Vorlesung {
 	 */
 	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
 			String name, String datum, String raum) {
-		UhrzeitVon = uhrzeitVon;
-		UhrzeitBis = uhrzeitBis;
-		Dozent = dozent;
-		Name = name;
-		Datum = datum;
-		Raum = raum;
+		super(null, name, dozent, datum, uhrzeitVon, uhrzeitBis, raum);
 	}
 	/**
 	 * Kostruktor
@@ -41,72 +50,12 @@ public class Vorlesung {
 		this("","","","");
 	}
 	
-	public String getDatum() {
-		return Datum;
-	}
-
-	public void setDatum(String datum) {
-		Datum = datum;
-	}
-
-	public String getRaum() {
-		return Raum;
-	}
-
-	public void setRaum(String raum) {
-		Raum = raum;
-	}
-
-	/**
-	 * @return the uhrzeitVon
-	 */
-	public String getUhrzeitVon() {
-		return UhrzeitVon;
-	}
-	/**
-	 * @param uhrzeitVon the uhrzeitVon to set
-	 */
-	public void setUhrzeitVon(String uhrzeitVon) {
-		UhrzeitVon = uhrzeitVon;
-	}
-	/**
-	 * @return the uhrzeitBis
-	 */
-	public String getUhrzeitBis() {
-		return UhrzeitBis;
-	}
-	/**
-	 * @param uhrzeitBis the uhrzeitBis to set
-	 */
-	public void setUhrzeitBis(String uhrzeitBis) {
-		UhrzeitBis = uhrzeitBis;
-	}
-	/**
-	 * @return the dozent
-	 */
-	public String getDozent() {
-		return Dozent;
-	}
-	/**
-	 * @param dozent the dozent to set
-	 */
-	public void setDozent(String dozent) {
-		Dozent = dozent;
-	}
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return Name;
-	}
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		Name = name;
+	public Vorlesung(AbstractVorlesung aVorlesung) {
+		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getDatum(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());
 	}
 	
-	public String toString(){
-		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent+" am "+Datum+" in "+Raum;
-	}
+//	TODO Wird diese Methode Ã¼berhaupt gebraucht?? Wenn nicht lÃ¶schen.
+//	public String toString(){
+//		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent+" am "+Datum+" in "+Raum;
+//	}
 }
