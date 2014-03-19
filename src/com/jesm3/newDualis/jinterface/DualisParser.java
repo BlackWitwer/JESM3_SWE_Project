@@ -67,6 +67,15 @@ public class DualisParser {
 				}
 			}
 			
+			if(days.size()>6&&calenderSet==false){
+				datelinks = days.get(6).select("a");			
+				if(datelinks.size()>0){
+					String wochenEnddatum = datelinks.get(0).attr("title");
+					stdgr.getStd().setEndDatum(wochenEnddatum);
+					stdgr.setKalenderwoche(wochenEnddatum);
+				}
+			}
+			
 			for(int j=0;j<days.size();j++){
 				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days.get(j));
 				if (vorlesungen.size()==0){  
