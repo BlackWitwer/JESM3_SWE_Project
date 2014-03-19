@@ -123,7 +123,7 @@ public class DatabaseManager {
 	}
 	
 	/**
-	 * Gibt alle gecachten MailContainer zurück.
+	 * Gibt alle gecachten MailContainer zurï¿½ck.
 	 * @return die Menge der MailContainer.
 	 */
 	public List<MailContainer> getMailContainer() {
@@ -159,11 +159,6 @@ public class DatabaseManager {
 		}
 		
 		return theResultList;
-	}
-	
-	public MailContainer insertMail (MailContainer aMail) {
-		mailDAO.insert(aMail);
-		return aMail;
 	}
 	
 	public DaoMaster getMaster() {

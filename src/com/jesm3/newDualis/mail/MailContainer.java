@@ -37,12 +37,14 @@ public class MailContainer extends AbstractMailContainer {
 		setSeen(anOriginalMessage.getFlags().contains(Flag.SEEN));
 		setFromComplete(anOriginalMessage.getFrom()[0].toString());
 		setTo(anOriginalMessage.getAllRecipients()[0].toString());
+		setMessageNumber(anOriginalMessage.getMessageNumber());
 		
 		originalMessage = anOriginalMessage;
 	}
 	
-	public MailContainer(Message anOriginalMessage, long aUID) {
-//		setMessageNumber(aUID);
+	public MailContainer(Message anOriginalMessage, long aUID) throws MessagingException, IOException {
+		this(anOriginalMessage);
+		setUId(aUID);
 	}
 	
 	/**

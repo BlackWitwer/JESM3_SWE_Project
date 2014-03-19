@@ -34,6 +34,11 @@ public class MailManager {
 	}
 
 	private void init() {
+		messageIdMap = new HashMap<Integer, MailContainer>();
+		for (MailContainer eachMail : backend.getDbManager().getMailContainer()) {
+			messageIdMap.put(eachMail.getMessageNumber(), eachMail);
+		}
+		
 		try {
 			Properties props = new Properties();
 			props.setProperty("mail.imaps.host", getHost());
@@ -64,11 +69,6 @@ public class MailManager {
 				folder.open(Folder.READ_ONLY);
 			}
 
-			messageIdMap = new HashMap<Integer, MailContainer>();
-			
-			for (MailContainer eachMail : backend.getDbManager().getMailContainer()) {
-//				messageIdMap.put(eachMail.get, eachMail);
-			}
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
@@ -127,13 +127,22 @@ public class MailManager {
 
 			ArrayList<MailContainer> theMessageList = new ArrayList<MailContainer>();
 			Message theMessage;
+			MailContainer theMail;
 			for (int i = from; i <= temp; i++) {
 				if (!messageIdMap.containsKey(i)) {
 					theMessage  = getFolder().getMessage(i);
 					long theUID = idFolder.getUID(theMessage);
-					messageIdMap.put(i, new MailContainer(theMessage, theUID));
+					theMail = new MailContainer(theMessage, theUID);
+					messageIdMap.put(i, theMail);
+					theMessageList.add(theMail);
+				} else {
+					theMail = messageIdMap.get(i);
+					MailContainer theNewMail = new MailContainer(idFolder.getMessageByUID(theMail.getUId()));
+					
+					if (!theMail.getSubject().equals(theNewMail.getSubject())) {
+						messageIdMap.put(i, theMail);
+					}
 				}
-				theMessageList.add(messageIdMap.get(i));
 			}
 			Collections.sort(theMessageList, new Comparator<MailContainer>() {
 
@@ -144,6 +153,8 @@ public class MailManager {
 			});
 			return theMessageList;
 		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
@@ -182,6 +193,8 @@ public class MailManager {
 	}
 
 	public Collection<MailContainer> getCachedMails() {
+		while (!loggedIn) {
+		}
 		return messageIdMap.values();
 	}
 	
