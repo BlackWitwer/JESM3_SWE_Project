@@ -3,6 +3,8 @@ package com.jesm3.newDualis.mail;
 import com.jesm3.newDualis.is.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.SynchronousQueue;
+
 import javax.mail.*;
 
 
@@ -81,6 +83,7 @@ public class MailManager {
 	 * @return true, wenn ungelesenen Nachrichten vorhanden sind. Ansonsten false.
 	 */
 	public boolean sync() {
+		//TODO überarbeiten.
 		try {
 			if (getFolder().getUnreadMessageCount() > 0) {
 				getMessagesFromTo(getMessageCount()-getFolder().getUnreadMessageCount(), getMessageCount());
@@ -113,36 +116,21 @@ public class MailManager {
 	 * Läd alle Nachrichten aus dem Postfach die sich in dem angegebenen Bereich befinden inklusive der Grenzen. Die Nachrichten
 	 * werden in einer Map gespeichert, sollten sie nochmals gebraucht werden. Mit der Ausführung wird auf einen erfolgreichen Login
 	 * gewartet.
-	 * @param from untere Grenze.
+	 * @param aFrom untere Grenze.
 	 * @param to obere Grenze.
 	 * @return Liste der Nachrichten innerhalb der Grenzen.
 	 */
-	public ArrayList<MailContainer> getMessagesFromTo(int from, int to) {
+	public ArrayList<MailContainer> getMessagesFromTo(int aFrom, int to) {
 		while (!loggedIn) {
 		}
 		
 		try {
-			int temp = to > getFolder().getMessageCount() ? getFolder()
+			long temp = to > getFolder().getMessageCount() ? getFolder()
 					.getMessageCount() : to;
 
 			ArrayList<MailContainer> theMessageList = new ArrayList<MailContainer>();
-			Message theMessage;
-			MailContainer theMail;
-			for (int i = from; i <= temp; i++) {
-				if (!messageIdMap.containsKey(i)) {
-					theMessage  = getFolder().getMessage(i);
-					long theUID = idFolder.getUID(theMessage);
-					theMail = new MailContainer(theMessage, theUID);
-					messageIdMap.put(i, theMail);
-					theMessageList.add(theMail);
-				} else {
-					theMail = messageIdMap.get(i);
-					MailContainer theNewMail = new MailContainer(idFolder.getMessageByUID(theMail.getUId()));
-					
-					if (!theMail.getSubject().equals(theNewMail.getSubject())) {
-						messageIdMap.put(i, theMail);
-					}
-				}
+			for (int i = aFrom; i <= temp; i++) {
+				theMessageList.add(getMessage(i));
 			}
 			Collections.sort(theMessageList, new Comparator<MailContainer>() {
 
@@ -154,11 +142,64 @@ public class MailManager {
 			return theMessageList;
 		} catch (MessagingException e) {
 			e.printStackTrace();
-		} catch(IOException e) {
-			e.printStackTrace();
 		}
 		
 		return new ArrayList<MailContainer>();
+	}
+	
+	private boolean refreshCache() {
+		try {
+			boolean theRefreshFlag = false;
+			int theMessageCount = getFolder().getMessageCount();
+			MailContainer theMailContainer;
+			for (int eachKey : messageIdMap.keySet()) {
+				Message theMessage = getFolder().getMessage(eachKey);
+				long theUid = getIdFolder().getUID(theMessage);
+				if (!(theUid == messageIdMap.get(eachKey).getUId().longValue())) {
+					theMailContainer = new MailContainer(theMessage, theUid);
+					messageIdMap.put(eachKey, theMailContainer);
+					if (theMessageCount-10 < eachKey) {
+						backend.getDbManager().insertMailContainer(theMailContainer);
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+					}
+					
+					theRefreshFlag = true;
+				}
+			}
+			return sync() || theRefreshFlag;
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	private MailContainer getMessage(int aMessageNumber) {
+		while (!loggedIn) {
+		}
+		
+		try {
+			Message theMessage;
+			MailContainer theMail = null;
+			if (!messageIdMap.containsKey(aMessageNumber)) {
+				theMessage = getFolder().getMessage(aMessageNumber);
+				theMail = new MailContainer(theMessage, getIdFolder().getUID(theMessage));
+				messageIdMap.put(aMessageNumber, theMail);
+				
+				int theMessageCount = getFolder().getMessageCount();
+				if (aMessageNumber > theMessageCount - 10) {
+					backend.getDbManager().insertMailContainer(theMail);
+					backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+				}
+			}
+			return messageIdMap.get(aMessageNumber);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -225,6 +266,10 @@ public class MailManager {
 
 	private Folder getFolder() {
 		return folder;
+	}
+	
+	private UIDFolder getIdFolder() {
+		return idFolder;
 	}
 
 	private class PassAuthenticator extends Authenticator {

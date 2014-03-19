@@ -48,7 +48,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		TextView theHeaderTo = (TextView) convertView.findViewById(R.id.listHeaderTo);
 		TextView theHeaderDate = (TextView) convertView.findViewById(R.id.listHeaderDate);
 		
-		theHeaderFrom.setText("Von: " + theMail.getFrom());
+		theHeaderFrom.setText("Von: " + theMail.getFromComplete());
 		theHeaderTo.setText("An: " + theMail.getTo());
 		theHeaderDate.setText("Datum: " + theMail.getDate().toString());
 		
@@ -115,6 +115,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		lblListSubject.setTextColor(Color.BLACK);
 		if (!theMessage.getSeen()) {
 			lblListSubject.setTextColor(Color.BLUE);
+			lblListFrom.setTextColor(Color.BLUE);
 		}
 		lblListSubject.setText(theMessage.getSubject());
 		

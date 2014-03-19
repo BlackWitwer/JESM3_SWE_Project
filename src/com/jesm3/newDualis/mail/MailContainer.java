@@ -178,4 +178,5 @@ public class MailContainer extends AbstractMailContainer {
 		}
 		return super.getText();
 	}
+	
 }
