@@ -16,9 +16,14 @@
 
   <!-- Compiles the java code (including the usage of library for JUnit -->
   <target name="run" depends="clean, makedir">
-      
-    <java fork="true" failonerror="yes" classname="com.jesm3.newDualis.mail.Snippet">
+    <path id="runtime.path">
+	   <fileset dir="src" />
+	</path>
+     
+    <!-- 
+    <java fork="true" failonerror="yes" classname="com.jesm3.newDualis.persist.DualisDaoGenerator" classpathref="runtime.path">
     </java>
+    -->
 
   </target>
 

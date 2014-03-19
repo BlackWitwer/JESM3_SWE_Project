@@ -59,7 +59,7 @@
     <string name="samstag">Samstag</string>
     <string name="standort">Standort</string>
     <string name="aktualisieren">Aktualisieren</string>
-    <string name="app_close">Nochmal klicken um die App zu schließen...</string>
+    <string name="app_close">Nochmal klicken um die App zu beenden&#8230;</string>
     <string name="name">Name</string>
     <string name="passwort">Passwort</string>
     <string name="logindaten_merken">Logindaten merken</string>

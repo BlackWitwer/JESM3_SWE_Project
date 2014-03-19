@@ -1,6 +1,7 @@
 package com.jesm3.newDualis.activities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AnalogClock;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
@@ -118,7 +120,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			return;
 		}
 		this.doubleClicked = true;
-		Toast.makeText(this, "Nochmal klicken um die App zu schlie�en...",
+		Toast.makeText(this, R.string.app_close,
 				Toast.LENGTH_SHORT).show();
 		new Handler().postDelayed(new Runnable() {
 
@@ -329,11 +331,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
     		List<Integer> theWochen = new ArrayList<Integer>(theVorlesungsplanManager.getWochenMap().keySet());
+    		Collections.sort(theWochen);
     		Spinner kwSpinner = (Spinner) aContainer.findViewById(R.id.spinner_kalenderwoche);
     		ArrayAdapter<Integer> theKwAdapter = new ArrayAdapter<Integer>(aContainer.getContext(), android.R.layout.simple_spinner_item, theWochen);
     		kwSpinner.setAdapter(theKwAdapter);
-    		//XXX MBA Nur bis die Wochenmap gefixt ist...
-    		kwSpinner.setSelection(1);
     		kwSpinner.setOnItemSelectedListener( new OnItemSelectedListener() {
 
 				@Override
@@ -364,7 +365,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     			} else {
     				subLayout.setBackgroundColor(Color.LTGRAY);
     			}
-    			subLayout.setWeightSum(1);
     			
     			zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
     			subLayout.addView(zeit);
@@ -475,7 +475,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		}
 
 		/**
-		 * Initialisiert die ExpandableListView der Mailansicht.
+		 * Initialisiert die ExpandableListVi2ew der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
 			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
