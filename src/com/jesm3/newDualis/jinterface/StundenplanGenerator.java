@@ -1,5 +1,8 @@
 package com.jesm3.newDualis.jinterface;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,9 +38,6 @@ public class StundenplanGenerator {
         break;
         default: break;
 		}
-		if(v.getDozent().equals("DRFAIL")==false){
-			setKalenderwoche(v);
-		}
 	}
 	
 	public Wochenplan mergeWeeks(Wochenplan w1, Wochenplan w2) {
@@ -45,7 +45,7 @@ public class StundenplanGenerator {
 		ArrayList<ArrayList<Vorlesung>> w2l = getDays(w2);
 		boolean merge = false;
 		for(int i=0; i<6; i++){
-			merge = w1l.get(i).get(0).getDozent().equals("DRFAIL");
+			merge = w1l.get(i).get(0).getDozent().equals("DRFAIL");  //Unterscheidung ferien/monatsende???
 			if(merge){
 				w1l.set(i, w2l.get(i));
 			}
@@ -82,9 +82,29 @@ public class StundenplanGenerator {
 	
 	private void setKalenderwoche(Vorlesung aVorlesung) {
 		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
-		String[] theDate = aVorlesung.getDatum().split("\\.");
-		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
-		GregorianCalendar gc = new GregorianCalendar(Integer.parseInt(theDate[2])-1, Integer.parseInt(theDate[1])-1, Integer.parseInt(theDate[0])-1);
+		GregorianCalendar gc = stringToGreg(aVorlesung.getDatum());
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
+	}
+	
+	public void setKalenderwoche(String somedate) {
+		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
+		GregorianCalendar gc = stringToGreg(somedate);
+		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
+	}
+	
+	public GregorianCalendar stringToGreg(String date) {
+		String[] theDate = date.split("\\.");
+		DateFormat df = new SimpleDateFormat("dd MM yyyy");
+		Date dateD = null;
+		try {
+			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(dateD);
+		return gc;
 	}
 }

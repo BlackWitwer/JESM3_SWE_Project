@@ -9,6 +9,24 @@ public class Wochenplan {
 	/**
 	 * Alle Vorlesungen f�r Montag.
 	 */
+	private String anfangsDatum;
+	private String endDatum;
+	public String getAnfangsDatum() {
+		return anfangsDatum;
+	}
+
+	public void setAnfangsDatum(String anfangsDatum) {
+		this.anfangsDatum = anfangsDatum;
+	}
+
+	public String getEndDatum() {
+		return endDatum;
+	}
+
+	public void setEndDatum(String endDatum) {
+		this.endDatum = endDatum;
+	}
+
 	private ArrayList<Vorlesung> montag;
 	public void setMontag(ArrayList<Vorlesung> montag) {
 		this.montag = montag;
@@ -166,13 +184,14 @@ public class Wochenplan {
 	}
 
 	public String toString() {
+		String sWochenHead ="++++" + anfangsDatum + " - " + endDatum +"++++\n";
 		String sMontag = "Montag:\n" + dayToString(montag) + "\n";
 		String sDienstag = "Dienstag:\n" + dayToString(dienstag) + "\n";
 		String sMittwoch = "Mittwoch:\n" + dayToString(mittwoch) + "\n";
 		String sDonnerstag = "Donnerstag:\n" + dayToString(donnerstag) + "\n";
 		String sFreitag = "Freitag:\n" + dayToString(freitag) + "\n";
 		String sSamstag = "Samstag:\n" + dayToString(samstag) + "\n";
-		String stundenplan = sMontag + sDienstag + sMittwoch + sDonnerstag
+		String stundenplan =sWochenHead + sMontag + sDienstag + sMittwoch + sDonnerstag
 				+ sFreitag + sSamstag;
 		return stundenplan;
 	}

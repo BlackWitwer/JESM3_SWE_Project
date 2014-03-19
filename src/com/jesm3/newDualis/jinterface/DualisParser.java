@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -40,16 +41,38 @@ public class DualisParser {
 		// Siehe auch http://jsoup.org/apidocs/org/jsoup/select/Selector.html
 		Elements weeks = doc.select("tr"); //RAM???
 
-		String datum = "DD.MM.YYYY";
 		for(int i=1;i<weeks.size();i++){
+			boolean addWeek = true;
+			boolean calenderSet = false;
 			Elements days = weeks.get(i).select(".tbMonthDayCell");
 			stdgr = new StundenplanGenerator();
+			
+			//Wochenafangsdatum auslesen und setzen 
+			Elements datelinks = days.get(0).select("a");
+			if(datelinks.size()>0){
+				String wochenAnfangsdatum = datelinks.get(0).attr("title");
+				stdgr.getStd().setAnfangsDatum(wochenAnfangsdatum);
+				stdgr.setKalenderwoche(wochenAnfangsdatum);
+				calenderSet = true;
+				
+				GregorianCalendar gc = stdgr.stringToGreg(wochenAnfangsdatum);
+				int kalenderWoche = gc.get(GregorianCalendar.WEEK_OF_YEAR);
+				int jahr = gc.get(GregorianCalendar.YEAR);
+				GregorianCalendar gcnow = new GregorianCalendar();
+				int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
+				int jahrNow = gcnow.get(GregorianCalendar.YEAR);
+				Log.d("parsetest", "kalenderWoche:"+ kalenderWoche + " kalenderWocheNow" + kalenderWocheNow + "jahr"+jahr+" jahrNow"+jahrNow);
+				if(kalenderWoche<kalenderWocheNow && jahr == jahrNow){
+					addWeek = false;
+				}
+			}
+			
 			for(int j=0;j<days.size();j++){
 				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days.get(j));
 				if (vorlesungen.size()==0){  
 					// Dummyvorlesung wenn Vorlesung in Monat nicht geladen
 					Vorlesung dummy=new Vorlesung();
-					dummy.setDozent("DRFAIL");
+					dummy.setDozent("FREEDAY");
 					stdgr.addVorlesung(j, dummy);
 				}
 				for(int k=0;k<vorlesungen.size();k++){
@@ -63,7 +86,12 @@ public class DualisParser {
 					stdgr.addVorlesung(j, dummy);
 				}
 			}
-			stdl.add(stdgr.getStd());
+			if(addWeek) {
+				stdl.add(stdgr.getStd());
+			}
+			else {
+				Log.d("parsetest", "Wochenplan wird nicht geaddet");
+			}
 		}
 		String out = "";
 		for (int i=0;i<stdl.size();i++){

@@ -152,13 +152,14 @@ public class DualisConnection {
 				wl.addAll(wl2);
 			}
 			else{
+				mergeWeek.setKalenderwoche(wl.get(wl.size()-2).getKalenderwoche()+1);
 				wl.remove(wl.size()-1);
 				wl2.remove(0);
 				wl.add(mergeWeek);
 				wl.addAll(wl2);
 			}
 		}
-		
+		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
 		for (Wochenplan eachWoche : wl) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
