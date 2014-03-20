@@ -156,8 +156,13 @@ public class DualisConnection {
 			}
 		}
 		else {
-			if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+			if(wl.get(0).getAnfangsDatum()==null){
 				wl.remove(0);
+			}
+			else{
+				if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+					wl.remove(0);
+				}
 			}
 		}
 		Log.d("parsetest", "Monate die geladen werden müssen: "+monthsToGo);
