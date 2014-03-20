@@ -20,6 +20,7 @@ import android.webkit.WebView;
 import android.widget.*;
 
 import com.jesm3.newDualis.R;
+import java.util.*;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -246,10 +247,26 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	public void addMessage(MailContainer aMessage) {
 		messageList.add(aMessage);
+		sortMessages();
 	}
 	
 	public void addAllMessages (Collection<MailContainer> someMessages) {
 		messageList.addAll(someMessages);
+		sortMessages();
+	}
+	
+	private void sortMessages() {
+		Collections.sort(messageList, new Comparator<MailContainer>() {
+			
+			@Override
+			public int compare(MailContainer lhs, MailContainer rhs) {
+				return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
+			}
+		});
+	}
+	
+	public void removeAllMessages() {
+		messageList.clear();
 	}
 
 	public String convertToMinSize (int aSize) {

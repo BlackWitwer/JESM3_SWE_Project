@@ -3,9 +3,13 @@ package com.jesm3.newDualis.mail;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ExpandableListView;
+import com.jesm3.newDualis.is.*;
+import android.app.*;
 
 public class MailExpandableListView extends ExpandableListView {
 
+	private MailManager mailManager;
+	
 	public MailExpandableListView(Context context) {
 		super(context);
 	}
@@ -25,9 +29,18 @@ public class MailExpandableListView extends ExpandableListView {
 	@Override
 	protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
 			boolean clampedY) {
-		// TODO Auto-generated method stub
-		System.out.println(scrollX + " " + scrollY + " " + clampedX + " " + clampedY);
 		super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+		getMailManager().refreshCache();
+		((ExpandableListAdapter) getExpandableListAdapter()).removeAllMessages();
+		((ExpandableListAdapter) getExpandableListAdapter()).addAllMessages(getMailManager().getCachedMails());
+		((ExpandableListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
+	}
+	
+	private MailManager getMailManager() {
+		if (mailManager == null) {
+			mailManager = ((CustomApplication) ((Activity) getContext()).getApplication()).getBackend().getMailManager();
+		}
+		return mailManager;
 	}
 
 }

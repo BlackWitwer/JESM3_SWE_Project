@@ -3,8 +3,6 @@ package com.jesm3.newDualis.mail;
 import com.jesm3.newDualis.is.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.SynchronousQueue;
-
 import javax.mail.*;
 
 
@@ -83,10 +81,17 @@ public class MailManager {
 	 * @return true, wenn ungelesenen Nachrichten vorhanden sind. Ansonsten false.
 	 */
 	public boolean sync() {
-		//TODO überarbeiten.
 		try {
-			if (getFolder().getUnreadMessageCount() > 0) {
-				getMessagesFromTo(getMessageCount()-getFolder().getUnreadMessageCount(), getMessageCount());
+			if (!messageIdMap.containsKey(getFolder().getMessageCount())) {
+				
+				int theHighKey = 0;
+				for (Map.Entry<Integer, MailContainer> eachEntry : messageIdMap.entrySet()) {
+					if (eachEntry.getKey() > theHighKey) {
+						theHighKey = eachEntry.getKey();
+					}
+				}
+				
+				getMessagesFromTo(theHighKey, getFolder().getMessageCount());
 				return true;
 			}
 		} catch (MessagingException e) {
@@ -132,13 +137,6 @@ public class MailManager {
 			for (int i = aFrom; i <= temp; i++) {
 				theMessageList.add(getMessage(i));
 			}
-			Collections.sort(theMessageList, new Comparator<MailContainer>() {
-
-				@Override
-				public int compare(MailContainer lhs, MailContainer rhs) {
-					return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
-				}
-			});
 			return theMessageList;
 		} catch (MessagingException e) {
 			e.printStackTrace();
@@ -147,7 +145,7 @@ public class MailManager {
 		return new ArrayList<MailContainer>();
 	}
 	
-	private boolean refreshCache() {
+	public boolean refreshCache() {
 		try {
 			boolean theRefreshFlag = false;
 			int theMessageCount = getFolder().getMessageCount();
@@ -190,7 +188,10 @@ public class MailManager {
 				int theMessageCount = getFolder().getMessageCount();
 				if (aMessageNumber > theMessageCount - 10) {
 					backend.getDbManager().insertMailContainer(theMail);
-					backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+//					if (messageIdMap.containsKey(theMessageCount-10)
+//						&& messageIdMap.get(theMessageCount-10).getId() < 0) {
+//						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+//					}
 				}
 			}
 			return messageIdMap.get(aMessageNumber);

@@ -441,14 +441,13 @@ public class MainActivity extends FragmentActivity {
 		 * Initialisiert die ExpandableListView der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
-			MailManager manager =((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
+			MailManager manager = ((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
 					new ArrayList<MailContainer>());
 			final MailExpandableListView expListView;
 			expListView = (MailExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
-			expListView.setOverScrollMode(ListView.OVER_SCROLL_ALWAYS);
 			listAdapter.addAllMessages(manager.getCachedMails());
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
