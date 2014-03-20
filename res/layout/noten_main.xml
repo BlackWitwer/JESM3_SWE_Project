@@ -10,7 +10,7 @@
     tools:context=".MainActivity$DummySectionFragment" >
 
     <Button
-        android:id="@+id/pdf_button"
+        android:id="@+id/update_marks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -19,14 +19,15 @@
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/update_marks"
+        android:layout_alignParentTop="true" >
 
         <TableLayout
             android:id="@+id/noten_table"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="35dp" >
+            android:layout_height="wrap_content" >
 
         </TableLayout>
 

@@ -61,7 +61,7 @@ public class SpecialActivity extends Activity implements OnGestureListener {
 		foodPaint.setColor(Color.BLACK);
 
 		backgroundPaint = new Paint();
-		backgroundPaint.setColor(getResources().getColor(R.color.color_name));
+		backgroundPaint.setColor(getResources().getColor(R.color.mintgreen));
 
 		scorePaint = new Paint();
 		scorePaint.setTextSize(20);

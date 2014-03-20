@@ -6,17 +6,17 @@ public class Vorlesung extends AbstractVorlesung {
 	
 	public enum Requests {
 		/**
-		 * Alle Einträge der Datenbank werden geladen. 
+		 * Alle Eintrï¿½ge der Datenbank werden geladen. 
 		 */
 		REQUEST_ALL,
 		
 		/**
-		 * Alle zukünftigen Einträge inklusive des heutigen Tages.
+		 * Alle zukï¿½nftigen Eintrï¿½ge inklusive des heutigen Tages.
 		 */
 		REQUEST_NEXT,
 		
 		/**
-		 * Alle vergangenen Einträge exklusive des heutigen Tages.
+		 * Alle vergangenen Eintrï¿½ge exklusive des heutigen Tages.
 		 */
 		REQUEST_LAST
 	}

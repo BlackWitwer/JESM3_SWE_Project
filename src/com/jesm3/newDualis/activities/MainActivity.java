@@ -156,12 +156,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 	}
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
 	}
 	
-	    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onNewIntent(android.content.Intent)
 	 */
 	@Override
@@ -342,7 +345,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 				@Override
 				public void onNothingSelected(AdapterView<?> arg0) {
-					// TODO MBA erstmal nichts...
+					// erstmal nichts...
 					
 				}
 			});
@@ -434,29 +437,32 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setText("Note");
 			credits.setText("Credits");
 			
-			fach.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
-			note.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
-			credits.setTextAppearance(aLayout.getContext(), android.R.style.TextAppearance_Medium);
+			fach.setTextAppearance(aLayout.getContext(), R.style.Bold);
+			note.setTextAppearance(aLayout.getContext(), R.style.Bold);
+			credits.setTextAppearance(aLayout.getContext(), R.style.Bold);
 
-			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.border);
-			fach.setBackgroundDrawable(theBorderDrawable);
-			note.setBackgroundDrawable(theBorderDrawable);
-			credits.setBackgroundDrawable(theBorderDrawable);
 			
-			row.addView(fach);
-			row.addView(note);
-			row.addView(credits);
+			fach.setBackgroundResource(R.drawable.border_header);
+			note.setBackgroundResource(R.drawable.border_header);
+			credits.setBackgroundResource(R.drawable.border_header);
+			
 			
 		    TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
 		    llp.weight = 5;
 		    fach.setLayoutParams(llp);
 		    llp.weight = 1;
 		    note.setLayoutParams(llp);
-		    llp.weight = 1;
+		    llp.weight = 2;
 		    credits.setLayoutParams(llp);
-			fach.setEms(20);
+			
+		    fach.setEms(20);
 			note.setEms(10);
 			credits.setEms(10);
+			
+			row.addView(fach);
+			row.addView(note);
+			row.addView(credits);
+			
 			aLayout.addView(row);
 		}
 		
@@ -467,16 +473,11 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			TextView note = new TextView(getActivity());
 			TextView credits = new TextView(getActivity());
 			
-			//Werte setzen...
-			fach.setText(aVal1);
-			note.setText(aVal2);
-			credits.setText(aVal3);
 			
 			// Borders setzen
-			Drawable theBorderDrawable = getResources().getDrawable(R.drawable.border);
-			fach.setBackgroundDrawable(theBorderDrawable);
-			note.setBackgroundDrawable(theBorderDrawable);
-			credits.setBackgroundDrawable(theBorderDrawable);
+			fach.setBackgroundResource(R.drawable.border);
+			note.setBackgroundResource(R.drawable.border);
+			credits.setBackgroundResource(R.drawable.border);
 			
 			// TextViews in das Layout einfügen...
 			row.addView(fach);
@@ -485,33 +486,27 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			
 		    // Layoutparamter setzen...
 			TableRow.LayoutParams llp = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
-		    llp.weight = 5;
+		    llp.setMargins(0, 5, 0, 0);
+			llp.weight = 5;
 		    fach.setLayoutParams(llp);
 		    llp.weight = 1;
 		    note.setLayoutParams(llp);
-		    llp.weight = 1;
+		    llp.weight = 2;
 		    credits.setLayoutParams(llp);
-			fach.setEms(20);
+			
+		    fach.setEms(20);
 			note.setEms(10);
 			credits.setEms(10);
+			
+			//Werte setzen...
+			fach.setText(aVal1);
+			note.setText(aVal2);
+			credits.setText(aVal3);
 			
 			// Die fertige TableRow in das parentLayout einfügen...
 			aLayout.addView(row);
 		}
 		
-		
-
-		/* (non-Javadoc)
-		 * @see android.support.v4.app.Fragment#onResume()
-		 */
-		@Override
-		public void onResume() {
-			super.onResume();
-			//TODO MBA testen 
-			Log.d("DualisGui", "<<<<<<<<<<<App Resumed>>>>>>>>>>>");
-			
-		}
-
 		private void initializeMarks() {
 			noten = new ArrayList<Note>();
 			noten.add(new Note("Angewantde Mathematik", "2.1", "6"));
