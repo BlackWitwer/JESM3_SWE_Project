@@ -2,9 +2,12 @@ package com.jesm3.newDualis.activities;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.mail.Message;
@@ -57,6 +60,7 @@ import com.jesm3.newDualis.mail.MessageContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
+import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
@@ -329,17 +333,36 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
         	final GregorianCalendar cal = new GregorianCalendar();
     		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
-    		List<Integer> theWochen = new ArrayList<Integer>(theVorlesungsplanManager.getWochenMap().keySet());
-    		Collections.sort(theWochen);
+			
+    		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
+    		
+    		Set<Entry<Integer, Wochenplan>> theEntrySet = theWochenMap.entrySet();
+    		List<Wochenplan> theWochenplaene = new ArrayList<Wochenplan>();
+    		for (Entry<Integer, Wochenplan> eachEntry : theEntrySet) {
+				theWochenplaene.add(eachEntry.getValue());
+			}
+    		Collections.sort(theWochenplaene, new Comparator<Wochenplan>() {
+
+				@Override
+				public int compare(Wochenplan lhs, Wochenplan rhs) {
+					if (lhs.getKalenderwoche() < rhs.getKalenderwoche()) {
+						return -1;
+					} else {
+						return 1;
+					}
+				}
+			});
+    		
     		Spinner kwSpinner = (Spinner) aContainer.findViewById(R.id.spinner_kalenderwoche);
-    		ArrayAdapter<Integer> theKwAdapter = new ArrayAdapter<Integer>(aContainer.getContext(), android.R.layout.simple_spinner_item, theWochen);
+    		WochenplanArrayAdapter theKwAdapter = new WochenplanArrayAdapter(aContainer.getContext(), android.R.layout.simple_spinner_item, theWochenplaene);
+    		
     		kwSpinner.setAdapter(theKwAdapter);
     		kwSpinner.setOnItemSelectedListener( new OnItemSelectedListener() {
 
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
-					stupla = theVorlesungsplanManager.getWochenplan(((Integer) arg0.getSelectedItem()).intValue());
+					stupla = (Wochenplan) arg0.getSelectedItem();
 					setLecturesOnGUI(aContainer);
 				}
 
@@ -354,29 +377,38 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     	private void generateDay(ArrayList<Vorlesung> aDayList, LinearLayout aLayout) {
     		for(Vorlesung eachLecture : aDayList ) {
     			LinearLayout subLayout = new LinearLayout(getActivity());
-    			TextView zeit = new TextView(getActivity());
-//    			FIXME Dozent noch nicht implementiert
-//    			TextView dozent= new TextView(getActivity());
-    			TextView name= new TextView(getActivity());
-    			
     			subLayout.setOrientation(LinearLayout.VERTICAL);
     			if (aLayout.getChildCount() % 2 == 0) {
     				subLayout.setBackgroundColor(Color.WHITE);
     			} else {
     				subLayout.setBackgroundColor(Color.LTGRAY);
     			}
-    			
-    			zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
-    			subLayout.addView(zeit);
-    			
-    			name.setText(eachLecture.getName());
-    			subLayout.addView(name);
-    			
-//    			FIXME Dozent noch nicht implementiert
-//    			dozent.setText(eachLecture.getDozent());
-//    			subLayout.addView(dozent);
-    			
-    			aLayout.addView(subLayout);
+    			if (!"FREEDAY".equals(eachLecture.getDozent())) {
+    				TextView zeit = new TextView(getActivity());
+//    				FIXME Dozent noch nicht implementiert
+//    				TextView dozent= new TextView(getActivity());
+    				TextView name= new TextView(getActivity());
+    				
+    				
+    				zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
+    				subLayout.addView(zeit);
+    				
+    				name.setText(eachLecture.getName());
+    				subLayout.addView(name);
+    				
+//    				FIXME Dozent noch nicht implementiert
+//    				dozent.setText(eachLecture.getDozent());
+//    				subLayout.addView(dozent);
+    				
+    				aLayout.addView(subLayout);
+    			} else {
+    				TextView name= new TextView(getActivity());
+    				name.setText("Frei/Praxis/Klausur");
+    				
+    				subLayout.addView(name);
+    				
+    				aLayout.addView(subLayout);
+    			}
     		}
     	}
     	
