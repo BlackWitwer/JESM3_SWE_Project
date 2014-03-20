@@ -22,6 +22,7 @@ public class SyncService extends Service {
 
 	private ConnectivityManager connectivityManager;
 	SharedPreferences sharedPrefs;
+
 	private String logname = "SyncService";
 
 	/**
@@ -42,18 +43,18 @@ public class SyncService extends Service {
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		Toast.makeText(this, "Service gestartet", Toast.LENGTH_LONG).show();
-		startSync();
 
 	}
 
-	public void onBind(Bundle savedInstanceState) {
+	private final IBinder mBinder = new LocalBinder();
+
+	@Override
+	public IBinder onBind(Intent intent) {
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-		startSync();
+		return mBinder;
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -62,13 +63,19 @@ public class SyncService extends Service {
 	}
 
 	/**
-	 * @return If the Devices is connected to a Network
+	 * @return What kind of connection the device is using, 0=mobile 1=wifi
 	 */
 	private int checkConnection() {
+		int connection;
 		NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-		int connection = activeNetwork.getType();
+		if (activeNetwork != null) {
+			connection = activeNetwork.getType();
+		} else {
+			connection = -1;
+		}
 
 		return connection;
+
 	}
 
 	/**
@@ -78,14 +85,14 @@ public class SyncService extends Service {
 	 * @return the result (0 -> OK; -1 -> connection invalid; -2 -> unmatching
 	 *         settings)
 	 */
-	public int startSync() {
+	public int startAutoSync() {
 		int result = 0;
 		int connection = checkConnection();
 		String prefs = sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_CONNECTION, "1");
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
-		Log.d(logname, "" + connection);
-		Log.d(logname, "Preferences" + prefs);
+		Log.d(logname, "Connection in autoSync " + connection);
+		Log.d(logname, "Preferences " + prefs);
 		if (valid) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
@@ -108,6 +115,25 @@ public class SyncService extends Service {
 	}
 
 	/**
+	 * The ManualSync
+	 * 
+	 * @return the result (0 -> OK, 1 -> invalid network)
+	 */
+	public int manualSync() {
+		int connection = checkConnection();
+		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
+		Log.d(logname, "Connection: " + connection);
+		int result = 0;
+		if (valid) {
+			result = sync();
+		} else {
+			result = 1;
+		}
+
+		return result;
+	}
+
+	/**
 	 * The Sync
 	 * 
 	 * @return the result (0 -> OK)
@@ -115,13 +141,10 @@ public class SyncService extends Service {
 	public int sync() {
 		Log.d(logname, "starting Sync");
 		int result = 0;
+		// TODO the actual Sync
+
+		// XXX insert sexual content here
 
 		return result;
-	}
-
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

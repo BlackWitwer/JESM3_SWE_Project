@@ -98,7 +98,8 @@ public class MainActivity extends FragmentActivity {
 							IBinder service) {
 						mBoundSyncService = ((SyncService.LocalBinder) service)
 								.getService();
-
+						Toast.makeText(mBoundSyncService, "Service Verbunden",
+								Toast.LENGTH_SHORT).show();
 					}
 				}, 0);
 
@@ -225,7 +226,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	public void updateStupla(View v) {
 		// TODO MJI hier soll der Stundenplan aktualisiert werden.
-		mBoundSyncService.startSync();
+		mBoundSyncService.manualSync();
 
 	}
 
