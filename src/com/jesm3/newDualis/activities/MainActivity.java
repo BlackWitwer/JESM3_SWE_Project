@@ -448,6 +448,8 @@ public class MainActivity extends FragmentActivity {
 			expListView = (MailExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
+			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+			listAdapter.removeAllMessages();
 			listAdapter.addAllMessages(manager.getCachedMails());
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
