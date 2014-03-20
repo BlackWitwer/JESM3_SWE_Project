@@ -7,8 +7,8 @@ public class Wochenplan {
 	/**
 	 * Alle Vorlesungen f�r Montag.
 	 */
-	private String anfangsDatum;
-	private String endDatum;
+	private String anfangsDatum=null;
+	private String endDatum=null;
 	public String getAnfangsDatum() {
 		return anfangsDatum;
 	}
@@ -71,7 +71,7 @@ public class Wochenplan {
 	 */
 	private ArrayList<Vorlesung> samstag;
 
-	private int kalenderwoche;
+	private int kalenderwoche=0;
 
 	public Wochenplan() {
 		montag = new ArrayList<Vorlesung>();
