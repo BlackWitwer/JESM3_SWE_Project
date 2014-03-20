@@ -449,21 +449,16 @@ public class MainActivity extends FragmentActivity {
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-			listAdapter.removeAllMessages();
-			listAdapter.addAllMessages(manager.getCachedMails());
+			listAdapter.setMessages(manager.getCachedMails());
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
-				public void mailReceived(List<MailContainer> someMails) {
-					listAdapter.addAllMessages(someMails);
-					final boolean theEmptyFlag = someMails.isEmpty();
+				public void mailReceived() {
+					listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
 					getActivity().runOnUiThread(new Runnable() {
 						
 						@Override
 						public void run() {
-							listAdapter.notifyDataSetChanged();
-							if (!theEmptyFlag) {
-								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
-							}
+							aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
 						}
 					});
 				}

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.mail.MessagingException;
 import javax.mail.Part;
+
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -245,14 +247,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	public void addMessage(MailContainer aMessage) {
-		messageList.add(aMessage);
-		sortMessages();
-	}
-	
-	public void addAllMessages (Collection<MailContainer> someMessages) {
+	public void setMessages(Collection<MailContainer> someMessages) {
+		messageList.clear();
 		messageList.addAll(someMessages);
 		sortMessages();
+		((Activity) context).runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+			
+		});
+		notifyDataSetChanged();
 	}
 	
 	private void sortMessages() {
@@ -263,10 +270,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
 			}
 		});
-	}
-	
-	public void removeAllMessages() {
-		messageList.clear();
 	}
 
 	public String convertToMinSize (int aSize) {

@@ -31,9 +31,7 @@ public class MailExpandableListView extends ExpandableListView {
 			boolean clampedY) {
 		super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
 		getMailManager().refreshCache();
-		((ExpandableListAdapter) getExpandableListAdapter()).removeAllMessages();
-		((ExpandableListAdapter) getExpandableListAdapter()).addAllMessages(getMailManager().getCachedMails());
-		((ExpandableListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
+		((ExpandableListAdapter) getExpandableListAdapter()).setMessages(getMailManager().getCachedMails());
 	}
 	
 	private MailManager getMailManager() {

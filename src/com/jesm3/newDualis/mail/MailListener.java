@@ -5,5 +5,5 @@ import java.util.List;
 import javax.mail.Message;
 
 public abstract class MailListener {
-	public abstract void mailReceived(List<MailContainer> someMails);
+	public abstract void mailReceived();
 }

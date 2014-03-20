@@ -112,7 +112,8 @@ public class MailManager {
 
 			@Override
 			public void run() {
-				aListener.mailReceived(getMessagesFromTo(from, to));
+				getMessagesFromTo(from, to);
+				aListener.mailReceived();
 			}
 		}).start();
 	}
