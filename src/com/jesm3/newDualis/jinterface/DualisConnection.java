@@ -141,6 +141,25 @@ public class DualisConnection {
 				+ parseLink);
 		ArrayList<Wochenplan> wl = dparse.parseMonth(monatsansichtContent);
 		int monthsToGo = calcMonthsToGo(weeks);
+		
+		GregorianCalendar gcnow = new GregorianCalendar();
+		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
+		
+		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()-1==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
+			Log.d("parsetest", "Erste Wochenhälfte fehlt, springe einen Monat zurück!!!");
+			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowLeft");
+			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
+			monthsToGo++;
+			wl = dparse.parseMonth(monatsansichtContent);
+			for(int i=0;i<wl.size()-1;i++){
+				wl.remove(0);
+			}
+		}
+		else {
+			if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+				wl.remove(0);
+			}
+		}
 		Log.d("parsetest", "Monate die geladen werden müssen: "+monthsToGo);
 		for (int i=0; i<monthsToGo; i++) {
 			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowRight");
@@ -152,7 +171,7 @@ public class DualisConnection {
 				wl.addAll(wl2);
 			}
 			else{
-				mergeWeek.setKalenderwoche(wl.get(wl.size()-2).getKalenderwoche()+1);
+				mergeWeek.setKalenderwoche(wl.get(wl.size()-1).getKalenderwoche());
 				wl.remove(wl.size()-1);
 				wl2.remove(0);
 				wl.add(mergeWeek);
@@ -163,11 +182,6 @@ public class DualisConnection {
 		for (Wochenplan eachWoche : wl) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
-	}
-	
-	public ArrayList<Wochenplan> getMonatsContent(String link){
-		String monatsansichtContent = getPage("https://dualis.dhbw.de" + link);
-		return dparse.parseMonth(monatsansichtContent);
 	}
 	
 	public int calcMonthsToGo(int weeks){

@@ -51,7 +51,10 @@ public class StundenplanGenerator {
 			}
 		}
 		if(merge){
-			return listToWochenplan(w1l);
+			Wochenplan resultwl = listToWochenplan(w1l);
+			resultwl.setAnfangsDatum(w1.getAnfangsDatum());
+			resultwl.setEndDatum(w2.getEndDatum());
+			return resultwl;
 		}
 		else{
 			return null;
