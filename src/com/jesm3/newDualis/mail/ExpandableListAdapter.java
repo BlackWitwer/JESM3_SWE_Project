@@ -55,7 +55,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.listItem);
 		WebView view = (WebView) convertView.findViewById(R.id.webViewItem);
-		String theText = theMail.getText();
+		String theText = theMail.getMessageText();
 		if (theMail.getHtml()) {
 			view.loadData(theText, "text/html; charset=UTF-8", null);
 			view.setVisibility(View.VISIBLE);

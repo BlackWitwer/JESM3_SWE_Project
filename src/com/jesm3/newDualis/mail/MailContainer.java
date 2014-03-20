@@ -161,11 +161,7 @@ public class MailContainer extends AbstractMailContainer {
 		this.attachmentList = attachmentList;
 	}
 
-	/**
-	 * @return the text
-	 */
-	@Override
-	public String getText() {
+	public String getMessageText() {
 		if (super.getText() == null) {
 			try {
 				setText(getText(getOriginalMessage()));
