@@ -259,7 +259,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			}
 			
 		});
-		notifyDataSetChanged();
 	}
 	
 	private void sortMessages() {

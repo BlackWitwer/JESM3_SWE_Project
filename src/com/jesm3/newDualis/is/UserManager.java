@@ -1,5 +1,7 @@
 package com.jesm3.newDualis.is;
 
+import javax.crypto.Cipher;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -73,6 +75,7 @@ public class UserManager {
 	private boolean saveUserData() {
 		if (user != null) {
 			// TODO Passwort verschl�sselung.
+//			Cipher.getInstance(Cipher.)
 			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor theEditor = thePrefs.edit();
 			theEditor.putString(PREFS_USERNAME, getUser().getUsername());
@@ -87,15 +90,14 @@ public class UserManager {
 	 * den SharedPrefs wird null zur�ckgegeben.
 	 * @return ein User Objekt, wenn Benutzerdaten vorhanden sind.
 	 */
-	public User loadUserData() {
+	public boolean loadUserData() {
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String theUsername = thePrefs.getString(PREFS_USERNAME, "");
 		String thePassword = thePrefs.getString(PREFS_PASSWORD, "");
 		if ("".equals(theUsername) || "".equals(thePassword)) {
-			return null;
+			return false;
 		}
 		User theUser = new User(theUsername, thePassword);
-		login(theUser, false, false);
-		return theUser;
+		return login(theUser, false, false);
 	}
 }

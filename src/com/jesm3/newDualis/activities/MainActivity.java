@@ -98,9 +98,9 @@ public class MainActivity extends FragmentActivity {
 
 		// Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt
 		// im Interface Thread Netzwerkaktivitäten zu verwenden.
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-				.permitAll().build();
-		StrictMode.setThreadPolicy(policy);
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+//				.permitAll().build();
+//		StrictMode.setThreadPolicy(policy);
 		// -----------------------------------
 
 		// initMailView();
