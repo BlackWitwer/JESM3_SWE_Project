@@ -79,6 +79,9 @@ public class MainActivity extends FragmentActivity {
 
 	private boolean doubleClicked;
 	private SyncService mBoundSyncService;
+	private String logname = "mainActivity";
+	// for nude purpose only
+	private long timestamp = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -225,9 +228,14 @@ public class MainActivity extends FragmentActivity {
 	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
 	 */
 	public void updateStupla(View v) {
-		// TODO MJI hier soll der Stundenplan aktualisiert werden.
 		mBoundSyncService.manualSync();
 
+		// XXX
+		if (System.currentTimeMillis() - timestamp < 100) {
+			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
+					.show();
+		}
+		timestamp = System.currentTimeMillis();
 	}
 
 	/**
