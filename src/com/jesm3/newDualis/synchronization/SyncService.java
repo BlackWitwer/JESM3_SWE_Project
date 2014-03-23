@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
@@ -53,7 +54,10 @@ public class SyncService extends Service {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		Toast.makeText(this, "Service gestartet", Toast.LENGTH_LONG).show();
 
+
 	}
+	
+
 
 	private final IBinder mBinder = new LocalBinder();
 
@@ -63,6 +67,21 @@ public class SyncService extends Service {
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		// registering an listener for changed preferences
+		//TODO Get it to work
+		OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+		  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+			  Log.d(logname, "something changed");
+			  if (key.equals(SettingsFragment.KEY_PREF_INTERVALL_SYNC) && syncIntervall != sharedPrefs.getInt(SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000)) {
+				  syncIntervall = sharedPrefs.getInt(SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000);
+				  Log.d(logname, "syncintervall changed");
+			  }
+		  }
+		};
+
+		sharedPrefs.registerOnSharedPreferenceChangeListener(listener);
+		
 		return mBinder;
 	}
 
