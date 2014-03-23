@@ -3,6 +3,9 @@ package com.jesm3.newDualis.synchronization;
 /**
  * @author mji
  */
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +25,8 @@ public class SyncService extends Service {
 
 	private ConnectivityManager connectivityManager;
 	SharedPreferences sharedPrefs;
+	private Timer timer = new Timer();
+	private int syncIntervall;
 
 	private String logname = "SyncService";
 
@@ -35,10 +40,14 @@ public class SyncService extends Service {
 		}
 	}
 
-	/** Called when the service is first created. */
+	/**
+	 * Called when the service is first created.
+	 * */
 	public void onCreate(Bundle savedInstanceState) {
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		syncIntervall = sharedPrefs.getInt(
+				SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000);
 
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -79,9 +88,8 @@ public class SyncService extends Service {
 	}
 
 	/**
-	 * starting the synchronization
+	 * starting the automated synchronization
 	 * 
-	 * @param view
 	 * @return the result (0 -> OK; -1 -> connection invalid; -2 -> unmatching
 	 *         settings)
 	 */
@@ -111,11 +119,19 @@ public class SyncService extends Service {
 			Log.d(logname, "connection invalid");
 			result = -1;
 		}
+		// TODO is this the right place to start the timer?
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				startAutoSync();
+			}
+		}, syncIntervall);
 		return result;
 	}
 
 	/**
-	 * The ManualSync
+	 * The manualSync Called for manual synchronization
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
@@ -134,7 +150,7 @@ public class SyncService extends Service {
 	}
 
 	/**
-	 * The Sync
+	 * Doing the actual synchronization
 	 * 
 	 * @return the result (0 -> OK)
 	 */
@@ -144,6 +160,9 @@ public class SyncService extends Service {
 		// TODO the actual Sync
 
 		// XXX insert sexual content here
+		// Log.wtf(logname, "(.)(.)");
+		// Log.wtf(logname, " )  ( ");
+		// Log.wtf(logname, "(  y )");
 
 		return result;
 	}
