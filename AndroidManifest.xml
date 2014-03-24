@@ -33,6 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter> >
         </activity>
+        <service android:name="com.jesm3.newDualis.synchronization.SyncService" />
 		<receiver android:name=".widget.WidgetProvider" >
             <intent-filter >
                 <action
