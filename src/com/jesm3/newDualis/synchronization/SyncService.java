@@ -28,7 +28,9 @@ public class SyncService extends Service implements
 	private ConnectivityManager connectivityManager;
 	SharedPreferences sharedPrefs;
 	private Timer timer = new Timer();
-	private int syncIntervall;
+	// The SyncIntervall in minutes
+	private int syncIntervallMin;
+	private boolean syncActive;
 
 	private String logname = "SyncService";
 
@@ -47,7 +49,9 @@ public class SyncService extends Service implements
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		syncIntervall = Integer.parseInt(sharedPrefs.getString(
+		syncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 
 		connectivityManager = (ConnectivityManager) this
@@ -63,7 +67,9 @@ public class SyncService extends Service implements
 		Log.d(logname, "bound");
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		syncIntervall = Integer.parseInt(sharedPrefs.getString(
+		syncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -104,11 +110,11 @@ public class SyncService extends Service implements
 		int result = 0;
 		int connection = checkConnection();
 		String prefs = sharedPrefs.getString(
-				SettingsFragment.KEY_PREF_CONNECTION, "1");
+				SettingsFragment.KEY_PREF_CONNECTION, "0");
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection in autoSync " + connection);
 		Log.d(logname, "Preferences " + prefs);
-		if (valid) {
+		if (valid && syncActive) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
 				result = sync();
@@ -126,15 +132,23 @@ public class SyncService extends Service implements
 			Log.d(logname, "connection invalid");
 			result = -1;
 		}
-		// TODO is this the right place to start the timer?
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				startAutoSync();
-			}
-		}, syncIntervall);
 		return result;
+	}
+
+	private void refreshSyncTimer() {
+
+		timer.cancel();
+		if (syncActive) {
+			timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					startAutoSync();
+				}
+			}, syncIntervallMin * 60 * 1000, syncIntervallMin * 60 * 1000);
+			Log.d(logname, "Timer aktualisiert");
+		}
 	}
 
 	/**
@@ -149,6 +163,7 @@ public class SyncService extends Service implements
 		int result = 0;
 		if (valid) {
 			result = sync();
+			refreshSyncTimer();
 		} else {
 			result = 1;
 		}
@@ -161,7 +176,7 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK)
 	 */
-	public int sync() {
+	private int sync() {
 		Log.d(logname, "starting Sync");
 		int result = 0;
 		// TODO the actual Sync
@@ -173,15 +188,21 @@ public class SyncService extends Service implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (key.equals(SettingsFragment.KEY_PREF_INTERVALL_SYNC)
-				&& syncIntervall != Integer.parseInt(sharedPreferences
+				&& syncIntervallMin != Integer.parseInt(sharedPreferences
 						.getString(SettingsFragment.KEY_PREF_INTERVALL_SYNC,
 								"720"))) {
 
-			syncIntervall = Integer.parseInt(sharedPreferences.getString(
+			syncIntervallMin = Integer.parseInt(sharedPreferences.getString(
 					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 
-			Log.d(logname, "syncintervall changed to " + syncIntervall
+			refreshSyncTimer();
+
+			Log.d(logname, "syncintervall changed to " + syncIntervallMin
 					+ " minutes");
+		} else if (key.equals(SettingsFragment.KEY_PREF_SYNC_ONOFF)
+				&& syncActive != sharedPreferences.getBoolean(key, false)) {
+			syncActive = sharedPreferences.getBoolean(key, false);
+			refreshSyncTimer();
 		}
 	}
 }
