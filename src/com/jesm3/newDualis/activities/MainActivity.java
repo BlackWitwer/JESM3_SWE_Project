@@ -86,25 +86,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// start the SyncService
-		startService(new Intent(this, SyncService.class));
-		bindService(new Intent(this, SyncService.class),
-				new ServiceConnection() {
-
-					@Override
-					public void onServiceDisconnected(ComponentName name) {
-						mBoundSyncService = null;
-					}
-
-					@Override
-					public void onServiceConnected(ComponentName name,
-							IBinder service) {
-						mBoundSyncService = ((SyncService.LocalBinder) service)
-								.getService();
-						Toast.makeText(mBoundSyncService, "Service Verbunden",
-								Toast.LENGTH_SHORT).show();
-					}
-				}, 0);
 
 		actionBar = getActionBar();
 		actionBar.hide();
@@ -127,6 +108,26 @@ public class MainActivity extends FragmentActivity {
 		// -----------------------------------
 
 		// initMailView();
+
+		// start the SyncService
+		startService(new Intent(this, SyncService.class));
+		bindService(new Intent(this, SyncService.class),
+				new ServiceConnection() {
+
+					@Override
+					public void onServiceDisconnected(ComponentName name) {
+						mBoundSyncService = null;
+					}
+
+					@Override
+					public void onServiceConnected(ComponentName name,
+							IBinder service) {
+						mBoundSyncService = ((SyncService.LocalBinder) service)
+								.getService();
+						Toast.makeText(mBoundSyncService, "Service Verbunden",
+								Toast.LENGTH_SHORT).show();
+					}
+				}, 0);
 	}
 
 	/*

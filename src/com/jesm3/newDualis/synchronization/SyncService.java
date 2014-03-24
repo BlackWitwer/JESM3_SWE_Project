@@ -22,7 +22,8 @@ import android.widget.Toast;
 
 import com.jesm3.newDualis.settings.SettingsFragment;
 
-public class SyncService extends Service {
+public class SyncService extends Service implements
+		OnSharedPreferenceChangeListener {
 
 	private ConnectivityManager connectivityManager;
 	SharedPreferences sharedPrefs;
@@ -45,43 +46,30 @@ public class SyncService extends Service {
 	 * Called when the service is first created.
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
-
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		syncIntervall = sharedPrefs.getInt(
-				SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000);
+		syncIntervall = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		Toast.makeText(this, "Service gestartet", Toast.LENGTH_LONG).show();
 
-
 	}
-	
-
 
 	private final IBinder mBinder = new LocalBinder();
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		Log.d(logname, "bound");
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		syncIntervall = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
-		// registering an listener for changed preferences
-		//TODO Get it to work
-		OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-		  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-			  Log.d(logname, "something changed");
-			  if (key.equals(SettingsFragment.KEY_PREF_INTERVALL_SYNC) && syncIntervall != sharedPrefs.getInt(SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000)) {
-				  syncIntervall = sharedPrefs.getInt(SettingsFragment.KEY_PREF_INTERVALL_SYNC, 1 * 60 * 1000);
-				  Log.d(logname, "syncintervall changed");
-			  }
-		  }
-		};
 
-		sharedPrefs.registerOnSharedPreferenceChangeListener(listener);
-		
+		sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+
 		return mBinder;
 	}
 
@@ -178,11 +166,22 @@ public class SyncService extends Service {
 		int result = 0;
 		// TODO the actual Sync
 
-		// XXX insert sexual content here
-		// Log.wtf(logname, "(.)(.)");
-		// Log.wtf(logname, " )  ( ");
-		// Log.wtf(logname, "(  y )");
-
 		return result;
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.equals(SettingsFragment.KEY_PREF_INTERVALL_SYNC)
+				&& syncIntervall != Integer.parseInt(sharedPreferences
+						.getString(SettingsFragment.KEY_PREF_INTERVALL_SYNC,
+								"720"))) {
+
+			syncIntervall = Integer.parseInt(sharedPreferences.getString(
+					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
+
+			Log.d(logname, "syncintervall changed to " + syncIntervall
+					+ " minutes");
+		}
 	}
 }
