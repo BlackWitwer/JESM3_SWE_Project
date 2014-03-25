@@ -276,7 +276,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public int compare(MailContainer lhs, MailContainer rhs) {
-				return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
+				return lhs.getMessageNumber() < rhs.getMessageNumber() ? 1 : -1;
 			}
 		});
 	}

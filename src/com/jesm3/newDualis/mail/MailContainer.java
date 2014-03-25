@@ -47,6 +47,21 @@ public class MailContainer extends AbstractMailContainer {
 		setUId(aUID);
 	}
 	
+	public MailContainer(AbstractMailContainer aMailContainer) {
+		super(aMailContainer.getId(), 
+			aMailContainer.getFrom(), 
+			aMailContainer.getFromComplete(), 
+			aMailContainer.getTo(), 
+			aMailContainer.getSubject(), 
+			aMailContainer.getText(), 
+			aMailContainer.getDate(), 
+			aMailContainer.getAttachment(), 
+			aMailContainer.getSeen(), 
+			aMailContainer.getHtml(), 
+			aMailContainer.getMessageNumber(), 
+			aMailContainer.getUId());
+	}
+	
 	/**
 	 * TODO SEW nochmal überarbeiten die Anhänge werden nicht korrekt erkannt.
 	 * @param aPart
@@ -164,6 +179,7 @@ public class MailContainer extends AbstractMailContainer {
 	public String getMessageText() {
 		if (super.getText() == null) {
 			try {
+				//TODO Fixen wenn keine Originale Message vorhanden ist und der Text noch nicht gelesen wurde.
 				setText(getText(getOriginalMessage()));
 			} catch (MessagingException e) {
 				e.printStackTrace();
@@ -174,5 +190,4 @@ public class MailContainer extends AbstractMailContainer {
 		}
 		return super.getText();
 	}
-	
 }
