@@ -28,11 +28,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private ArrayList<MailContainer> messageList;
-
+	private boolean showProgress;
+	
 	public ExpandableListAdapter(Context context,
 			ArrayList<MailContainer> someMessages) {
 		this.context = context;
 		this.messageList = someMessages;
+		this.showProgress = true;
 	}
 
 	@Override
@@ -96,6 +98,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
+		if (groupPosition == getGroupCount() && showProgress) {
+			System.out.println(convertView);
+			return convertView;
+		}
+				
 		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
@@ -219,17 +226,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		return 1;
+		return getGroupCount() == groupPosition && showProgress ? 0 : 1;
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		return messageList.get(groupPosition);
+		return getGroupCount() == groupPosition && showProgress ? null : messageList.get(groupPosition);
 	}
 
 	@Override
 	public int getGroupCount() {
-		return messageList.size();
+		return messageList.size() + (showProgress ? 1 : 0);
 	}
 
 	@Override

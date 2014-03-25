@@ -153,8 +153,9 @@ public class MailManager {
 			MailContainer theMailContainer;
 			for (int eachKey : messageIdMap.keySet()) {
 				Message theMessage = getFolder().getMessage(eachKey);
+//				System.out.println(theMessage);
 				long theUid = getIdFolder().getUID(theMessage);
-				if (!(theUid == messageIdMap.get(eachKey).getUId().longValue())) {
+				if (theUid != messageIdMap.get(eachKey).getUId().longValue()) {
 					theMailContainer = new MailContainer(theMessage, theUid);
 					messageIdMap.put(eachKey, theMailContainer);
 					if (theMessageCount-10 < eachKey) {

@@ -1,11 +1,10 @@
 package com.jesm3.newDualis.is;
 
-import javax.crypto.Cipher;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
+import android.content.*;
+import android.content.SharedPreferences.*;
+import android.preference.*;
+import java.security.*;
+import javax.crypto.*;
 
 public class UserManager {
 
@@ -75,12 +74,20 @@ public class UserManager {
 	private boolean saveUserData() {
 		if (user != null) {
 			// TODO Passwort verschl�sselung.
-//			Cipher.getInstance(Cipher.)
-			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
-			Editor theEditor = thePrefs.edit();
-			theEditor.putString(PREFS_USERNAME, getUser().getUsername());
-			theEditor.putString(PREFS_PASSWORD, getUser().getPassword());
-			return theEditor.commit();
+			try {
+				Cipher theCipher = Cipher.getInstance("AES");
+//				theCipher
+				SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
+				Editor theEditor = thePrefs.edit();
+				theEditor.putString(PREFS_USERNAME, getUser().getUsername());
+				theEditor.putString(PREFS_PASSWORD, getUser().getPassword());
+				return theEditor.commit();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (NoSuchPaddingException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		return false;
 	}

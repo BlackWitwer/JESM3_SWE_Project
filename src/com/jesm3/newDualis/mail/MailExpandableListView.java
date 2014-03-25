@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.widget.ExpandableListView;
 import com.jesm3.newDualis.is.*;
 import android.app.*;
+import com.jesm3.newDualis.*;
 
 public class MailExpandableListView extends ExpandableListView {
 
@@ -30,7 +31,18 @@ public class MailExpandableListView extends ExpandableListView {
 	protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
 			boolean clampedY) {
 		super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+		final Activity theActivity = (Activity) getContext();
+		theActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				theActivity.findViewById(R.id.mailProgressBar).setVisibility(VISIBLE);
+			}
+		});
 		getMailManager().refreshCache();
+//		theActivity.runOnUiThread(new Runnable() {
+//			public void run() {
+//				theActivity.findViewById(R.id.mailProgressBar).setVisibility(GONE);
+//			}
+//		});
 		((ExpandableListAdapter) getExpandableListAdapter()).setMessages(getMailManager().getCachedMails());
 	}
 	
