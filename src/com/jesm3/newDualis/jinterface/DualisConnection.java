@@ -29,6 +29,7 @@ import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
 import com.jesm3.newDualis.is.Utilities;
+import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
@@ -146,7 +147,7 @@ public class DualisConnection {
 		String monatsansichtContent = getPage("https://dualis.dhbw.de"
 				+ parseLink);
 		ArrayList<Wochenplan> wl = dparse.parseMonth(monatsansichtContent);
-		int monthsToGo = calcMonthsToGo(weeks);
+		int monthsToGo = util.calcMonthsToGo(weeks);
 		
 		GregorianCalendar gcnow = new GregorianCalendar();
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
@@ -190,43 +191,23 @@ public class DualisConnection {
 			}
 		}
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
+		
+		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
+		
+		for (Wochenplan eachWoche : wl) {
+			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+		}
+		
 		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
 				Date anfangsDatum = eachWoche.getAnfangsDatum();
-				Date endDatum = addDaysToDate(anfangsDatum, 7);
+				Date endDatum = util.addDaysToDate(anfangsDatum, 7);
 				eachWoche.setEndDatumDate(endDatum);
 			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}
 
-	
-	public int calcMonthsToGo(int weeks){
-		Calendar c = Calendar.getInstance();
-		Date d = new Date();
-		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
-		int actualmonth = d.getMonth();
-		Date tarMonth = addDaysToDate(d,7*weeks);
-		int monthToGo = tarMonth.getMonth();
-		Log.d("parsetest", "Zieldatum: "+tarMonth.toString());
-		if(monthToGo<actualmonth){
-			monthToGo = monthToGo + 12 - actualmonth;
-		}
-		else {
-			monthToGo = monthToGo - actualmonth;
-		}
-		return monthToGo;
-	}
-	public Date addDaysToDate(Date date, int noOfDays) {
-	    Date newDate = new Date(date.getTime());
-
-	    GregorianCalendar calendar = new GregorianCalendar();
-	    calendar.setTime(newDate);
-	    calendar.add(Calendar.DATE, noOfDays);
-	    newDate.setTime(calendar.getTime().getTime());
-
-	    return newDate;
-	}
 	// L�d Seite ohne HTML Code zur�ckzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);
