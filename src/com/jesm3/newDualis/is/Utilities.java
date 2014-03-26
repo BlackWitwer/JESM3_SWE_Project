@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -14,6 +15,8 @@ import com.jesm3.newDualis.stupla.Wochenplan;
 import android.util.Log;
 
 public class Utilities {
+	public static final Locale LOCALE_GERMANY = Locale.GERMANY;
+
 	public static GregorianCalendar stringToGreg(String date) {
 		String[] theDate = date.split("\\.");
 		DateFormat df = new SimpleDateFormat("dd MM yyyy");
@@ -50,7 +53,7 @@ public class Utilities {
 	}
 	
 	public static String dateToString(Date d){
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", LOCALE_GERMANY);
 		if (d != null) {
 			return simpleDateFormat.format(d);
 		}
@@ -58,7 +61,7 @@ public class Utilities {
 	}
 	
 	public static String dateToTime(Date aDate) {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", LOCALE_GERMANY);
 		if (aDate != null) {
 			return simpleDateFormat.format(aDate);
 		}
