@@ -226,12 +226,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 		@Override
 		public Fragment getItem(int position) {
-			// getItem is called to instantiate the fragment for the given page.
-			// Return a DummySectionFragment (defined as a static inner class
-			// below) with the page number as its lone argument.
-			Fragment fragment = new DummySectionFragment();
+			Fragment fragment = new SectionFragment();
 			Bundle args = new Bundle();
-			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+			args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
 			return fragment;
 		}
@@ -260,10 +257,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	}
 
 	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
+	 * A fragment representing a section of the app.
 	 */
-	public static class DummySectionFragment extends Fragment {
+	public static class SectionFragment extends Fragment {
 	
 	    private Wochenplan stupla;
     	private ArrayList<Note> noten;
@@ -274,7 +270,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		 */
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
-		public DummySectionFragment() {
+		public SectionFragment() {
 		}
 
 		private void setLecturesOnGUI(View aContainer) {
