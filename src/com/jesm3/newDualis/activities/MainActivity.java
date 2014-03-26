@@ -10,14 +10,12 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +24,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -40,10 +37,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -56,11 +51,11 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
-import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -136,8 +131,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 							IBinder service) {
 						mBoundSyncService = ((SyncService.LocalBinder) service)
 								.getService();
-//						Toast.makeText(mBoundSyncService, "Service Verbunden",
-//								Toast.LENGTH_SHORT).show();
+
 					}
 				}, 0);
 	}
@@ -569,6 +563,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		 * Initialisiert die ExpandableListVi2ew der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
+
 			MailManager manager = ((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
 					new ArrayList<MailContainer>());
@@ -588,6 +583,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 							@Override
 							public void run() {
 								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
+
 							}
 						});
 					}

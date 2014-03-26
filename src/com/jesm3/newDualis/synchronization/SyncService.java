@@ -3,6 +3,7 @@ package com.jesm3.newDualis.synchronization;
 /**
  * @author mji
  */
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,17 +21,24 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.settings.SettingsFragment;
+import com.jesm3.newDualis.stupla.Vorlesung;
 
 public class SyncService extends Service implements
 		OnSharedPreferenceChangeListener {
 
 	private ConnectivityManager connectivityManager;
+
 	SharedPreferences sharedPrefs;
 	private Timer timer = new Timer();
 	// The SyncIntervall in minutes
 	private int syncIntervallMin;
 	private boolean syncActive;
+
+	private DatabaseManager dManager;
+	private CustomApplication customApplication;
 
 	private String logname = "SyncService";
 
@@ -48,6 +56,7 @@ public class SyncService extends Service implements
 	 * Called when the service is first created.
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
+
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
@@ -182,6 +191,15 @@ public class SyncService extends Service implements
 		// TODO the actual Sync
 
 		return result;
+	}
+
+	/**
+	 * To get the next Lectures
+	 * 
+	 * @return the next lectures
+	 */
+	public List<Vorlesung> getNextLectures() {
+		return null;
 	}
 
 	@Override
