@@ -68,6 +68,7 @@ public class DatabaseManager {
 	 * @return die Menge der Vorlesungen. Eine leere Liste, wenn der Request Type nicht gefunden wird.
 	 */
 	public List<Vorlesung> getVorlesungen(Requests aRequest) {
+		// TODO Bastis Umwandelmethode verwenden.
 		List<Vorlesung> vorlesungsList = createVorlesung(vorlesungDAO.loadAll());
 		List<Vorlesung> removeList = new ArrayList<Vorlesung>();
 		
@@ -77,7 +78,7 @@ public class DatabaseManager {
 
 		switch (aRequest) {
 		case REQUEST_ALL:
-			return createVorlesung(vorlesungDAO.loadAll());
+			return vorlesungsList;
 			
 		case REQUEST_NEXT:						
 			for (Vorlesung eachVorlesung : vorlesungsList) {
@@ -85,7 +86,6 @@ public class DatabaseManager {
 					removeList.add(eachVorlesung);
 				}
 			}
-			
 			vorlesungsList.removeAll(removeList);
 			return vorlesungsList;
 			
@@ -95,7 +95,6 @@ public class DatabaseManager {
 					removeList.add(eachVorlesung);
 				}
 			}
-			
 			vorlesungsList.removeAll(removeList);
 			return vorlesungsList;
 			
@@ -128,39 +127,8 @@ public class DatabaseManager {
 	 * @return Noten als List<Noten>.
 	 */
 	public List<Note> getNoten () {
-		return createNote(noteDAO.loadAll());
-	}
-	
-	
-	/**
-	 * Wandelt eine Liste<AbstractVorlesung> in Liste<Vorlesung>
-	 * @param aList (Liste<AbstractVorlesung>)
-	 * @return ResultList (Liste<Vorlesung>)
-	 */
-	private List<Vorlesung> createVorlesung(List<AbstractVorlesung> aList) {
-		List<Vorlesung> theResultList = new ArrayList<Vorlesung>();
-		
-		for (AbstractVorlesung eachData : aList) {
-			theResultList.add(new Vorlesung(eachData));
-		}
-		
-		return theResultList;
-	}
-	
-	
-	/**
-	 * Wandelt eine List<AbstractNote> in List<Note>
-	 * @param aList vom Typ List<AbstractNote>
-	 * @return ResultList vom Typ List<Note>
-	 */
-	private List<Note> createNote(List<AbstractNote> aList) {
-		List<Note> theResultList = new ArrayList<Note>();
-		
-		for (AbstractNote eachData : aList) {
-			theResultList.add(new Note(eachData));
-		}
-		
-		return theResultList;
+		// TODO Bastis Umwandelmethode verwenden.
+		//return createNote(noteDAO.loadAll());
 	}
 	
 	public DaoMaster getMaster() {
