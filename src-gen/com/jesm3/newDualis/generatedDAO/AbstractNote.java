@@ -4,6 +4,7 @@ package com.jesm3.newDualis.generatedDAO;
 /**
  * Entity mapped to table ABSTRACT_NOTE.
  */
+// TODO Notenklasse überarbeiten: Muss von AbstractNote erben!
 public class AbstractNote {
 
     private Long id;

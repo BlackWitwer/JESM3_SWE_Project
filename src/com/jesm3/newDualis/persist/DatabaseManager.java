@@ -1,14 +1,14 @@
 package com.jesm3.newDualis.persist;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 
+import com.jesm3.newDualis.generatedDAO.AbstractNote;
+import com.jesm3.newDualis.generatedDAO.AbstractNoteDao;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesungDao;
 import com.jesm3.newDualis.generatedDAO.DaoMaster;
@@ -18,8 +18,6 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 
-import de.greenrobot.dao.query.QueryBuilder;
-
 public class DatabaseManager {
 	
 	private SQLiteDatabase db;
@@ -27,6 +25,7 @@ public class DatabaseManager {
 	private DaoSession sessionDAO;
 	
 	private AbstractVorlesungDao vorlesungDAO;
+	private AbstractNoteDao noteDAO;
 	
 	private Context context;
 	
@@ -43,6 +42,7 @@ public class DatabaseManager {
 		sessionDAO = masterDAO.newSession();
 		
 		vorlesungDAO = sessionDAO.getAbstractVorlesungDao();
+		noteDAO = sessionDAO.getAbstractNoteDao();
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class DatabaseManager {
 		return aVorlesung;
 	}
 	/**
-	 * L�scht eine Vorlesung.
+	 * Löscht eine Vorlesung.
 	 * @param aVorlesung die gel�scht werden soll.
 	 */
 	public void deleteVorlesung(Vorlesung aVorlesung) {
@@ -104,11 +104,60 @@ public class DatabaseManager {
 		}
 	}
 	
+	// TODO: Michas Noten-Klasse importieren.
+	/**
+	 * Speichert eine Note in die Datenbank.
+	 * @param aNote, zu speichernde Note.
+	 * @return Note mit DatenbankID.
+	 */
+	public Note insertNote(Note aNote) {
+		noteDAO.insert(aNote);
+		return aNote;
+	}
+	
+	/**
+	 * Löscht eine Note aus der Datenbank.
+	 * @param aNote, zu löschende Note.
+	 */
+	public void deleteNote(Note aNote) {
+		noteDAO.delete(aNote);
+	}
+	
+	/**
+	 * Lädt alle Noten(Einträge) aus der Datenbank.
+	 * @return Noten als List<Noten>.
+	 */
+	public List<Note> getNoten () {
+		return createNote(noteDAO.loadAll());
+	}
+	
+	
+	/**
+	 * Wandelt eine Liste<AbstractVorlesung> in Liste<Vorlesung>
+	 * @param aList (Liste<AbstractVorlesung>)
+	 * @return ResultList (Liste<Vorlesung>)
+	 */
 	private List<Vorlesung> createVorlesung(List<AbstractVorlesung> aList) {
 		List<Vorlesung> theResultList = new ArrayList<Vorlesung>();
 		
 		for (AbstractVorlesung eachData : aList) {
 			theResultList.add(new Vorlesung(eachData));
+		}
+		
+		return theResultList;
+	}
+	
+	
+	/**
+	 * Wandelt eine List<AbstractNote> in List<Note>
+	 * @param aList vom Typ List<AbstractNote>
+	 * @return ResultList vom Typ List<Note>
+	 */
+	private List<Note> createNote(List<AbstractNote> aList) {
+		List<Note> theResultList = new ArrayList<Note>();
+		
+		for (AbstractNote eachData : aList) {
+			theResultList.add(new Note(eachData));
 		}
 		
 		return theResultList;
