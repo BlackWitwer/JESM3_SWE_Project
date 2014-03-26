@@ -3,6 +3,7 @@ package com.jesm3.newDualis.stupla;
 import java.util.List;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.is.Utilities;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -61,7 +62,7 @@ public class WochenplanArrayAdapter extends ArrayAdapter<Wochenplan>{
 					// check to see if each individual textview is null.
 					// if not, assign some text!
 					if (tt != null){
-						tt.setText(theWochenplan.getKalenderwoche() + " (" + theWochenplan.getAnfangsDatum() + " - " + theWochenplan.getEndDatum() + ")");
+						tt.setText(theWochenplan.getKalenderwoche() + " (" + Utilities.dateToString(theWochenplan.getAnfangsDatum()) + " - " + Utilities.dateToString(theWochenplan.getEndDatum()) + ")");
 					}
 				}
 
@@ -104,7 +105,7 @@ public class WochenplanArrayAdapter extends ArrayAdapter<Wochenplan>{
 			// check to see if each individual textview is null.
 			// if not, assign some text!
 			if (tt != null){
-				tt.setText(theWochenplan.getKalenderwoche() + " (" + theWochenplan.getAnfangsDatum() + " - " + theWochenplan.getEndDatum() + ")");
+				tt.setText(theWochenplan.getKalenderwoche() + " (" + Utilities.dateToString(theWochenplan.getAnfangsDatum()) + " - " + Utilities.dateToString(theWochenplan.getEndDatum()) + ")");
 			}
 		}
 

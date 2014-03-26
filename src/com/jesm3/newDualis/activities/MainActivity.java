@@ -50,6 +50,7 @@ import android.widget.Toast;
 
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
@@ -399,7 +400,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     				TextView name= new TextView(getActivity());
     				
     				
-    				zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
+    				zeit.setText(Utilities.dateToTime(eachLecture.getUhrzeitVon()) + " - " + Utilities.dateToTime(eachLecture.getUhrzeitBis()) + " Uhr");
     				subLayout.addView(zeit);
     				
     				name.setText(eachLecture.getName());

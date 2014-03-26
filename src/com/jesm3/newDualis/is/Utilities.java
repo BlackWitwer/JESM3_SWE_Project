@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -14,7 +15,9 @@ import com.jesm3.newDualis.stupla.Wochenplan;
 import android.util.Log;
 
 public class Utilities {
-	public GregorianCalendar stringToGreg(String date) {
+	public static final Locale LOCALE_GERMANY = Locale.GERMANY;
+
+	public static GregorianCalendar stringToGreg(String date) {
 		String[] theDate = date.split("\\.");
 		DateFormat df = new SimpleDateFormat("dd MM yyyy");
 		Date dateD = null;
@@ -30,17 +33,17 @@ public class Utilities {
 		return gc;
 	}
 	
-	public GregorianCalendar dateToGreg(Date d) {
+	public static GregorianCalendar dateToGreg(Date d) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(d);
 		return gc;
 	}
 	
-	public Date stringToDate(String date){
+	public static Date stringToDate(String date){
 		return stringToGreg(date).getTime();
 	}
 	
-	public Date dateAndTimeToDate(String date, String time){
+	public static Date dateAndTimeToDate(String date, String time){
 		Date d = null;
 		String[] timeSplit = time.split(":");
 		long addTime = Integer.parseInt(timeSplit[0])*1000*60*60;
@@ -49,9 +52,20 @@ public class Utilities {
 		return new Date(addTime+dayTime);
 	}
 	
-	public String dateToString(Date d){
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		return simpleDateFormat.format(d);
+	public static String dateToString(Date d){
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy", LOCALE_GERMANY);
+		if (d != null) {
+			return simpleDateFormat.format(d);
+		}
+		return "";
+	}
+	
+	public static String dateToTime(Date aDate) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", LOCALE_GERMANY);
+		if (aDate != null) {
+			return simpleDateFormat.format(aDate);
+		}
+		return "";
 	}
 	
 	public int calcMonthsToGo(int weeks){
