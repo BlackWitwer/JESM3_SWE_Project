@@ -74,23 +74,30 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		layout.removeAllViews();
 
 		final View superView = convertView;
-		for (final Part eachPart : theMail.getAttachmentList()) {
-			Button theButton = new Button(layout.getContext());
-			theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-			layout.addView(theButton);
+		//FIXME Nach dem Laden aus der DB sind die Attachments erstmal nicht geladen.
+		try {
+			for (final Part eachPart : theMail.getAttachmentList()) {
+				Button theButton = new Button(layout.getContext());
+				theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+				layout.addView(theButton);
 
-			theButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					downloadAttachment(superView, eachPart);					
+				theButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						downloadAttachment(superView, eachPart);					
+					}
+				});
+
+				try {
+					theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
+				} catch (MessagingException e) {
+					e.printStackTrace();
 				}
-			});
-
-			try {
-				theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
-			} catch (MessagingException e) {
-				e.printStackTrace();
 			}
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return convertView;
 	}	
@@ -123,13 +130,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		//der Mail View. Evt in Containerobjekt auslagern in dem die nötigen Informationen bereits drin sind.
 		//vermindert zwar nicht die Ladezeit aber macht das Laden evt flüssiger.
 		lblListSubject.setTextColor(Color.BLACK);
+		lblListFrom.setTextColor(Color.BLACK);
 		if (!theMessage.getSeen()) {
 			lblListSubject.setTextColor(Color.BLUE);
 			lblListFrom.setTextColor(Color.BLUE);
 		}
 		lblListSubject.setText(theMessage.getSubject());
 		
-		lblListFrom.setText(theMessage.getFrom() + "    " + theMessage.getMessageNumber());
+		lblListFrom.setText(theMessage.getFrom() + "    " + theMessage.getUId());
 		
 		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				

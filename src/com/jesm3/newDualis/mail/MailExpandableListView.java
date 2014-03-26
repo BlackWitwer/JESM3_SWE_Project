@@ -38,12 +38,12 @@ public class MailExpandableListView extends ExpandableListView {
 			}
 		});
 		getMailManager().refreshCache();
-//		theActivity.runOnUiThread(new Runnable() {
-//			public void run() {
-//				theActivity.findViewById(R.id.mailProgressBar).setVisibility(GONE);
-//			}
-//		});
 		((ExpandableListAdapter) getExpandableListAdapter()).setMessages(getMailManager().getCachedMails());
+		theActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				theActivity.findViewById(R.id.mailProgressBar).setVisibility(GONE);
+			}
+		});
 	}
 	
 	private MailManager getMailManager() {

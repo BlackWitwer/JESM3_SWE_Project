@@ -40,6 +40,9 @@ public class MailContainer extends AbstractMailContainer {
 		setMessageNumber(anOriginalMessage.getMessageNumber());
 		
 		originalMessage = anOriginalMessage;
+		
+		//Muss nach dem setzen der Originalnachricht gemacht werden, da diese benötigt wird.
+		setText(getMessageText());
 	}
 	
 	public MailContainer(Message anOriginalMessage, long aUID) throws MessagingException, IOException {
@@ -60,6 +63,10 @@ public class MailContainer extends AbstractMailContainer {
 			aMailContainer.getHtml(), 
 			aMailContainer.getMessageNumber(), 
 			aMailContainer.getUId());
+	}
+	
+	public void setOriginalMessage(Message aMessage) {
+		originalMessage = aMessage;
 	}
 	
 	/**
@@ -164,8 +171,18 @@ public class MailContainer extends AbstractMailContainer {
 
 	/**
 	 * @return the attachmentList
+	 * @throws IOException 
+	 * @throws MessagingException 
 	 */
-	public ArrayList<Part> getAttachmentList() {
+	public ArrayList<Part> getAttachmentList() throws MessagingException, IOException {
+		if (attachmentList == null) {
+			if (getOriginalMessage() != null) {
+				attachmentList = getAttachments(getOriginalMessage());
+			} else {
+				//FIXME die Liste sollte korrekt geladen werden. Dazu muss ggf. die Nachricht vom MailServer geholt werden.
+				attachmentList = new ArrayList<Part>();
+			}
+		}
 		return attachmentList;
 	}
 
@@ -179,14 +196,12 @@ public class MailContainer extends AbstractMailContainer {
 	public String getMessageText() {
 		if (super.getText() == null) {
 			try {
-				//TODO Fixen wenn keine Originale Message vorhanden ist und der Text noch nicht gelesen wurde.
 				setText(getText(getOriginalMessage()));
 			} catch (MessagingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//TODO Update auf der Datenbank ausf�hren, damit der Text persistiert wird.
 		}
 		return super.getText();
 	}

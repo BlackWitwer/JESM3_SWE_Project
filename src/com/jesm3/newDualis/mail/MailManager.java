@@ -90,7 +90,7 @@ public class MailManager {
 			}
 		}
 		//HighKey+1 ist die erste Nachricht, die nach der neuesten geladenen Nachricht kommen müsste.
-		return getMessagesFromTo(theHighKey+1, UIDFolder.LASTUID).isEmpty();
+		return getMessagesFromTo(theHighKey, UIDFolder.LASTUID).isEmpty();
 	}
 
 	/**
@@ -143,13 +143,17 @@ public class MailManager {
 		try {
 			boolean theRefreshFlag = false;
 			List<Long> theDelKeyList = new ArrayList<Long>();
+			Message[] theMessages;
 			for (long eachKey : messageIdMap.keySet()) {
-				Message theMessage;
-				theMessage = getIdFolder().getMessageByUID(eachKey);
-				if (theMessage == null) {
+				theMessages = getIdFolder().getMessagesByUID(eachKey, eachKey);
+				if (theMessages == null || theMessages.length == 0) {
 					theDelKeyList.add(eachKey);
-					backend.getDbManager().deleteMailContainer(messageIdMap.get(eachKey));
 					theRefreshFlag = true;
+					
+					//Aus der Datenbank löschen falls die Mail gespeichert wurde.
+					if (messageIdMap.get(eachKey).getId() > 0) {
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(eachKey));
+					}
 				}
 			}
 			for (long eachKey : theDelKeyList) {
@@ -185,15 +189,16 @@ public class MailManager {
 				theMail = new MailContainer(aMessage, theUid);
 				messageIdMap.put(theUid, theMail);
 				
-				//TODO Datenbank management impln.
-//				int theMessageCount = getFolder().getMessageCount();
-//				if (aMessageUId > theMessageCount - 10) {
-//					backend.getDbManager().insertMailContainer(theMail);
-//					if (messageIdMap.containsKey(theMessageCount-10)
-//						&& messageIdMap.get(theMessageCount-10).getId() < 0) {
-//						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
-//					}
-//				}
+				int theMessageCount = getFolder().getMessageCount();
+				if (theMail.getMessageNumber() > theMessageCount - 10) {
+					backend.getDbManager().insertMailContainer(theMail);
+					if (messageIdMap.containsKey(theMessageCount-10)
+						&& messageIdMap.get(theMessageCount-10).getId() > 0) {
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+					}
+				}
+			} else if (messageIdMap.get(theUid).getOriginalMessage() == null) {
+				messageIdMap.get(theUid).setOriginalMessage(aMessage);
 			}
 			return messageIdMap.get(theUid);
 		} catch (MessagingException e) {
@@ -229,19 +234,17 @@ public class MailManager {
 		}
 		
 		MailContainer theMail = getMessage(getFolder().getMessage(getFolder().getMessageCount()));
+		long theId = theMail.getUId();
+		MailContainer theOldMail = null;
 		for (int i = anAmount; i > 0; i--) {
-			loadNextOlderMessage(theMail.getUId());
+			theOldMail = null;
+			while (theOldMail == null && theId > 0) {
+				theOldMail = getMessage(theId--);
+			}
 		}
+		aListener.mailReceived();
 	}
 	
-	private void loadNextOlderMessage(long anUid) throws MessagingException {
-		long theId = anUid;
-		MailContainer theMail = null;
-		while (theMail == null) {
-			theMail = getMessage(theId--);
-		}
-	}
-
 	public Collection<MailContainer> getCachedMails() {
 		while (!loggedIn) {
 		}
