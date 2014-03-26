@@ -56,7 +56,7 @@ public class DualisParser {
 				stdgr.setKalenderwoche(wochenAnfangsdatum);
 				calenderSet = true;
 
-				GregorianCalendar gc = stdgr.stringToGreg(wochenAnfangsdatum);
+				GregorianCalendar gc = util.stringToGreg(wochenAnfangsdatum);
 				int kalenderWoche = gc.get(GregorianCalendar.WEEK_OF_YEAR);
 				int jahr = gc.get(GregorianCalendar.YEAR);
 				GregorianCalendar gcnow = new GregorianCalendar();

@@ -18,6 +18,13 @@ public class StundenplanGenerator {
 	private Utilities util = new Utilities();
 	private Wochenplan std= new Wochenplan();
 	
+	public ArrayList<Wochenplan> generateStundenplan(ArrayList<Vorlesung> alleVorlesungen) {
+		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
+		GregorianCalendar gc = new GregorianCalendar();
+		std = new Wochenplan();
+		return stdl;
+	}
+
 	public Wochenplan getStd() {
 		return std;
 	}
@@ -99,27 +106,7 @@ public class StundenplanGenerator {
 	
 	public void setKalenderwoche(String somedate) {
 		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
-		GregorianCalendar gc = stringToGreg(somedate);
+		GregorianCalendar gc = util.stringToGreg(somedate);
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
-	}
-	
-	public GregorianCalendar stringToGreg(String date) {
-		String[] theDate = date.split("\\.");
-		DateFormat df = new SimpleDateFormat("dd MM yyyy");
-		Date dateD = null;
-		try {
-			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
-		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTime(dateD);
-		return gc;
-	}
-	
-	public Date stringToDate(String date){
-		return stringToGreg(date).getTime();
 	}
 }
