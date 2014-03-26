@@ -26,10 +26,9 @@ public class AbstractVorlesungDao extends AbstractDao<AbstractVorlesung, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Dozent = new Property(2, String.class, "dozent", false, "DOZENT");
-        public final static Property Datum = new Property(3, String.class, "datum", false, "DATUM");
-        public final static Property UhrzeitVon = new Property(4, String.class, "uhrzeitVon", false, "UHRZEIT_VON");
-        public final static Property UhrzeitBis = new Property(5, String.class, "uhrzeitBis", false, "UHRZEIT_BIS");
-        public final static Property Raum = new Property(6, String.class, "raum", false, "RAUM");
+        public final static Property UhrzeitVon = new Property(3, java.util.Date.class, "uhrzeitVon", false, "UHRZEIT_VON");
+        public final static Property UhrzeitBis = new Property(4, java.util.Date.class, "uhrzeitBis", false, "UHRZEIT_BIS");
+        public final static Property Raum = new Property(5, String.class, "raum", false, "RAUM");
     };
 
 
@@ -48,10 +47,9 @@ public class AbstractVorlesungDao extends AbstractDao<AbstractVorlesung, Long> {
                 "'_id' INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "'NAME' TEXT," + // 1: name
                 "'DOZENT' TEXT," + // 2: dozent
-                "'DATUM' TEXT," + // 3: datum
-                "'UHRZEIT_VON' TEXT," + // 4: uhrzeitVon
-                "'UHRZEIT_BIS' TEXT," + // 5: uhrzeitBis
-                "'RAUM' TEXT);"); // 6: raum
+                "'UHRZEIT_VON' INTEGER," + // 3: uhrzeitVon
+                "'UHRZEIT_BIS' INTEGER," + // 4: uhrzeitBis
+                "'RAUM' TEXT);"); // 5: raum
     }
 
     /** Drops the underlying database table. */
@@ -80,24 +78,19 @@ public class AbstractVorlesungDao extends AbstractDao<AbstractVorlesung, Long> {
             stmt.bindString(3, dozent);
         }
  
-        String datum = entity.getDatum();
-        if (datum != null) {
-            stmt.bindString(4, datum);
-        }
- 
-        String uhrzeitVon = entity.getUhrzeitVon();
+        java.util.Date uhrzeitVon = entity.getUhrzeitVon();
         if (uhrzeitVon != null) {
-            stmt.bindString(5, uhrzeitVon);
+            stmt.bindLong(4, uhrzeitVon.getTime());
         }
  
-        String uhrzeitBis = entity.getUhrzeitBis();
+        java.util.Date uhrzeitBis = entity.getUhrzeitBis();
         if (uhrzeitBis != null) {
-            stmt.bindString(6, uhrzeitBis);
+            stmt.bindLong(5, uhrzeitBis.getTime());
         }
  
         String raum = entity.getRaum();
         if (raum != null) {
-            stmt.bindString(7, raum);
+            stmt.bindString(6, raum);
         }
     }
 
@@ -114,10 +107,9 @@ public class AbstractVorlesungDao extends AbstractDao<AbstractVorlesung, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // dozent
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // datum
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // uhrzeitVon
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // uhrzeitBis
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // raum
+            cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)), // uhrzeitVon
+            cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)), // uhrzeitBis
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // raum
         );
         return entity;
     }
@@ -128,10 +120,9 @@ public class AbstractVorlesungDao extends AbstractDao<AbstractVorlesung, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setDozent(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setDatum(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setUhrzeitVon(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setUhrzeitBis(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setRaum(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setUhrzeitVon(cursor.isNull(offset + 3) ? null : new java.util.Date(cursor.getLong(offset + 3)));
+        entity.setUhrzeitBis(cursor.isNull(offset + 4) ? null : new java.util.Date(cursor.getLong(offset + 4)));
+        entity.setRaum(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     /** @inheritdoc */

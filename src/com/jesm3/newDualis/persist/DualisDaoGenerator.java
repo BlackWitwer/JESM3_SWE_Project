@@ -27,9 +27,8 @@ public class DualisDaoGenerator {
 		theVorlesung.addIdProperty().autoincrement();
 		theVorlesung.addStringProperty("name");
 		theVorlesung.addStringProperty("dozent");
-		theVorlesung.addStringProperty("datum");
-		theVorlesung.addStringProperty("uhrzeitVon");
-		theVorlesung.addStringProperty("uhrzeitBis");
+		theVorlesung.addDateProperty("uhrzeitVon");
+		theVorlesung.addDateProperty("uhrzeitBis");
 		theVorlesung.addStringProperty("raum");
 	}
 }

@@ -2,6 +2,9 @@ package com.jesm3.newDualis.jinterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +28,7 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
@@ -37,11 +41,13 @@ public class DualisConnection {
 	private DualisParser dparse;
 	private DualisLinks mlinks;
 	private Backend backend;
+	Utilities util;
 
 	public DualisConnection(Backend aBackend) {
 		httpClient = new DefaultHttpClient();
 		dparse = new DualisParser();
 		this.backend = aBackend;
+		util = new Utilities();
 	}
 
 	/**
@@ -160,7 +166,7 @@ public class DualisConnection {
 				wl.remove(0);
 			}
 			else{
-				if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+				if(util.dateToString(wl.get(0).getAnfangsDatum()).matches("01.([0-9].){1}.[0-9]*")==false) {
 					wl.remove(0);
 				}
 			}
@@ -185,9 +191,15 @@ public class DualisConnection {
 		}
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
 		for (Wochenplan eachWoche : wl) {
+			if(eachWoche.getEndDatum()==null){
+				Date anfangsDatum = eachWoche.getAnfangsDatum();
+				Date endDatum = addDaysToDate(anfangsDatum, 7);
+				eachWoche.setEndDatumDate(endDatum);
+			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}
+
 	
 	public int calcMonthsToGo(int weeks){
 		Calendar c = Calendar.getInstance();

@@ -1,6 +1,7 @@
 package com.jesm3.newDualis.jinterface;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.jsoup.Jsoup;
@@ -10,11 +11,13 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class DualisParser {
-
+	Utilities util = new Utilities();
+	
 	public DualisParser() {
 	}
 
@@ -135,8 +138,9 @@ public class DualisParser {
 			String raum = splitTitle[1].trim(); // TODO STG-RB41-4.14-TINF
 												// "-TINF" notwendig??
 			String name = splitTitle[2].trim();
-			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent,
-					name, datum, raum);
+			Date uhrZeitVonDate = util.dateAndTimeToDate(datum,uhrzeitVon);
+			Date uhrZeitBisDate = util.dateAndTimeToDate(datum,uhrzeitBis);
+			Vorlesung dayv = new Vorlesung(uhrZeitVonDate, uhrZeitBisDate, dozent, name, raum);
 
 			vorlesungen.add(dayv);
 		}
