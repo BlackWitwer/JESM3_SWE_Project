@@ -164,5 +164,4 @@
             android:text="@string/aktualisieren" />
 
     </LinearLayout>
-
 </RelativeLayout>

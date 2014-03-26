@@ -1,148 +1,154 @@
 package com.jesm3.newDualis.jinterface;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.util.Log;
+
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
-import android.content.res.Resources;
-import android.text.Html;
-import android.util.Log;
-
 public class DualisParser {
-	
-	public DualisParser(){
+
+	public DualisParser() {
 	}
-	
-	// JSoup HTML Parser, schnell aber noch kein Parsing mit xsl files 
-	public ArrayList<Wochenplan> parseMonth(String aContent){ 
+
+	// JSoup HTML Parser, schnell aber noch kein Parsing mit xsl files
+	public ArrayList<Wochenplan> parseMonth(String aContent) {
 		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
 		StundenplanGenerator stdgr = new StundenplanGenerator();
 		Document doc = Jsoup.parse(aContent);
-		
-		// Siehe auch http://jsoup.org/apidocs/org/jsoup/select/Selector.html
-		Elements weeks = doc.select("tr"); //RAM???
 
-		for(int i=1;i<weeks.size();i++){
+		// Siehe auch http://jsoup.org/apidocs/org/jsoup/select/Selector.html
+		Elements weeks = doc.select("tr"); // RAM???
+
+		for (int i = 1; i < weeks.size(); i++) {
 			boolean addWeek = true;
 			boolean calenderSet = false;
+
 			Elements days = weeks.get(i).select(".tbMonthDayCell");
 			stdgr = new StundenplanGenerator();
-			
-			//Wochenafangsdatum auslesen und setzen 
+
+			// Wochenafangsdatum auslesen und setzen
 			Elements datelinks = null;
-			
-			if(days.size()>6&&calenderSet==false){
-				datelinks = days.get(6).select("a");			
-				if(datelinks.size()>0){
+
+			if (days.size() > 6 && calenderSet == false) {
+				datelinks = days.get(6).select("a");
+				if (datelinks.size() > 0) {
 					String wochenEnddatum = datelinks.get(0).attr("title");
 					stdgr.getStd().setEndDatum(wochenEnddatum);
 					stdgr.setKalenderwoche(wochenEnddatum);
 				}
 			}
-			
+
 			datelinks = days.get(0).select("a");
-			if(datelinks.size()>0){
+			if (datelinks.size() > 0) {
 				String wochenAnfangsdatum = datelinks.get(0).attr("title");
 				stdgr.getStd().setAnfangsDatum(wochenAnfangsdatum);
 				stdgr.setKalenderwoche(wochenAnfangsdatum);
 				calenderSet = true;
-				
+
 				GregorianCalendar gc = stdgr.stringToGreg(wochenAnfangsdatum);
 				int kalenderWoche = gc.get(GregorianCalendar.WEEK_OF_YEAR);
 				int jahr = gc.get(GregorianCalendar.YEAR);
 				GregorianCalendar gcnow = new GregorianCalendar();
-				int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
+				int kalenderWocheNow = gcnow
+						.get(GregorianCalendar.WEEK_OF_YEAR);
 				int jahrNow = gcnow.get(GregorianCalendar.YEAR);
-				Log.d("parsetest", "kalenderWoche:"+ kalenderWoche + " kalenderWocheNow" + kalenderWocheNow + "jahr"+jahr+" jahrNow"+jahrNow);
-				if(kalenderWoche<kalenderWocheNow && jahr == jahrNow){
+				Log.d("parsetest", "kalenderWoche:" + kalenderWoche
+						+ " kalenderWocheNow" + kalenderWocheNow + "jahr"
+						+ jahr + " jahrNow" + jahrNow);
+				if (kalenderWoche < kalenderWocheNow && jahr == jahrNow) {
 					addWeek = false;
 				}
 			}
-			
-			for(int j=0;j<days.size();j++){
-				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days.get(j));
-				if (vorlesungen.size()==0){  
+
+			for (int j = 0; j < days.size(); j++) {
+				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days
+						.get(j));
+				if (vorlesungen.size() == 0) {
 					// Dummyvorlesung wenn Vorlesung in Monat nicht geladen
-					Vorlesung dummy=new Vorlesung();
+					Vorlesung dummy = new Vorlesung();
 					dummy.setDozent("FREEDAY");
 					stdgr.addVorlesung(j, dummy);
 				}
-				for(int k=0;k<vorlesungen.size();k++){
+				for (int k = 0; k < vorlesungen.size(); k++) {
+
 					stdgr.addVorlesung(j, vorlesungen.get(k));
 				}
 			}
-			for(int j=0;j<6;j++) {
-				if(stdgr.getDays(stdgr.getStd()).get(j).size()==0){ //Prüft ob eine Vorlesung an jedem Tag existiert
-					Vorlesung dummy=new Vorlesung();
+			for (int j = 0; j < 6; j++) {
+				if (stdgr.getDays(stdgr.getStd()).get(j).size() == 0) { // Prüft
+																		// ob
+																		// eine
+																		// Vorlesung
+																		// an
+																		// jedem
+																		// Tag
+																		// existiert
+					Vorlesung dummy = new Vorlesung();
 					dummy.setDozent("DRFAIL");
 					stdgr.addVorlesung(j, dummy);
 				}
 			}
-			if(addWeek) {
+			if (addWeek) {
 				stdl.add(stdgr.getStd());
-			}
-			else {
+			} else {
 				Log.d("parsetest", "Wochenplan wird nicht geaddet");
 			}
 		}
 		String out = "";
-		for (int i=0;i<stdl.size();i++){
-			out=out+"Kalenderwoche\n"+stdl.get(i).toString()+"\n\n";
+		for (int i = 0; i < stdl.size(); i++) {
+			out = out + "Kalenderwoche\n" + stdl.get(i).toString() + "\n\n";
 		}
 		Log.d("parsetest", out.toString());
-		return stdl; 
-		//Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut ausf�hren und 
-		//mit erstem/letzten Stundenplan mergen
+		return stdl;
+		// Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut
+		// ausf�hren und
+		// mit erstem/letzten Stundenplan mergen
 	}
-	
-	public ArrayList<Vorlesung> generateVorlesungen(Element day){
+
+	public ArrayList<Vorlesung> generateVorlesungen(Element day) {
 		ArrayList<Vorlesung> vorlesungen = new ArrayList<Vorlesung>();
 		Elements vlink = day.select(".apmntLink");
-		for(int i=0;i<vlink.size();i++) {
+		for (int i = 0; i < vlink.size(); i++) {
 			String title = vlink.get(i).attr("title");
+			// Log ausgabe?
+			System.out.println("TITLE: " + title);
+
 			String[] splitTitle = title.split("/");
 			String[] splitTime = splitTitle[0].split("-");
 			Elements atags = day.select("a");
 			String datum = "DD.MM.YYYY";
-			if(atags.size()>0){
+			if (atags.size() > 0) {
 				datum = atags.get(0).attr("title");
 			}//
-			String uhrzeitVon=splitTime[0].trim();
-			String uhrzeitBis=splitTime[1].trim();
-			String dozent="???";
-			String raum = splitTitle[1].trim();  // TODO STG-RB41-4.14-TINF "-TINF" notwendig??
-			String name=splitTitle[2].trim();
-			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent, name, datum, raum);
+
+			String uhrzeitVon = splitTime[0].trim();
+			String uhrzeitBis = splitTime[1].trim();
+			String dozent = "???";
+			String raum = splitTitle[1].trim(); // TODO STG-RB41-4.14-TINF
+												// "-TINF" notwendig??
+			String name = splitTitle[2].trim();
+			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent,
+					name, datum, raum);
+
 			vorlesungen.add(dayv);
 		}
 		return vorlesungen;
 	}
-	
+
 	// Methode die den Link mit xslt herausparst, weiterverwenden?
-	public String parseLink(String aContent, String selector){
+	public String parseLink(String aContent, String selector) {
 		Document doc = Jsoup.parse(aContent);
 		Element link = doc.select(selector).first();
 		String linkHref = link.attr("href");
 		return linkHref;
 	}
-	
+
 }

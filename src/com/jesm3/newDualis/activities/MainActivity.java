@@ -17,12 +17,15 @@ import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -61,6 +64,7 @@ import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
+import com.jesm3.newDualis.synchronization.SyncService;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
@@ -85,10 +89,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	ActionBar actionBar;
 
 	private boolean doubleClicked;
+	private SyncService mBoundSyncService;
+	private String logname = "mainActivity";
+	// for nude purpose only
+	private long timestamp = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		actionBar = getActionBar();
 		actionBar.hide();
 		setContentView(R.layout.activity_main);
@@ -110,6 +119,26 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		// -----------------------------------
 
 		// initMailView();
+
+		// start the SyncService
+		startService(new Intent(this, SyncService.class));
+		bindService(new Intent(this, SyncService.class),
+				new ServiceConnection() {
+
+					@Override
+					public void onServiceDisconnected(ComponentName name) {
+						mBoundSyncService = null;
+					}
+
+					@Override
+					public void onServiceConnected(ComponentName name,
+							IBinder service) {
+						mBoundSyncService = ((SyncService.LocalBinder) service)
+								.getService();
+//						Toast.makeText(mBoundSyncService, "Service Verbunden",
+//								Toast.LENGTH_SHORT).show();
+					}
+				}, 0);
 	}
 
 	/*
@@ -211,7 +240,14 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
 	 */
 	public void updateStupla(View v) {
-		//TODO MJI hier soll der Stundenplan aktualisiert werden.
+		mBoundSyncService.manualSync();
+
+		// XXX
+		if (System.currentTimeMillis() - timestamp < 100) {
+			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
+					.show();
+		}
+		timestamp = System.currentTimeMillis();
 	}
 
 	/**
@@ -260,10 +296,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * A fragment representing a section of the app.
 	 */
 	public static class SectionFragment extends Fragment {
-	
-	    private Wochenplan stupla;
-    	private ArrayList<Note> noten;
-	
+
+		private Wochenplan stupla;
+		private ArrayList<Note> noten;
+
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -445,7 +481,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 			return rootView;
 		}
-		
+
 		private void setMarksOnGui(View aContainer) {
 			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
 			addHeaderRow(lay_table);
@@ -543,7 +579,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			noten.add(new Note("Rechnerarchitekturen", "3.8", "5"));
 			noten.add(new Note("Formale Sprachen und Automaten", "5.0", "8"));
 			noten.add(new Note("Netztechnik", "3.5", "6"));
-			
+
 		}
 
 		/**
@@ -563,7 +599,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					listAdapter.addAllMessages(someMails);
 					final boolean theEmptyFlag = someMails.isEmpty();
 					getActivity().runOnUiThread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							listAdapter.notifyDataSetChanged();
@@ -575,9 +611,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				}
 			});
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-				
+
 				private int lastExpand = -1;
-				
+
 				@Override
 				public void onGroupExpand(int groupPosition) {
 					if (lastExpand > -1 && lastExpand != groupPosition) {
