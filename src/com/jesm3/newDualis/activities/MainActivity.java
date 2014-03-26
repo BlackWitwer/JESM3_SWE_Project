@@ -10,19 +10,16 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.mail.Message;
-
 import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -40,8 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.AnalogClock;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
@@ -216,24 +211,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	    myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 	    myNotification.setLatestEventInfo(context, notificationTitle, notificationText, pendingIntent);
 	    notificationManager.notify(1, myNotification);
-		
-		
-//    	Intent intent = new Intent(this, MainActivity.class);
-//        PendingIntent pi = PendingIntent.getActivity(this, 0,intent, 0);
-//    	
-//    	NotificationCompat.Builder mBuilder =
-//    	        new NotificationCompat.Builder(this)
-//    	        .setSmallIcon(R.drawable.icon)
-//    	        .setContentTitle("Neue Mail")
-//    	        .setContentText("Sie haben 1 neue Mail erhalten!");
-//    	
-//    	Notification note = mBuilder.build();
-//    	note.setLatestEventInfo(this, "New Email", "Unread Conversation", pi);
-//    	note.flags |= Notification.FLAG_AUTO_CANCEL;
-//    	
-//    	NotificationManager mNotificationManager =
-//    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//    	mNotificationManager.notify(1, mBuilder.build());
 	}
 	
 	/**
