@@ -76,7 +76,12 @@ public class Utilities {
 
 	    GregorianCalendar calendar = new GregorianCalendar();
 	    calendar.setTime(newDate);
-	    calendar.add(Calendar.DATE, noOfDays);
+	    if(noOfDays>0){
+	    	calendar.add(Calendar.DATE, noOfDays);
+	    }
+	    else {
+	    	calendar.setTimeInMillis(calendar.getTimeInMillis()+noOfDays*24*60*60*1000);
+	    }
 	    newDate.setTime(calendar.getTime().getTime());
 
 	    return newDate;

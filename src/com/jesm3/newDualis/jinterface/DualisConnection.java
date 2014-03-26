@@ -204,6 +204,11 @@ public class DualisConnection {
 				Date endDatum = util.addDaysToDate(anfangsDatum, 7);
 				eachWoche.setEndDatumDate(endDatum);
 			}
+			if(eachWoche.getAnfangsDatum()==null){
+				Date endDatum = eachWoche.getEndDatum();
+				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
+				eachWoche.setAnfangsDatumDate(anfangsDatum);
+			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}
