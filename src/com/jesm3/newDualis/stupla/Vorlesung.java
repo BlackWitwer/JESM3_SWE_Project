@@ -1,5 +1,7 @@
 package com.jesm3.newDualis.stupla;
 
+import java.util.Date;
+
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 
 public class Vorlesung extends AbstractVorlesung {
@@ -29,9 +31,9 @@ public class Vorlesung extends AbstractVorlesung {
 	 * @param dozent Name des Dozenten.
 	 * @param name Name der Vorlesung.
 	 */
-	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
-			String name, String datum, String raum) {
-		super(null, name, dozent, datum, uhrzeitVon, uhrzeitBis, raum);
+	public Vorlesung(Date uhrzeitVon, Date uhrzeitBis, String dozent,
+			String name, String raum) {
+		super(null, name, dozent, uhrzeitVon, uhrzeitBis, raum);
 	}
 	/**
 	 * Kostruktor
@@ -41,17 +43,17 @@ public class Vorlesung extends AbstractVorlesung {
 	 * @param dozent Name des Dozenten.
 	 * @param name Name der Vorlesung.
 	 */
-	public Vorlesung(String uhrzeitVon, String uhrzeitBis, String dozent,
+	public Vorlesung(Date uhrzeitVon, Date uhrzeitBis, String dozent,
 			String name) {
-		this(uhrzeitVon,uhrzeitBis,dozent,name,"","");
+		this(uhrzeitVon,uhrzeitBis,dozent,name,"");
 	}
 	
 	public Vorlesung() {
-		this("","","","");
+		this(null,null,"","");
 	}
 	
 	public Vorlesung(AbstractVorlesung aVorlesung) {
-		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getDatum(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());
+		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());
 	}
 	
 //	TODO Wird diese Methode überhaupt gebraucht?? Wenn nicht löschen.

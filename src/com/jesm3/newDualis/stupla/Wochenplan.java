@@ -1,27 +1,61 @@
 package com.jesm3.newDualis.stupla;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 public class Wochenplan {
 	/**
 	 * Alle Vorlesungen f�r Montag.
 	 */
-	private String anfangsDatum=null;
-	private String endDatum=null;
-	public String getAnfangsDatum() {
+	private Date anfangsDatum=null;
+	private Date endDatum=null;
+	
+	public Date stringToDate(String date){
+		return stringToGreg(date).getTime();
+	}
+	
+	public GregorianCalendar stringToGreg(String date) {
+		String[] theDate = date.split("\\.");
+		DateFormat df = new SimpleDateFormat("dd MM yyyy");
+		Date dateD = null;
+		try {
+			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(dateD);
+		return gc;
+	}
+	
+	public Date getAnfangsDatum() {
 		return anfangsDatum;
 	}
 
 	public void setAnfangsDatum(String anfangsDatum) {
+		this.anfangsDatum = stringToDate(anfangsDatum);
+	}
+	
+	public void setAnfangsDatumDate(Date anfangsDatum) {
 		this.anfangsDatum = anfangsDatum;
 	}
 
-	public String getEndDatum() {
+	public Date getEndDatum() {
 		return endDatum;
 	}
-
+	
 	public void setEndDatum(String endDatum) {
+		this.endDatum = stringToDate(endDatum);
+	}
+	
+	public void setEndDatumDate(Date endDatum) {
 		this.endDatum = endDatum;
 	}
 

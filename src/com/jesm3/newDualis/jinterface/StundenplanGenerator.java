@@ -10,11 +10,12 @@ import java.util.GregorianCalendar;
 
 import android.util.Log;
 
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class StundenplanGenerator {
-	
+	private Utilities util = new Utilities();
 	private Wochenplan std= new Wochenplan();
 	
 	public Wochenplan getStd() {
@@ -55,8 +56,8 @@ public class StundenplanGenerator {
 		}
 		if(merge){
 			Wochenplan resultwl = listToWochenplan(w1l);
-			resultwl.setAnfangsDatum(w1.getAnfangsDatum());
-			resultwl.setEndDatum(w1.getEndDatum());
+			resultwl.setAnfangsDatumDate(w1.getAnfangsDatum());
+			resultwl.setEndDatumDate(w1.getEndDatum());
 			return resultwl;
 		}
 		else{
@@ -94,12 +95,6 @@ public class StundenplanGenerator {
 		out.setFreitag(l.get(4));
 		out.setSamstag(l.get(5));
 		return out;
-	}
-	
-	private void setKalenderwoche(Vorlesung aVorlesung) {
-		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
-		GregorianCalendar gc = stringToGreg(aVorlesung.getDatum());
-		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
 	}
 	
 	public void setKalenderwoche(String somedate) {

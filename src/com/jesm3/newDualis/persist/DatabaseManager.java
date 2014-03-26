@@ -55,8 +55,8 @@ public class DatabaseManager {
 		return aVorlesung;
 	}
 	/**
-	 * Löscht eine Vorlesung.
-	 * @param aVorlesung die gelöscht werden soll.
+	 * Lï¿½scht eine Vorlesung.
+	 * @param aVorlesung die gelï¿½scht werden soll.
 	 */
 	public void deleteVorlesung(Vorlesung aVorlesung) {
 		vorlesungDAO.delete(aVorlesung);
@@ -71,8 +71,6 @@ public class DatabaseManager {
 		List<Vorlesung> vorlesungsList = createVorlesung(vorlesungDAO.loadAll());
 		List<Vorlesung> removeList = new ArrayList<Vorlesung>();
 		
-		SimpleDateFormat dateFormat = new SimpleDateFormat( "dd.MM.yyyy" );
-		Date datumVorlesung = new Date();
 		// Heute = System.currentTimeMillis() - die Millisekunden eines ganzen Tages (ansonsten werden heutige Vorlesungen als Vergangen betrachtet).
 		long einTag = 86400000;
 		long heute = System.currentTimeMillis() - einTag;
@@ -83,14 +81,8 @@ public class DatabaseManager {
 			
 		case REQUEST_NEXT:						
 			for (Vorlesung eachVorlesung : vorlesungsList) {
-				try {
-					datumVorlesung = dateFormat.parse(eachVorlesung.getDatum());
-					
-					if (datumVorlesung.getTime() < heute) {
-						removeList.add(eachVorlesung);
-					}
-				} catch (ParseException e) {
-					e.printStackTrace();
+				if (eachVorlesung.getUhrzeitVon().getTime() < heute) {
+					removeList.add(eachVorlesung);
 				}
 			}
 			
@@ -99,14 +91,8 @@ public class DatabaseManager {
 			
 		case REQUEST_LAST:			
 			for (Vorlesung eachVorlesung : vorlesungsList) {
-				try {
-					datumVorlesung = dateFormat.parse(eachVorlesung.getDatum());
-					
-					if (datumVorlesung.getTime() >= heute) {
-						removeList.add(eachVorlesung);
-					}
-				} catch (ParseException e) {
-					e.printStackTrace();
+				if (eachVorlesung.getUhrzeitVon().getTime() < heute) {
+					removeList.add(eachVorlesung);
 				}
 			}
 			

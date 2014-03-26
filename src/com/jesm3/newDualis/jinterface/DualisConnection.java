@@ -28,6 +28,7 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
@@ -40,11 +41,13 @@ public class DualisConnection {
 	private DualisParser dparse;
 	private DualisLinks mlinks;
 	private Backend backend;
+	Utilities util;
 
 	public DualisConnection(Backend aBackend) {
 		httpClient = new DefaultHttpClient();
 		dparse = new DualisParser();
 		this.backend = aBackend;
+		util = new Utilities();
 	}
 
 	/**
@@ -163,7 +166,7 @@ public class DualisConnection {
 				wl.remove(0);
 			}
 			else{
-				if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+				if(util.dateToString(wl.get(0).getAnfangsDatum()).matches("01.([0-9].){1}.[0-9]*")==false) {
 					wl.remove(0);
 				}
 			}
@@ -189,34 +192,14 @@ public class DualisConnection {
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
 		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
-				Date anfangsDatum = stringToDate(eachWoche.getAnfangsDatum());
+				Date anfangsDatum = eachWoche.getAnfangsDatum();
 				Date endDatum = addDaysToDate(anfangsDatum, 7);
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-				eachWoche.setEndDatum(simpleDateFormat.format(endDatum));
+				eachWoche.setEndDatumDate(endDatum);
 			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}
-	
-	public GregorianCalendar stringToGreg(String date) {
-		String[] theDate = date.split("\\.");
-		DateFormat df = new SimpleDateFormat("dd MM yyyy");
-		Date dateD = null;
-		try {
-			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
-		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTime(dateD);
-		return gc;
-	}
-	
-	public Date stringToDate(String date){
-		return stringToGreg(date).getTime();
-	}
+
 	
 	public int calcMonthsToGo(int weeks){
 		Calendar c = Calendar.getInstance();
