@@ -13,7 +13,7 @@ public class VorlesungsplanManager {
 	}
 	
 	public Wochenplan getWochenplan(int aKalenderwoche) {
-		Wochenplan stupla = new Wochenplan();
+//		Wochenplan stupla = new Wochenplan();
 //		stupla.setKalenderwoche("41");
 //		
 //		stupla.addMontag(new Vorlesung(
