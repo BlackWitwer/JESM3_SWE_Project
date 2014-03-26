@@ -5,8 +5,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import javax.mail.Message;
-
 import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -125,8 +123,9 @@ public class MainActivity extends FragmentActivity {
 							IBinder service) {
 						mBoundSyncService = ((SyncService.LocalBinder) service)
 								.getService();
-						Toast.makeText(mBoundSyncService, "Service Verbunden",
-								Toast.LENGTH_SHORT).show();
+						// Toast.makeText(mBoundSyncService,
+						// "Service Verbunden",
+						// Toast.LENGTH_SHORT).show();
 					}
 				}, 0);
 	}
@@ -511,9 +510,10 @@ public class MainActivity extends FragmentActivity {
 		 * Initialisiert die ExpandableListView der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
-			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
-			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-					new ArrayList<MessageContainer>());
+			MailManager manager = ((CustomApplication) getActivity()
+					.getApplication()).getMailManager();
+			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(
+					getActivity(), new ArrayList<MessageContainer>());
 			final ExpandableListView expListView;
 			expListView = (ExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
@@ -529,7 +529,8 @@ public class MainActivity extends FragmentActivity {
 						public void run() {
 							listAdapter.notifyDataSetChanged();
 							if (!theEmptyFlag) {
-								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
+								aView.findViewById(R.id.mailProgressBar)
+										.setVisibility(View.GONE);
 							}
 						}
 					});
