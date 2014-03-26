@@ -129,7 +129,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		}
 		lblListSubject.setText(theMessage.getSubject());
 		
-		lblListFrom.setText(theMessage.getFrom());
+		lblListFrom.setText(theMessage.getFrom() + "    " + theMessage.getMessageNumber());
 		
 		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				

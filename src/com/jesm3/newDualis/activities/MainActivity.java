@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 
 import android.app.ActionBar;
 import android.app.Notification;
@@ -450,19 +451,24 @@ public class MainActivity extends FragmentActivity {
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 			listAdapter.setMessages(manager.getCachedMails());
-			manager.getLatestMessages(10, new MailListener() {
-				@Override
-				public void mailReceived() {
-					listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
-					getActivity().runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
-						}
-					});
-				}
-			});
+			try {
+				manager.getLatestMessages(10, new MailListener() {
+					@Override
+					public void mailReceived() {
+						listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
+						getActivity().runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
+							}
+						});
+					}
+				});
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+			
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
 				
 				private int lastExpand = -1;
