@@ -2,6 +2,9 @@ package com.jesm3.newDualis.jinterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -185,8 +188,34 @@ public class DualisConnection {
 		}
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
 		for (Wochenplan eachWoche : wl) {
+			if(eachWoche.getEndDatum()==null){
+				Date anfangsDatum = stringToDate(eachWoche.getAnfangsDatum());
+				Date endDatum = addDaysToDate(anfangsDatum, 7);
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				eachWoche.setEndDatum(simpleDateFormat.format(endDatum));
+			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
+	}
+	
+	public GregorianCalendar stringToGreg(String date) {
+		String[] theDate = date.split("\\.");
+		DateFormat df = new SimpleDateFormat("dd MM yyyy");
+		Date dateD = null;
+		try {
+			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(dateD);
+		return gc;
+	}
+	
+	public Date stringToDate(String date){
+		return stringToGreg(date).getTime();
 	}
 	
 	public int calcMonthsToGo(int weeks){
