@@ -216,24 +216,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	    myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 	    myNotification.setLatestEventInfo(context, notificationTitle, notificationText, pendingIntent);
 	    notificationManager.notify(1, myNotification);
-		
-		
-//    	Intent intent = new Intent(this, MainActivity.class);
-//        PendingIntent pi = PendingIntent.getActivity(this, 0,intent, 0);
-//    	
-//    	NotificationCompat.Builder mBuilder =
-//    	        new NotificationCompat.Builder(this)
-//    	        .setSmallIcon(R.drawable.icon)
-//    	        .setContentTitle("Neue Mail")
-//    	        .setContentText("Sie haben 1 neue Mail erhalten!");
-//    	
-//    	Notification note = mBuilder.build();
-//    	note.setLatestEventInfo(this, "New Email", "Unread Conversation", pi);
-//    	note.flags |= Notification.FLAG_AUTO_CANCEL;
-//    	
-//    	NotificationManager mNotificationManager =
-//    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//    	mNotificationManager.notify(1, mBuilder.build());
 	}
 	
 	/**
