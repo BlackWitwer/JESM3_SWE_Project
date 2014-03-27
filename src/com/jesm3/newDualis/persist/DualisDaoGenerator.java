@@ -14,6 +14,7 @@ public class DualisDaoGenerator {
 		
 		addVorlesung(theSchema);
 		addMail(theSchema);
+		addNoten(theSchema);
 		
 		File theFile = new File("./src-gen");
 		if (!theFile.exists()) {
@@ -48,5 +49,13 @@ public class DualisDaoGenerator {
 		theMail.addBooleanProperty("html");
 		theMail.addIntProperty("messageNumber");
 		theMail.addLongProperty("uId");
+	}
+	
+	private static void addNoten(Schema aSchema) {
+		Entity theNote = aSchema.addEntity("AbstractNote");
+		theNote.addIdProperty().autoincrement();
+		theNote.addStringProperty("titel");
+		theNote.addStringProperty("note");
+		theNote.addStringProperty("credits");
 	}
 }
