@@ -1,10 +1,7 @@
 package com.jesm3.newDualis.is;
 
 import android.app.Application;
-import android.content.Intent;
 
-import com.jesm3.newDualis.activities.LoginActivity;
-import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.mail.MailManager;
 
 public class CustomApplication extends Application {
