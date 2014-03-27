@@ -17,6 +17,44 @@ import android.util.Log;
 public class Utilities {
 	public static final Locale LOCALE_GERMANY = Locale.GERMANY;
 
+	public static boolean sameDate(Date date1, Date date2) {
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(date1);
+		cal2.setTime(date2);
+		boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+		return sameDay;
+	}
+	
+	public static Wochenplan addDateToFreedays(Wochenplan wp){
+		ArrayList<Vorlesung> stdl = new ArrayList<Vorlesung>();
+		for(int i=0; i<6; i++) {
+			switch (i) {
+			case 0:  stdl = wp.getMontag();
+	        break;
+			case 1:  stdl = wp.getDienstag();
+	        break;
+			case 2:  stdl = wp.getMittwoch();
+	        break;
+			case 3:  stdl = wp.getDonnerstag();
+	        break;
+			case 4:  stdl = wp.getFreitag();
+	        break;
+			case 5:  stdl = wp.getSamstag();
+	        break;
+	        default: break;
+			}
+			for(int j = 0; j<stdl.size(); j++){
+				if(stdl.get(j).getDozent().equals("FREEDAY")) {
+					stdl.get(j).setUhrzeitVon(addDaysToDate(wp.getAnfangsDatum(), i));
+					stdl.get(j).setUhrzeitBis(addDaysToDate(wp.getAnfangsDatum(), i));
+				}
+			}
+		}
+		return wp;
+	}
+	
 	public static GregorianCalendar stringToGreg(String date) {
 		String[] theDate = date.split("\\.");
 		DateFormat df = new SimpleDateFormat("dd MM yyyy");
@@ -85,7 +123,7 @@ public class Utilities {
 		return monthToGo;
 	}
 	
-	public Date addDaysToDate(Date date, int noOfDays) {
+	public static Date addDaysToDate(Date date, int noOfDays) {
 	    Date newDate = new Date(date.getTime());
 
 	    GregorianCalendar calendar = new GregorianCalendar();

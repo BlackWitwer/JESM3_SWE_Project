@@ -195,10 +195,6 @@ public class DualisConnection {
 		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
 		
 		for (Wochenplan eachWoche : wl) {
-			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
-		}
-		
-		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
 				Date anfangsDatum = eachWoche.getAnfangsDatum();
 				Date endDatum = util.addDaysToDate(anfangsDatum, 7);
@@ -209,6 +205,11 @@ public class DualisConnection {
 				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
 				eachWoche.setAnfangsDatumDate(anfangsDatum);
 			}
+			eachWoche = util.addDateToFreedays(eachWoche);
+		//	alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+		}
+	//	ArrayList<Wochenplan> parsedWeeks= new StundenplanGenerator().generateStundenplan(alleVorlesungen);
+		for (Wochenplan eachWoche : wl) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}

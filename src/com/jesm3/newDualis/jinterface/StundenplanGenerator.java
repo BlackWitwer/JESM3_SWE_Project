@@ -5,13 +5,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import android.util.Log;
 
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.VorlesungComparator;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class StundenplanGenerator {
@@ -20,9 +23,56 @@ public class StundenplanGenerator {
 	
 	public ArrayList<Wochenplan> generateStundenplan(ArrayList<Vorlesung> alleVorlesungen) {
 		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
-		GregorianCalendar gc = new GregorianCalendar();
+		GregorianCalendar gc = new GregorianCalendar(Locale.GERMAN);
+		gc.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		alleVorlesungen = sortVorlesungen(alleVorlesungen);
 		std = new Wochenplan();
+		std.setAnfangsDatumDate(alleVorlesungen.get(0).getUhrzeitVon());
+		int lastDay = 0;
+		for(int i = 0; i<alleVorlesungen.size(); i++) {
+			gc.setTime(alleVorlesungen.get(i).getUhrzeitVon());
+			int day = dayOfWeekTranslate(gc.DAY_OF_WEEK);
+			if(lastDay == 5 && day == 0){
+				std.setEndDatumDate(std.getSamstag().get(0).getUhrzeitVon());
+				std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
+				stdl.add(std);
+				std = new Wochenplan();
+				std.setAnfangsDatumDate(alleVorlesungen.get(i).getUhrzeitVon());
+			}
+			Log.d("gstd", alleVorlesungen.get(i).getUhrzeitVon().toGMTString());
+			addVorlesung(day, alleVorlesungen.get(i));
+			lastDay = day;
+		}
+		std.setEndDatumDate(std.getSamstag().get(0).getUhrzeitVon());
+		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
+		stdl.add(std);
 		return stdl;
+	}
+	
+	public int dayOfWeekTranslate(int dow) {
+		int rt = 0;
+		switch (dow) {
+		case GregorianCalendar.MONDAY:  rt = 0;
+        break;
+		case GregorianCalendar.TUESDAY:  rt = 1;
+        break;
+		case GregorianCalendar.WEDNESDAY:  rt = 2;
+        break;
+		case GregorianCalendar.THURSDAY:  rt = 3;
+        break;
+		case GregorianCalendar.FRIDAY:  rt = 4;
+        break;
+		case GregorianCalendar.SATURDAY:  rt = 5;
+        break;
+        default: break;
+		}
+		return rt;
+	}
+	
+	public ArrayList<Vorlesung> sortVorlesungen(ArrayList<Vorlesung> alleVorlesungen) {
+        VorlesungComparator comp = new VorlesungComparator();
+        Collections.sort(alleVorlesungen, comp);
+		return alleVorlesungen;
 	}
 
 	public Wochenplan getStd() {
