@@ -35,6 +35,9 @@ public class DatabaseManager {
 		init();
 	}
 	
+	/**
+	 * Initalisierung der Datenbankensessions für Vorlesungen und Noten.
+	 */
 	private void init() {
 		DevOpenHelper theHelper = new DaoMaster.DevOpenHelper(context, "dualis-db", null);
 		db = theHelper.getWritableDatabase();
@@ -46,6 +49,16 @@ public class DatabaseManager {
 	}
 	
 	/**
+	 * Speichert eine Liste von Vorlesungen in die Datenbank.
+	 * @param aVorlesungsList die gespeichert werden soll.
+	 * @return List der Vorlesungen mit DatenbankID.
+	 */
+	public List<Vorlesung> insertVorlesungen(List<Vorlesung> aVorlesungsList) {
+		vorlesungDAO.insertOrReplaceInTx(aVorlesungsList.toArray(new Vorlesung[0]));
+		return aVorlesungsList;
+	}
+	
+	/**
 	 * Speichert eine Vorlesung in die Datenbank.
 	 * @param aVorlesung die gespeichert werden soll.
 	 * @return Vorlesung mit DatenbankID.
@@ -54,9 +67,38 @@ public class DatabaseManager {
 		vorlesungDAO.insert(aVorlesung);
 		return aVorlesung;
 	}
+	
 	/**
-	 * Löscht eine Vorlesung.
-	 * @param aVorlesung die gel�scht werden soll.
+	 * Löscht je nach Parameter eine Menge von Vorlesungen aus der Datenbank.
+	 * Wird der Parameter nicht erkannt passiert nichts.
+	 * @param aRequest der ReqeuestTyp.
+	 */
+	public void deleteVorlesungen(Requests aRequest) {
+		List<Vorlesung> removeList = new ArrayList<Vorlesung>();
+		
+		switch (aRequest) {
+		case REQUEST_ALL:
+			vorlesungDAO.deleteAll();
+			return;
+			
+		case REQUEST_NEXT:
+			removeList = getVorlesungen(Requests.REQUEST_NEXT);
+			vorlesungDAO.deleteInTx(removeList.toArray(new Vorlesung[0]));
+			return;
+			
+		case REQUEST_LAST:
+			removeList = getVorlesungen(Requests.REQUEST_LAST);
+			vorlesungDAO.deleteInTx(removeList.toArray(new Vorlesung[0]));
+			return;
+			
+		default:
+			return;	
+		}
+	}
+	
+	/**
+	 * Löscht die übergebene Vorlesung.
+	 * @param aVorlesung zu löschende Vorlesung.
 	 */
 	public void deleteVorlesung(Vorlesung aVorlesung) {
 		vorlesungDAO.delete(aVorlesung);
