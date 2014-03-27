@@ -33,6 +33,7 @@ import com.jesm3.newDualis.noten.Semester;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
+import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
 import android.text.Html;
 import android.util.Log;
@@ -222,12 +223,13 @@ public class DualisConnection {
 				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
 				eachWoche.setAnfangsDatumDate(anfangsDatum);
 			}
-			eachWoche = util.addDateToFreedays(eachWoche);
-		//	alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+//			eachWoche = util.addDateToFreedays(eachWoche);
+			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
 		}
-	//	ArrayList<Wochenplan> parsedWeeks= new StundenplanGenerator().generateStundenplan(alleVorlesungen);
-		for (Wochenplan eachWoche : wl) {
+		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(alleVorlesungen);
+		for (Wochenplan eachWoche : parsedWeeks) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
+//			new StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
 		}
 	}
 

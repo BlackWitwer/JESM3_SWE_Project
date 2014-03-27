@@ -8,7 +8,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.util.Log;
 
@@ -16,6 +19,7 @@ import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungComparator;
 import com.jesm3.newDualis.stupla.Wochenplan;
+import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
 public class StundenplanGenerator {
 	private Utilities util = new Utilities();
@@ -25,15 +29,15 @@ public class StundenplanGenerator {
 		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
 		GregorianCalendar gc = new GregorianCalendar(Locale.GERMAN);
 		gc.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		alleVorlesungen = sortVorlesungen(alleVorlesungen);
+//		alleVorlesungen = sortVorlesungen(alleVorlesungen);
 		std = new Wochenplan();
 		std.setAnfangsDatumDate(alleVorlesungen.get(0).getUhrzeitVon());
-		int lastDay = 0;
+		Days lastDay = Days.MONTAG;
 		for(int i = 0; i<alleVorlesungen.size(); i++) {
 			gc.setTime(alleVorlesungen.get(i).getUhrzeitVon());
-			int day = dayOfWeekTranslate(gc.DAY_OF_WEEK);
-			if(lastDay == 5 && day == 0){
-				std.setEndDatumDate(std.getSamstag().get(0).getUhrzeitVon());
+			Days day = dayOfWeekTranslate(GregorianCalendar.DAY_OF_WEEK);
+			if(lastDay == Days.SAMSTAG && day == Days.MONTAG){
+				std.setEndDatumDate(std.getDay(Days.SAMSTAG).get(0).getUhrzeitVon());
 				std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
 				stdl.add(std);
 				std = new Wochenplan();
@@ -43,26 +47,26 @@ public class StundenplanGenerator {
 			addVorlesung(day, alleVorlesungen.get(i));
 			lastDay = day;
 		}
-		std.setEndDatumDate(std.getSamstag().get(0).getUhrzeitVon());
+		std.setEndDatumDate(std.getDay(Days.SAMSTAG).get(0).getUhrzeitVon());
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
 		stdl.add(std);
 		return stdl;
 	}
 	
-	public int dayOfWeekTranslate(int dow) {
-		int rt = 0;
+	public Days dayOfWeekTranslate(int dow) {
+		Days rt = Days.MONTAG;
 		switch (dow) {
-		case GregorianCalendar.MONDAY:  rt = 0;
+		case GregorianCalendar.MONDAY:  rt = Days.MONTAG;
         break;
-		case GregorianCalendar.TUESDAY:  rt = 1;
+		case GregorianCalendar.TUESDAY:  rt = Days.DIENSTAG;
         break;
-		case GregorianCalendar.WEDNESDAY:  rt = 2;
+		case GregorianCalendar.WEDNESDAY:  rt = Days.MITTWOCH;
         break;
-		case GregorianCalendar.THURSDAY:  rt = 3;
+		case GregorianCalendar.THURSDAY:  rt = Days.DONNERSTAG;
         break;
-		case GregorianCalendar.FRIDAY:  rt = 4;
+		case GregorianCalendar.FRIDAY:  rt = Days.FREITAG;
         break;
-		case GregorianCalendar.SATURDAY:  rt = 5;
+		case GregorianCalendar.SATURDAY:  rt = Days.SAMSTAG;
         break;
         default: break;
 		}
@@ -83,22 +87,23 @@ public class StundenplanGenerator {
 		std =  new Wochenplan();
 	}
 	
-	public void addVorlesung(int day, Vorlesung v){
-		switch (day) {
-		case 0:  std.addMontag(v);
-        break;
-		case 1:  std.addDienstag(v);
-        break;
-		case 2:  std.addMittwoch(v);
-        break;
-		case 3:  std.addDonnerstag(v);
-        break;
-		case 4:  std.addFreitag(v);
-        break;
-		case 5:  std.addSamstag(v);
-        break;
-        default: break;
-		}
+	public void addVorlesung(Days day, Vorlesung v){
+		std.addToDay(day, v);
+//		switch (day) {
+//		case 0:  std.addMontag(v);
+//        break;
+//		case 1:  std.addDienstag(v);
+//        break;
+//		case 2:  std.addMittwoch(v);
+//        break;
+//		case 3:  std.addDonnerstag(v);
+//        break;
+//		case 4:  std.addFreitag(v);
+//        break;
+//		case 5:  std.addSamstag(v);
+//        break;
+//        default: break;
+//		}
 	}
 	
 	public Wochenplan mergeWeeks(Wochenplan w1, Wochenplan w2) {
@@ -106,7 +111,8 @@ public class StundenplanGenerator {
 		ArrayList<ArrayList<Vorlesung>> w2l = getDays(w2);
 		boolean merge = false;
 		for(int i=0; i<6; i++){
-			merge = w1l.get(i).get(0).getDozent().equals("DRFAIL");  //Unterscheidung ferien/monatsende???
+			merge = w1l.get(i).size() == 0;
+//			merge = w1l.get(i).get(0).getDozent().equals("DRFAIL");  //Unterscheidung ferien/monatsende???
 			if(merge){
 				w1l.set(i, w2l.get(i));
 			}
@@ -134,23 +140,30 @@ public class StundenplanGenerator {
 	
 	public ArrayList<ArrayList<Vorlesung>> getDays(Wochenplan w){
 		ArrayList<ArrayList<Vorlesung>> daylist= new ArrayList<ArrayList<Vorlesung>>();
-		daylist.add(w.getMontag());
-		daylist.add(w.getDienstag());
-		daylist.add(w.getMittwoch());
-		daylist.add(w.getDonnerstag());
-		daylist.add(w.getFreitag());
-		daylist.add(w.getSamstag());
+		for (Days eachDay : Days.values()) {
+			daylist.add(w.getDay(eachDay));
+		}
+//		daylist.add(w.getMontag());
+//		daylist.add(w.getDienstag());
+//		daylist.add(w.getMittwoch());
+//		daylist.add(w.getDonnerstag());
+//		daylist.add(w.getFreitag());
+//		daylist.add(w.getSamstag());
 		return daylist;
 	}
 	
 	public Wochenplan listToWochenplan(ArrayList<ArrayList<Vorlesung>> l){
 		Wochenplan out = new Wochenplan();
-		out.setMontag(l.get(0));
-		out.setDienstag(l.get(1));
-		out.setMittwoch(l.get(2));
-		out.setDonnerstag(l.get(3));
-		out.setFreitag(l.get(4));
-		out.setSamstag(l.get(5));
+		int i = 0;
+		for (Days eachDay : Days.values()) {
+			out.setDay(eachDay, l.get(i++));
+		}
+//		out.setMontag(l.get(0));
+//		out.setDienstag(l.get(1));
+//		out.setMittwoch(l.get(2));
+//		out.setDonnerstag(l.get(3));
+//		out.setFreitag(l.get(4));
+//		out.setSamstag(l.get(5));
 		return out;
 	}
 	
@@ -158,5 +171,52 @@ public class StundenplanGenerator {
 		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
 		GregorianCalendar gc = util.stringToGreg(somedate);
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
+	}
+	
+	public List<Wochenplan> generateWochenplaene(List<Vorlesung> aVorlesungList) {
+		Map<Integer, Wochenplan> theWochenplanMap = new HashMap<Integer, Wochenplan>();
+		GregorianCalendar calendar = new GregorianCalendar(Locale.GERMANY);
+		int week;
+		int day;
+		for (Vorlesung eachVorlesung : aVorlesungList) {
+			calendar.setTime(eachVorlesung.getUhrzeitVon());
+			week = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
+			day = calendar.get(GregorianCalendar.DAY_OF_WEEK);
+			if (!theWochenplanMap.containsKey(week)) {
+				Wochenplan theWochenplan = new Wochenplan();
+				theWochenplanMap.put(week, theWochenplan);
+				//-2, da der Montag die Zahl 2 hat und im Fall des Montags nichts abgezogen werden soll.
+				calendar.add(GregorianCalendar.DAY_OF_WEEK, -(calendar.get(GregorianCalendar.DAY_OF_WEEK)-2));
+				theWochenplan.setAnfangsDatumDate(calendar.getTime());
+				theWochenplan.setKalenderwoche(calendar.get(GregorianCalendar.WEEK_OF_YEAR));
+				calendar.add(GregorianCalendar.DAY_OF_WEEK, 6);
+				theWochenplan.setEndDatumDate(calendar.getTime());
+			}
+			
+			Wochenplan theWochenplan = theWochenplanMap.get(week);
+			//Der Tag minus 2 entspricht der Stelle im Array, da Montag im Gregorian Kalender die Nummer 2 hat und im Array die Nummer 0.
+			theWochenplan.addToDay(Days.values()[day-2], eachVorlesung);
+		}
+		
+		//Finish Wochenpläne. Füllt leere Tage mit einer Freien Tag Vorlesung auf.
+		List<Wochenplan> theWochenplaene = new ArrayList<Wochenplan>();
+		theWochenplaene.addAll(theWochenplanMap.values());
+		
+		GregorianCalendar theCalendar = new GregorianCalendar(Locale.GERMANY);
+		for (Wochenplan eachWochenplan : theWochenplaene) {
+			for (Days eachDay : Days.values()) {
+				if (eachWochenplan.getDay(eachDay).isEmpty()) {
+					Vorlesung theVorlesung = new Vorlesung();
+					theVorlesung.setDozent("FREEDAY");
+					
+					theCalendar.setTime(eachWochenplan.getAnfangsDatum());
+					theCalendar.add(GregorianCalendar.DAY_OF_WEEK, eachDay.getNumberInWeek());
+					
+					theVorlesung.setUhrzeitVon(theCalendar.getTime());
+					eachWochenplan.addToDay(eachDay, theVorlesung);
+				}
+			}
+		}
+		return theWochenplaene;
 	}
 }

@@ -9,11 +9,68 @@ import java.util.GregorianCalendar;
 
 
 public class Wochenplan {
+	private Date anfangsDatum=null;
+	private Date endDatum=null;
+	
 	/**
 	 * Alle Vorlesungen f�r Montag.
 	 */
-	private Date anfangsDatum=null;
-	private Date endDatum=null;
+	private ArrayList<Vorlesung> montag;
+
+	/**
+	 * Alle Vorlesungen f�r Dienstag.
+	 */
+	private ArrayList<Vorlesung> dienstag;
+	/**
+	 * Alle Vorlesungen f�r Mittwoch.
+	 */
+	private ArrayList<Vorlesung> mittwoch;
+	/**
+	 * Alle Vorlesungen f�r Donnerstag.
+	 */
+	private ArrayList<Vorlesung> donnerstag;
+	/**
+	 * Alle Vorlesungen f�r Freitag.
+	 */
+	private ArrayList<Vorlesung> freitag;
+	/**
+	 * Alle Vorlesungen f�r Samstag.
+	 */
+	private ArrayList<Vorlesung> samstag;
+
+	private int kalenderwoche=0;
+	
+	public enum Days {
+
+		MONTAG(0),
+		DIENSTAG(1),
+		MITTWOCH(2),
+		DONNERSTAG(3),
+		FREITAG(4),
+		SAMSTAG(5);
+		
+		/**
+		 * Startet mit 0 am Montag und hört mit 5 am Samstag auf.
+		 */
+		private int numberInWeek;
+		
+		private Days(int aNumberInWeek) {
+			numberInWeek = aNumberInWeek;
+		}
+		
+		public int getNumberInWeek() {
+			return numberInWeek;
+		}
+	}
+	
+	public Wochenplan() {
+		montag = new ArrayList<Vorlesung>();
+		dienstag = new ArrayList<Vorlesung>();
+		mittwoch = new ArrayList<Vorlesung>();
+		donnerstag = new ArrayList<Vorlesung>();
+		freitag = new ArrayList<Vorlesung>();
+		samstag = new ArrayList<Vorlesung>();
+	}
 	
 	public Date stringToDate(String date){
 		return stringToGreg(date).getTime();
@@ -59,68 +116,50 @@ public class Wochenplan {
 		this.endDatum = endDatum;
 	}
 
-	private ArrayList<Vorlesung> montag;
-	public void setMontag(ArrayList<Vorlesung> montag) {
-		this.montag = montag;
+	public void setDay(Days aDay, ArrayList<Vorlesung> aVorlesungList) {
+		switch (aDay) {
+		case MONTAG:
+			this.montag = aVorlesungList;
+			break;
+		case DIENSTAG:
+			this.dienstag = aVorlesungList;
+			break;
+		case MITTWOCH:
+			this.mittwoch = aVorlesungList;
+			break;
+		case DONNERSTAG:
+			this.donnerstag = aVorlesungList;
+			break;
+		case FREITAG:
+			this.freitag = aVorlesungList;
+			break;
+		case SAMSTAG:
+			this.samstag = aVorlesungList;
+			break;
+		}
 	}
-
-	public void setDienstag(ArrayList<Vorlesung> dienstag) {
-		this.dienstag = dienstag;
+	
+	public ArrayList<Vorlesung> getDay(Days aDay) {
+		switch (aDay) {
+		case MONTAG:
+			return this.montag;
+		case DIENSTAG:
+			return this.dienstag;
+		case MITTWOCH:
+			return this.mittwoch;
+		case DONNERSTAG:
+			return this.donnerstag;
+		case FREITAG:
+			return this.freitag;
+		case SAMSTAG:
+			return this.samstag;
+		default:
+			return null;
+		}
 	}
-
-	public void setMittwoch(ArrayList<Vorlesung> mittwoch) {
-		this.mittwoch = mittwoch;
-	}
-
-	public void setDonnerstag(ArrayList<Vorlesung> donnerstag) {
-		this.donnerstag = donnerstag;
-	}
-
-	public void setFreitag(ArrayList<Vorlesung> freitag) {
-		this.freitag = freitag;
-	}
-
-	public void setSamstag(ArrayList<Vorlesung> samstag) {
-		this.samstag = samstag;
-	}
-
-	/**
-	 * Alle Vorlesungen f�r Dienstag.
-	 */
-	private ArrayList<Vorlesung> dienstag;
-	/**
-	 * Alle Vorlesungen f�r Mittwoch.
-	 */
-	private ArrayList<Vorlesung> mittwoch;
-	/**
-	 * Alle Vorlesungen f�r Donnerstag.
-	 */
-	private ArrayList<Vorlesung> donnerstag;
-	/**
-	 * Alle Vorlesungen f�r Freitag.
-	 */
-	private ArrayList<Vorlesung> freitag;
-	/**
-	 * Alle Vorlesungen f�r Samstag.
-	 */
-	private ArrayList<Vorlesung> samstag;
-
-	private int kalenderwoche=0;
-
-	public Wochenplan() {
-		montag = new ArrayList<Vorlesung>();
-		dienstag = new ArrayList<Vorlesung>();
-		mittwoch = new ArrayList<Vorlesung>();
-		donnerstag = new ArrayList<Vorlesung>();
-		freitag = new ArrayList<Vorlesung>();
-		samstag = new ArrayList<Vorlesung>();
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addMontag(Vorlesung aVorlesung) {
-		montag.add(aVorlesung);
+	
+	public void addToDay(Days aDay, Vorlesung aVorlesung) {
+		getDay(aDay).add(aVorlesung);
 	}
 
 	/**
@@ -136,83 +175,6 @@ public class Wochenplan {
 	 */
 	public void setKalenderwoche(int kalenderwoche) {
 		this.kalenderwoche = kalenderwoche;
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addDienstag(Vorlesung aVorlesung) {
-		dienstag.add(aVorlesung);
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addMittwoch(Vorlesung aVorlesung) {
-		mittwoch.add(aVorlesung);
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addDonnerstag(Vorlesung aVorlesung) {
-		donnerstag.add(aVorlesung);
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addFreitag(Vorlesung aVorlesung) {
-		freitag.add(aVorlesung);
-	}
-
-	/**
-	 * F�gt dem Tag eine Vorlesung hinzu.
-	 */
-	public void addSamstag(Vorlesung aVorlesung) {
-		samstag.add(aVorlesung);
-	}
-
-	/**
-	 * @return the montag
-	 */
-	public ArrayList<Vorlesung> getMontag() {
-		return montag;
-	}
-
-	/**
-	 * @return the dienstag
-	 */
-	public ArrayList<Vorlesung> getDienstag() {
-		return dienstag;
-	}
-
-	/**
-	 * @return the mittwoch
-	 */
-	public ArrayList<Vorlesung> getMittwoch() {
-		return mittwoch;
-	}
-
-	/**
-	 * @return the donnerstag
-	 */
-	public ArrayList<Vorlesung> getDonnerstag() {
-		return donnerstag;
-	}
-
-	/**
-	 * @return the freitag
-	 */
-	public ArrayList<Vorlesung> getFreitag() {
-		return freitag;
-	}
-
-	/**
-	 * @return the samstag
-	 */
-	public ArrayList<Vorlesung> getSamstag() {
-		return samstag;
 	}
 
 	public String toString() {

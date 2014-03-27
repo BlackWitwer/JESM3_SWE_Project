@@ -18,6 +18,7 @@ import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
+import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
 public class DualisParser {
 	
@@ -74,34 +75,35 @@ public class DualisParser {
 				}
 			}
 
-			for (int j = 0; j < days.size(); j++) {
+			//Da wir nur von Montag bis Samstag betrachten darf j nicht größer 6 sein.
+			for (int j = 0; j < days.size() && j < 6; j++) {
 				ArrayList<Vorlesung> vorlesungen = generateVorlesungen(days
 						.get(j));
-				if (vorlesungen.size() == 0) {
-					// Dummyvorlesung wenn Vorlesung in Monat nicht geladen
-					Vorlesung dummy = new Vorlesung();
-					dummy.setDozent("FREEDAY");
-					stdgr.addVorlesung(j, dummy);
-				}
+//				if (vorlesungen.size() == 0) {
+//					// Dummyvorlesung wenn Vorlesung in Monat nicht geladen
+//					Vorlesung dummy = new Vorlesung();
+//					dummy.setDozent("FREEDAY");
+//					stdgr.addVorlesung(Days.values()[j], dummy);
+//				}
 				for (int k = 0; k < vorlesungen.size(); k++) {
 
-					stdgr.addVorlesung(j, vorlesungen.get(k));
+					stdgr.addVorlesung(Days.values()[j], vorlesungen.get(k));
 				}
 			}
-			for (int j = 0; j < 6; j++) {
-				if (stdgr.getDays(stdgr.getStd()).get(j).size() == 0) { // Prüft
-																		// ob
-																		// eine
-																		// Vorlesung
-																		// an
-																		// jedem
-																		// Tag
-																		// existiert
-					Vorlesung dummy = new Vorlesung();
-					dummy.setDozent("DRFAIL");
-					stdgr.addVorlesung(j, dummy);
-				}
-			}
+//			for (int j = 0; j < 6; j++) {
+//				if (stdgr.getDays(stdgr.getStd()).get(j).size() == 0) { // Prüft
+//																		// ob
+//																		// eine
+//																		// Vorlesung
+//																		// an
+//																		// jedem
+//																		// Tag
+//																		// existiert
+//					Vorlesung dummy = new Vorlesung();
+//					dummy.setDozent("DRFAIL");
+//					stdgr.addVorlesung(Days.values()[j], dummy);
+//				}
+//			}
 			if (addWeek) {
 				stdl.add(stdgr.getStd());
 			} else {

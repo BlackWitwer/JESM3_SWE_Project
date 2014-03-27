@@ -65,6 +65,7 @@ import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
+import com.jesm3.newDualis.stupla.Wochenplan.Days;
 import com.jesm3.newDualis.synchronization.SyncService;
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.NotenManager;
@@ -335,12 +336,12 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     		lay_freitag.addView(text_freitag);
     		lay_samstag.addView(text_samstag);
     		
-    		generateDay(stupla.getMontag(), lay_montag);
-    		generateDay(stupla.getDienstag(), lay_dienstag);
-    		generateDay(stupla.getMittwoch(), lay_mittwoch);
-    		generateDay(stupla.getDonnerstag(), lay_donnerstag);
-    		generateDay(stupla.getFreitag(), lay_freitag);
-    		generateDay(stupla.getSamstag(), lay_samstag);
+    		generateDay(stupla.getDay(Days.MONTAG), lay_montag);
+    		generateDay(stupla.getDay(Days.DIENSTAG), lay_dienstag);
+    		generateDay(stupla.getDay(Days.MITTWOCH), lay_mittwoch);
+    		generateDay(stupla.getDay(Days.DONNERSTAG), lay_donnerstag);
+    		generateDay(stupla.getDay(Days.FREITAG), lay_freitag);
+    		generateDay(stupla.getDay(Days.SAMSTAG), lay_samstag);
     		
     	}
         

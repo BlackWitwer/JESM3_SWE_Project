@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
+import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
 import android.util.Log;
 
@@ -29,22 +30,23 @@ public class Utilities {
 	
 	public static Wochenplan addDateToFreedays(Wochenplan wp){
 		ArrayList<Vorlesung> stdl = new ArrayList<Vorlesung>();
-		for(int i=0; i<6; i++) {
-			switch (i) {
-			case 0:  stdl = wp.getMontag();
-	        break;
-			case 1:  stdl = wp.getDienstag();
-	        break;
-			case 2:  stdl = wp.getMittwoch();
-	        break;
-			case 3:  stdl = wp.getDonnerstag();
-	        break;
-			case 4:  stdl = wp.getFreitag();
-	        break;
-			case 5:  stdl = wp.getSamstag();
-	        break;
-	        default: break;
-			}
+		for(int i=0; i<Days.values().length; i++) {
+//			switch (i) {
+//			case 0:  stdl = wp.getMontag();
+//	        break;
+//			case 1:  stdl = wp.getDienstag();
+//	        break;
+//			case 2:  stdl = wp.getMittwoch();
+//	        break;
+//			case 3:  stdl = wp.getDonnerstag();
+//	        break;
+//			case 4:  stdl = wp.getFreitag();
+//	        break;
+//			case 5:  stdl = wp.getSamstag();
+//	        break;
+//	        default: break;
+//			}
+			stdl = wp.getDay(Days.values()[i]);
 			for(int j = 0; j<stdl.size(); j++){
 				if(stdl.get(j).getDozent().equals("FREEDAY")) {
 					stdl.get(j).setUhrzeitVon(addDaysToDate(wp.getAnfangsDatum(), i));
@@ -141,12 +143,16 @@ public class Utilities {
 	
 	public ArrayList<Vorlesung> vorlesungenToList(Wochenplan wl){
 		ArrayList<Vorlesung> vll = new ArrayList<Vorlesung>();
-		vll.addAll(wl.getMittwoch());
-		vll.addAll(wl.getDienstag());
-		vll.addAll(wl.getMittwoch());
-		vll.addAll(wl.getDonnerstag());
-		vll.addAll(wl.getFreitag());
-		vll.addAll(wl.getSamstag());
+		for (Days eachDay : Days.values()) {
+			vll.addAll(wl.getDay(eachDay));
+		}
+		//TODO SEW war hier der Fehler wegen falscher Vorlesungen? 2x Mittwoch
+//		vll.addAll(wl.getMittwoch());
+//		vll.addAll(wl.getDienstag());
+//		vll.addAll(wl.getMittwoch());
+//		vll.addAll(wl.getDonnerstag());
+//		vll.addAll(wl.getFreitag());
+//		vll.addAll(wl.getSamstag());
 		return vll;
 	}
 }
