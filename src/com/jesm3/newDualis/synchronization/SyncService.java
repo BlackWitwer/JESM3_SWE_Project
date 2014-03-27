@@ -21,10 +21,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.settings.SettingsFragment;
 import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 
 public class SyncService extends Service implements
 		OnSharedPreferenceChangeListener {
@@ -36,8 +38,9 @@ public class SyncService extends Service implements
 	// The SyncIntervall in minutes
 	private int syncIntervallMin;
 	private boolean syncActive;
+	private Backend backend;
 
-	private DatabaseManager dManager;
+	private DatabaseManager dbManager;
 	private CustomApplication customApplication;
 
 	private String logname = "SyncService";
@@ -57,6 +60,9 @@ public class SyncService extends Service implements
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
 
+		customApplication = (CustomApplication) getApplication();
+		dbManager = customApplication.getBackend().getDbManager();
+
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
@@ -74,6 +80,8 @@ public class SyncService extends Service implements
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(logname, "bound");
+		customApplication = (CustomApplication) getApplication();
+		dbManager = customApplication.getBackend().getDbManager();
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
@@ -189,6 +197,9 @@ public class SyncService extends Service implements
 		Log.d(logname, "starting Sync");
 		int result = 0;
 		// TODO the actual Sync
+		// get the next lectures
+		List<Vorlesung> vorlesungen = dbManager
+				.getVorlesungen(Requests.REQUEST_NEXT);
 
 		return result;
 	}
