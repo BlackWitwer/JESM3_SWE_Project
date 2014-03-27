@@ -65,6 +65,8 @@ import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
 import com.jesm3.newDualis.synchronization.SyncService;
+import com.jesm3.newDualis.noten.Note;
+import com.jesm3.newDualis.noten.NotenManager;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
@@ -487,8 +489,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			addHeaderRow(lay_table);
 			
 			for(Note eachMark : noten) {
-				addRow(eachMark.getName(), eachMark.getNote(), eachMark.getCredits(), lay_table);
+				addRow(eachMark.getTitel(), eachMark.getNote(), eachMark.getCredits(), lay_table);
 			}
+			
+
 		}
 		
 		public void addHeaderRow(TableLayout aLayout) {
@@ -572,6 +576,13 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		}
 		
 		private void initializeMarks() {
+			//TODO Hier muss noch die anzeige gemacht werden
+			noten = new ArrayList<Note>();
+			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
+			noten.addAll(theNotenManager.getNoten()); 
+			//noten.addAll()
+			//VorlesungsplanManager.get
+			/*
 			noten = new ArrayList<Note>();
 			noten.add(new Note("Angewantde Mathematik", "2.1", "6"));
 			noten.add(new Note("Software Enineering", "1.0", "6"));
@@ -579,7 +590,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			noten.add(new Note("Rechnerarchitekturen", "3.8", "5"));
 			noten.add(new Note("Formale Sprachen und Automaten", "5.0", "8"));
 			noten.add(new Note("Netztechnik", "3.5", "6"));
-
+			*/
 		}
 
 		/**

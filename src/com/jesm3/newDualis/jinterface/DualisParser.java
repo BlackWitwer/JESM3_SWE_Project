@@ -10,6 +10,8 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.jesm3.newDualis.noten.Note;
+import com.jesm3.newDualis.noten.Semester;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
@@ -149,6 +151,42 @@ public class DualisParser {
 		Element link = doc.select(selector).first();
 		String linkHref = link.attr("href");
 		return linkHref;
+	}
+	
+	// Sucht die einzelnen Semester aus der Auswahlliste
+	public String[][] parseSemesterLinks(String aContent){
+		Document doc = Jsoup.parse(aContent); 
+		Element link = doc.select(".tabledata").first();
+		Elements options= doc.select("option");
+		String[][] semester = new String[options.size()][2];
+		for(int i=0;i<options.size();i++){
+			semester[i][0] = options.get(i).attr("value");
+			semester[i][1] = Jsoup.parse(options.get(i).toString()).text();
+		}
+		return semester;
+	}
+
+	//Parst alle Daten eines Semesters zur weiteren Verarveitung in ein 2 Dimensionales Array (Semester, Objekt-Noten)
+	public Semester parseNoten(String realNotenContent) {
+		Semester parsedSemester = new Semester("Semester");
+		Document doc = Jsoup.parse(realNotenContent); 
+		Element link = doc.select("tbody").first();
+		Elements ergebnisse = doc.select("tr");
+		for(int i=1;i < ergebnisse.size() - 1;i++){
+			Log.d("noten", "test");
+			Elements tds = ergebnisse.get(i).select("td");
+			String nummer = tds.get(0).text();
+			String kursName = tds.get(1).text();
+			String note = tds.get(2).text();
+			if (note.equals("noch nicht gesetzt"))
+			{
+				note = " - ";
+			}
+			String credits = tds.get(3).text();
+			Note neueNote = new Note(nummer,kursName,note,credits);
+			parsedSemester.addNote(neueNote);
+		}
+		return parsedSemester;
 	}
 
 }

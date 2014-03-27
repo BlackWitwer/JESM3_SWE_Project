@@ -3,6 +3,7 @@ package com.jesm3.newDualis.is;
 import java.util.List;
 
 import com.jesm3.newDualis.jinterface.DualisConnection;
+import com.jesm3.newDualis.noten.NotenManager;
 import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 import com.jesm3.newDualis.stupla.Vorlesung;
@@ -15,6 +16,7 @@ public class Backend {
 	private DualisConnection connection;
 	private VorlesungsplanManager vorlesungsplanManager;
 	private CustomApplication customApplication;
+	private NotenManager notenManager;
 	
 	public Backend(CustomApplication aCustomApplication) {
 		this.customApplication = aCustomApplication;
@@ -22,6 +24,7 @@ public class Backend {
 		this.connection = new DualisConnection(this);
 		this.vorlesungsplanManager = new VorlesungsplanManager();
 		this.dbManager = new DatabaseManager(customApplication);
+		this.notenManager = new NotenManager();
 	}
 	
 	public boolean checkLogin(User aUser) {
@@ -46,5 +49,9 @@ public class Backend {
 	
 	public CustomApplication getCustomApplication() {
 		return customApplication;
+	}
+	
+	public NotenManager getNotenManager() {
+		return notenManager;
 	}
 }
