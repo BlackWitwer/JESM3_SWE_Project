@@ -256,8 +256,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 		@Override
 		public int getCount() {
-			// Show 4 total pages.
-			return 4;
+			// Show 3 total pages.
+			return 3;
 		}
 
 		@Override
@@ -270,8 +270,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				return getString(R.string.title_section3).toUpperCase(l);
 			case 2:
 				return getString(R.string.title_section4).toUpperCase(l);
-			case 3:
-				return getString(R.string.title_section5).toUpperCase(l);
 			}
 			return null;
 		}
@@ -453,10 +451,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				rootView = inflater.inflate(R.layout.mail_main, container,
 						false);
 				initMailView(rootView);
-				break;
-			case 4:
-				rootView = inflater.inflate(R.layout.dozent_main, container,
-						false);
 				break;
 			default:
 				rootView = inflater.inflate(R.layout.error_main, container,
