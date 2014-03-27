@@ -38,21 +38,21 @@ public class WidgetFactory implements RemoteViewsService.RemoteViewsFactory {
 		// to onDataSetChanged()
 		// or getViewAt(). Taking more than 20 seconds in this call will result
 		// in an ANR.
-		mWidgetItems.add(new Vorlesung(
-				"09:00",
-				"12:30",
-				"Rentschler",
-				"Software Engineering"));
-		mWidgetItems.add(new Vorlesung(
-				"13:00",
-				"14:30",
-				"Kick",
-				"Langsame Mathematic"));
-		mWidgetItems.add(new Vorlesung(
-				"15:00",
-				"18:30",
-				"Schwarze",
-				"Schlafen und anderes Sinnvolles"));
+//		mWidgetItems.add(new Vorlesung(
+//				"09:00",
+//				"12:30",
+//				"Rentschler",
+//				"Software Engineering"));
+//		mWidgetItems.add(new Vorlesung(
+//				"13:00",
+//				"14:30",
+//				"Kick",
+//				"Langsame Mathematic"));
+//		mWidgetItems.add(new Vorlesung(
+//				"15:00",
+//				"18:30",
+//				"Schwarze",
+//				"Schlafen und anderes Sinnvolles"));
 	}
 
 	@Override

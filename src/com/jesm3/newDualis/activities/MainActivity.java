@@ -11,18 +11,18 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 
 import android.app.ActionBar;
-import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -40,11 +40,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.AnalogClock;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -55,11 +54,13 @@ import android.widget.Toast;
 
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
-import com.jesm3.newDualis.mail.MessageContainer;
+import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -115,9 +116,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 		// Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt
 		// im Interface Thread Netzwerkaktivitäten zu verwenden.
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-				.permitAll().build();
-		StrictMode.setThreadPolicy(policy);
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+//				.permitAll().build();
+//		StrictMode.setThreadPolicy(policy);
 		// -----------------------------------
 
 		// initMailView();
@@ -218,24 +219,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	    myNotification.flags |= Notification.FLAG_AUTO_CANCEL;
 	    myNotification.setLatestEventInfo(context, notificationTitle, notificationText, pendingIntent);
 	    notificationManager.notify(1, myNotification);
-		
-		
-//    	Intent intent = new Intent(this, MainActivity.class);
-//        PendingIntent pi = PendingIntent.getActivity(this, 0,intent, 0);
-//    	
-//    	NotificationCompat.Builder mBuilder =
-//    	        new NotificationCompat.Builder(this)
-//    	        .setSmallIcon(R.drawable.icon)
-//    	        .setContentTitle("Neue Mail")
-//    	        .setContentText("Sie haben 1 neue Mail erhalten!");
-//    	
-//    	Notification note = mBuilder.build();
-//    	note.setLatestEventInfo(this, "New Email", "Unread Conversation", pi);
-//    	note.flags |= Notification.FLAG_AUTO_CANCEL;
-//    	
-//    	NotificationManager mNotificationManager =
-//    		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//    	mNotificationManager.notify(1, mBuilder.build());
 	}
 	
 	/**
@@ -424,7 +407,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     				TextView name= new TextView(getActivity());
     				
     				
-    				zeit.setText(eachLecture.getUhrzeitVon() + " - " + eachLecture.getUhrzeitBis() + " Uhr");
+    				zeit.setText(Utilities.dateToTime(eachLecture.getUhrzeitVon()) + " - " + Utilities.dateToTime(eachLecture.getUhrzeitBis()) + " Uhr");
     				subLayout.addView(zeit);
     				
     				name.setText(eachLecture.getName());
@@ -597,34 +580,37 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		 * Initialisiert die ExpandableListVi2ew der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
-			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
+			MailManager manager = ((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-					new ArrayList<MessageContainer>());
-			final ExpandableListView expListView;
-			expListView = (ExpandableListView) aView
+					new ArrayList<MailContainer>());
+			final MailExpandableListView expListView;
+			expListView = (MailExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
-			manager.getLatestMessages(10, new MailListener() {
-				@Override
-				public void mailReceived(List<MessageContainer> someMails) {
-					listAdapter.addAllMessages(someMails);
-					final boolean theEmptyFlag = someMails.isEmpty();
-					getActivity().runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							listAdapter.notifyDataSetChanged();
-							if (!theEmptyFlag) {
+			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+			listAdapter.setMessages(manager.getCachedMails());
+			try {
+				manager.getLatestMessages(10, new MailListener() {
+					@Override
+					public void mailReceived() {
+						listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
+						getActivity().runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
 								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
 							}
-						}
-					});
-				}
-			});
+						});
+					}
+				});
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+			
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-
+				
 				private int lastExpand = -1;
-
+				
 				@Override
 				public void onGroupExpand(int groupPosition) {
 					if (lastExpand > -1 && lastExpand != groupPosition) {

@@ -2,6 +2,9 @@ package com.jesm3.newDualis.jinterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +30,8 @@ import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.Semester;
+import com.jesm3.newDualis.is.Utilities;
+import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 import android.text.Html;
@@ -39,11 +44,13 @@ public class DualisConnection {
 	private DualisParser dparse;
 	private DualisLinks mlinks;
 	private Backend backend;
+	Utilities util;
 
 	public DualisConnection(Backend aBackend) {
 		httpClient = new DefaultHttpClient();
 		dparse = new DualisParser();
 		this.backend = aBackend;
+		util = new Utilities();
 	}
 
 	/**
@@ -157,7 +164,7 @@ public class DualisConnection {
 		String monatsansichtContent = getPage("https://dualis.dhbw.de"
 				+ parseLink);
 		ArrayList<Wochenplan> wl = dparse.parseMonth(monatsansichtContent);
-		int monthsToGo = calcMonthsToGo(weeks);
+		int monthsToGo = util.calcMonthsToGo(weeks);
 		
 		GregorianCalendar gcnow = new GregorianCalendar();
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
@@ -177,7 +184,7 @@ public class DualisConnection {
 				wl.remove(0);
 			}
 			else{
-				if(wl.get(0).getAnfangsDatum().matches("01.([0-9].){1}.[0-9]*")==false) {
+				if(util.dateToString(wl.get(0).getAnfangsDatum()).matches("01.([0-9].){1}.[0-9]*")==false) {
 					wl.remove(0);
 				}
 			}
@@ -201,37 +208,28 @@ public class DualisConnection {
 			}
 		}
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
+		
+		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
+		
 		for (Wochenplan eachWoche : wl) {
+			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+		}
+		
+		for (Wochenplan eachWoche : wl) {
+			if(eachWoche.getEndDatum()==null){
+				Date anfangsDatum = eachWoche.getAnfangsDatum();
+				Date endDatum = util.addDaysToDate(anfangsDatum, 7);
+				eachWoche.setEndDatumDate(endDatum);
+			}
+			if(eachWoche.getAnfangsDatum()==null){
+				Date endDatum = eachWoche.getEndDatum();
+				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
+				eachWoche.setAnfangsDatumDate(anfangsDatum);
+			}
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 		}
 	}
-	
-	public int calcMonthsToGo(int weeks){
-		Calendar c = Calendar.getInstance();
-		Date d = new Date();
-		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
-		int actualmonth = d.getMonth();
-		Date tarMonth = addDaysToDate(d,7*weeks);
-		int monthToGo = tarMonth.getMonth();
-		Log.d("parsetest", "Zieldatum: "+tarMonth.toString());
-		if(monthToGo<actualmonth){
-			monthToGo = monthToGo + 12 - actualmonth;
-		}
-		else {
-			monthToGo = monthToGo - actualmonth;
-		}
-		return monthToGo;
-	}
-	public Date addDaysToDate(Date date, int noOfDays) {
-	    Date newDate = new Date(date.getTime());
 
-	    GregorianCalendar calendar = new GregorianCalendar();
-	    calendar.setTime(newDate);
-	    calendar.add(Calendar.DATE, noOfDays);
-	    newDate.setTime(calendar.getTime().getTime());
-
-	    return newDate;
-	}
 	// L�d Seite ohne HTML Code zur�ckzugeben
 	public void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);

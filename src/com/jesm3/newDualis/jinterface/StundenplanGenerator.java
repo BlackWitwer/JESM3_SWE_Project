@@ -4,16 +4,27 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.util.Log;
+
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class StundenplanGenerator {
-	
+	private Utilities util = new Utilities();
 	private Wochenplan std= new Wochenplan();
 	
+	public ArrayList<Wochenplan> generateStundenplan(ArrayList<Vorlesung> alleVorlesungen) {
+		ArrayList<Wochenplan> stdl = new ArrayList<Wochenplan>();
+		GregorianCalendar gc = new GregorianCalendar();
+		std = new Wochenplan();
+		return stdl;
+	}
+
 	public Wochenplan getStd() {
 		return std;
 	}
@@ -52,13 +63,23 @@ public class StundenplanGenerator {
 		}
 		if(merge){
 			Wochenplan resultwl = listToWochenplan(w1l);
-			resultwl.setAnfangsDatum(w1.getAnfangsDatum());
-			resultwl.setEndDatum(w2.getEndDatum());
+			resultwl.setAnfangsDatumDate(w1.getAnfangsDatum());
+			resultwl.setEndDatumDate(w1.getEndDatum());
 			return resultwl;
 		}
 		else{
 			return null;
 		}
+	}
+	
+	public Date addDaysToDate(Date date, int noOfDays) {
+	    Date newDate = new Date(date.getTime());
+
+	    GregorianCalendar calendar = new GregorianCalendar();
+	    calendar.setTime(newDate);
+	    calendar.add(Calendar.DATE, noOfDays);
+	    newDate.setTime(calendar.getTime().getTime());
+	    return newDate;
 	}
 	
 	public ArrayList<ArrayList<Vorlesung>> getDays(Wochenplan w){
@@ -83,31 +104,9 @@ public class StundenplanGenerator {
 		return out;
 	}
 	
-	private void setKalenderwoche(Vorlesung aVorlesung) {
-		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
-		GregorianCalendar gc = stringToGreg(aVorlesung.getDatum());
-		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
-	}
-	
 	public void setKalenderwoche(String somedate) {
 		//TODO was passiert wenn eine Woche keine Vorlesung hat oder keine Vorlesung ein Datum?
-		GregorianCalendar gc = stringToGreg(somedate);
+		GregorianCalendar gc = util.stringToGreg(somedate);
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
-	}
-	
-	public GregorianCalendar stringToGreg(String date) {
-		String[] theDate = date.split("\\.");
-		DateFormat df = new SimpleDateFormat("dd MM yyyy");
-		Date dateD = null;
-		try {
-			dateD = df.parse(theDate[0]+" "+theDate[1]+" "+theDate[2]);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
-		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTime(dateD);
-		return gc;
 	}
 }

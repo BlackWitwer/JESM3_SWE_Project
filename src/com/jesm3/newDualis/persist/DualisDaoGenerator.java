@@ -13,6 +13,7 @@ public class DualisDaoGenerator {
 		Schema theSchema = new Schema(3, "com.jesm3.newDualis.generatedDAO");
 		
 		addVorlesung(theSchema);
+		addMail(theSchema);
 		
 		File theFile = new File("./src-gen");
 		if (!theFile.exists()) {
@@ -27,9 +28,25 @@ public class DualisDaoGenerator {
 		theVorlesung.addIdProperty().autoincrement();
 		theVorlesung.addStringProperty("name");
 		theVorlesung.addStringProperty("dozent");
-		theVorlesung.addStringProperty("datum");
-		theVorlesung.addStringProperty("uhrzeitVon");
-		theVorlesung.addStringProperty("uhrzeitBis");
+		theVorlesung.addDateProperty("uhrzeitVon");
+		theVorlesung.addDateProperty("uhrzeitBis");
 		theVorlesung.addStringProperty("raum");
+	}
+	
+	private static void addMail(Schema aSchema) {
+		Entity theMail = aSchema.addEntity("AbstractMailContainer");
+		
+		theMail.addIdProperty().autoincrement();
+		theMail.addStringProperty("from");
+		theMail.addStringProperty("fromComplete");
+		theMail.addStringProperty("to");
+		theMail.addStringProperty("subject");
+		theMail.addStringProperty("text");
+		theMail.addDateProperty("date");
+		theMail.addBooleanProperty("attachment");
+		theMail.addBooleanProperty("seen");
+		theMail.addBooleanProperty("html");
+		theMail.addIntProperty("messageNumber");
+		theMail.addLongProperty("uId");
 	}
 }

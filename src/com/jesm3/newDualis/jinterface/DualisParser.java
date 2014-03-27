@@ -1,6 +1,7 @@
 package com.jesm3.newDualis.jinterface;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.jsoup.Jsoup;
@@ -12,11 +13,12 @@ import android.util.Log;
 
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.Semester;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class DualisParser {
-
+	
 	public DualisParser() {
 	}
 
@@ -55,7 +57,7 @@ public class DualisParser {
 				stdgr.setKalenderwoche(wochenAnfangsdatum);
 				calenderSet = true;
 
-				GregorianCalendar gc = stdgr.stringToGreg(wochenAnfangsdatum);
+				GregorianCalendar gc = Utilities.stringToGreg(wochenAnfangsdatum);
 				int kalenderWoche = gc.get(GregorianCalendar.WEEK_OF_YEAR);
 				int jahr = gc.get(GregorianCalendar.YEAR);
 				GregorianCalendar gcnow = new GregorianCalendar();
@@ -137,8 +139,9 @@ public class DualisParser {
 			String raum = splitTitle[1].trim(); // TODO STG-RB41-4.14-TINF
 												// "-TINF" notwendig??
 			String name = splitTitle[2].trim();
-			Vorlesung dayv = new Vorlesung(uhrzeitVon, uhrzeitBis, dozent,
-					name, datum, raum);
+			Date uhrZeitVonDate = Utilities.dateAndTimeToDate(datum,uhrzeitVon);
+			Date uhrZeitBisDate = Utilities.dateAndTimeToDate(datum,uhrzeitBis);
+			Vorlesung dayv = new Vorlesung(uhrZeitVonDate, uhrZeitBisDate, dozent, name, raum);
 
 			vorlesungen.add(dayv);
 		}
@@ -181,6 +184,9 @@ public class DualisParser {
 			if (note.equals("noch nicht gesetzt"))
 			{
 				note = " - ";
+			} else if (note.equals("b"))
+			{
+				note = " &#10004; ";
 			}
 			String credits = tds.get(3).text();
 			Note neueNote = new Note(nummer,kursName,note,credits);

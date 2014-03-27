@@ -11,6 +11,7 @@ import com.jesm3.newDualis.jinterface.DualisConnection;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -59,8 +60,8 @@ public class LoginActivity extends Activity{
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		
-		User theUser = ((CustomApplication)getApplication()).getUserManager().loadUserData();
-		if (theUser != null) {
+		boolean theSuccessFlag = ((CustomApplication)getApplication()).getUserManager().loadUserData();
+		if (theSuccessFlag) {
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		}
@@ -71,6 +72,9 @@ public class LoginActivity extends Activity{
 	 * @param v
 	 */
 	public void login(View v) {	    
+		final ProgressDialog theWaitDialog = ProgressDialog.show(LoginActivity.this, "Anmelden", "Sie werden angemeldet...", true);
+		theWaitDialog.setCancelable(false);
+		
     	EditText theUser = (EditText) findViewById(R.id.name);
 		String theUsername = theUser.getText().toString().trim();
 		if (!theUsername.contains("@")) {
@@ -79,12 +83,39 @@ public class LoginActivity extends Activity{
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);
     	
-    	if (((CustomApplication)getApplication()).getUserManager().login(theUsername, thePW.getText().toString(), theSaveFlag.isChecked())) {
-    		startActivity(new Intent(this, MainActivity.class));
-    		finish();
-    	} else {
-    		TextView label = (TextView) findViewById(R.id.error_label);
-    		label.setVisibility(View.VISIBLE);
-    	}
+    	final String theName = theUsername;
+    	final String thePassword = thePW.getText().toString();
+    	final boolean theFlag = theSaveFlag.isChecked();
+    	final Activity theActivity = this;
+    	//Im Fall einer Frage nicht zu MBA oder SEW kommen!
+    	new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (((CustomApplication)getApplication()).getUserManager().login(theName, thePassword, theFlag)) {
+					theActivity.runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							theWaitDialog.dismiss();
+						}
+					});
+					theActivity.startActivity(new Intent(theActivity, MainActivity.class));
+					
+					theActivity.finish();
+				} else {
+					theActivity.runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							theWaitDialog.dismiss();
+							TextView label = (TextView) findViewById(R.id.error_label);
+							label.setVisibility(View.VISIBLE);
+						}
+					});
+				}
+				
+			}
+		}).start();
 	}
 }

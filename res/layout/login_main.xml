@@ -14,20 +14,19 @@
 
         <ImageView
             android:id="@+id/imageView1"
-            android:contentDescription="@string/dhbw_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="0dip"
-            android:layout_gravity="top|center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/dhbw_logo"
             android:src="@drawable/icon" />
-
 
         <TableLayout
             android:id="@+id/tableLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" >
+            android:layout_gravity="center"
+            android:layout_weight="2" >
 
             <TableRow
                 android:id="@+id/tableRow1"
@@ -103,6 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="0.5"
             android:text="@string/logindaten_merken" />
 
         <TextView
@@ -110,6 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="0.5"
             android:text="@string/falsche_logindaten"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/holo_red_light"
@@ -121,8 +122,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="40dp"
+            android:layout_weight="1"
             android:onClick="login"
             android:text="@string/login" />
+
     </LinearLayout>
 
 </ScrollView>

@@ -9,9 +9,8 @@ public class AbstractVorlesung {
     private Long id;
     private String name;
     private String dozent;
-    private String datum;
-    private String uhrzeitVon;
-    private String uhrzeitBis;
+    private java.util.Date uhrzeitVon;
+    private java.util.Date uhrzeitBis;
     private String raum;
 
     public AbstractVorlesung() {
@@ -21,11 +20,10 @@ public class AbstractVorlesung {
         this.id = id;
     }
 
-    public AbstractVorlesung(Long id, String name, String dozent, String datum, String uhrzeitVon, String uhrzeitBis, String raum) {
+    public AbstractVorlesung(Long id, String name, String dozent, java.util.Date uhrzeitVon, java.util.Date uhrzeitBis, String raum) {
         this.id = id;
         this.name = name;
         this.dozent = dozent;
-        this.datum = datum;
         this.uhrzeitVon = uhrzeitVon;
         this.uhrzeitBis = uhrzeitBis;
         this.raum = raum;
@@ -55,27 +53,19 @@ public class AbstractVorlesung {
         this.dozent = dozent;
     }
 
-    public String getDatum() {
-        return datum;
-    }
-
-    public void setDatum(String datum) {
-        this.datum = datum;
-    }
-
-    public String getUhrzeitVon() {
+    public java.util.Date getUhrzeitVon() {
         return uhrzeitVon;
     }
 
-    public void setUhrzeitVon(String uhrzeitVon) {
+    public void setUhrzeitVon(java.util.Date uhrzeitVon) {
         this.uhrzeitVon = uhrzeitVon;
     }
 
-    public String getUhrzeitBis() {
+    public java.util.Date getUhrzeitBis() {
         return uhrzeitBis;
     }
 
-    public void setUhrzeitBis(String uhrzeitBis) {
+    public void setUhrzeitBis(java.util.Date uhrzeitBis) {
         this.uhrzeitBis = uhrzeitBis;
     }
 
