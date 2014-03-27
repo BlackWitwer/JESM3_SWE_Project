@@ -9,7 +9,8 @@
         android:id="@+id/action_export"
         android:orderInCategory="200"
         android:showAsAction="never"
-        android:title="@string/export_pdf"/>
+        android:title="@string/export_pdf" 
+        android:enabled="false"/> <!-- TODO Wenn Export implementier wieder aktivieren... -->
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="300"

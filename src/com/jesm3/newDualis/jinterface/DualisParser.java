@@ -11,8 +11,10 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.Semester;
+import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -186,7 +188,7 @@ public class DualisParser {
 				note = " - ";
 			} else if (note.equals("b"))
 			{
-				note = " &#10004; ";
+				note = "bestanden";
 			}
 			String credits = tds.get(3).text();
 			Note neueNote = new Note(nummer,kursName,note,credits);
