@@ -10,6 +10,9 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+
 import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -40,6 +43,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -52,10 +56,11 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
-import com.jesm3.newDualis.mail.MessageContainer;
+import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -109,9 +114,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 		// Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt
 		// im Interface Thread Netzwerkaktivitäten zu verwenden.
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-				.permitAll().build();
-		StrictMode.setThreadPolicy(policy);
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+//				.permitAll().build();
+//		StrictMode.setThreadPolicy(policy);
 		// -----------------------------------
 
 		// initMailView();
@@ -564,34 +569,37 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		 * Initialisiert die ExpandableListVi2ew der Mailansicht.
 		 */
 		public void initMailView(final View aView) {
-			MailManager manager =((CustomApplication) getActivity().getApplication()).getMailManager();
+			MailManager manager = ((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
-					new ArrayList<MessageContainer>());
-			final ExpandableListView expListView;
-			expListView = (ExpandableListView) aView
+					new ArrayList<MailContainer>());
+			final MailExpandableListView expListView;
+			expListView = (MailExpandableListView) aView
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
-			manager.getLatestMessages(10, new MailListener() {
-				@Override
-				public void mailReceived(List<MessageContainer> someMails) {
-					listAdapter.addAllMessages(someMails);
-					final boolean theEmptyFlag = someMails.isEmpty();
-					getActivity().runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							listAdapter.notifyDataSetChanged();
-							if (!theEmptyFlag) {
+			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+			listAdapter.setMessages(manager.getCachedMails());
+			try {
+				manager.getLatestMessages(10, new MailListener() {
+					@Override
+					public void mailReceived() {
+						listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
+						getActivity().runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
 								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
 							}
-						}
-					});
-				}
-			});
+						});
+					}
+				});
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+			
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-
+				
 				private int lastExpand = -1;
-
+				
 				@Override
 				public void onGroupExpand(int groupPosition) {
 					if (lastExpand > -1 && lastExpand != groupPosition) {
