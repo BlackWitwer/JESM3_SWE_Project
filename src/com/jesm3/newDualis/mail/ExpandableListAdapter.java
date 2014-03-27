@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import javax.mail.MessagingException;
 import javax.mail.Part;
+import javax.mail.Flags.Flag;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -23,6 +24,7 @@ import android.webkit.WebView;
 import android.widget.*;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
 
 import java.util.*;
@@ -46,8 +48,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
 
+		//TODO SEW gibt es hier keine schönere Möglichkeit?
 		try {
-			theMail = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend().getMailManager().loadOriginalMessage(theMail);
+			Backend theBackend = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend();
+			theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
+			if (theMail.getId() > 0) {
+				theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
+				theBackend.getDbManager().insertMailContainer(theMail);				
+			}
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}			

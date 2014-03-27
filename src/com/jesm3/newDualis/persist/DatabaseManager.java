@@ -110,7 +110,7 @@ public class DatabaseManager {
 	}
 	
 	public MailContainer insertMailContainer(MailContainer aMail) {
-		mailDAO.insert(aMail);
+		mailDAO.insertOrReplace(aMail);
 		return aMail;
 	}
 	
