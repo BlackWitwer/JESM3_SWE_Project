@@ -1,9 +1,10 @@
 package com.jesm3.newDualis.is;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
+import android.content.*;
+import android.content.SharedPreferences.*;
+import android.preference.*;
+import java.security.*;
+import javax.crypto.*;
 
 public class UserManager {
 
@@ -43,7 +44,8 @@ public class UserManager {
 		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getConnnection().loadStundenplan(10);
+			app.getBackend().getConnnection().loadStundenplan(5);
+			app.getBackend().getConnnection().loadNoten();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();
@@ -86,15 +88,14 @@ public class UserManager {
 	 * den SharedPrefs wird null zur�ｽckgegeben.
 	 * @return ein User Objekt, wenn Benutzerdaten vorhanden sind.
 	 */
-	public User loadUserData() {
+	public boolean loadUserData() {
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String theUsername = thePrefs.getString(PREFS_USERNAME, "");
 		String thePassword = thePrefs.getString(PREFS_PASSWORD, "");
 		if ("".equals(theUsername) || "".equals(thePassword)) {
-			return null;
+			return false;
 		}
 		User theUser = new User(theUsername, thePassword);
-		login(theUser, false, false);
-		return theUser;
+		return login(theUser, false, false);
 	}
 }

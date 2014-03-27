@@ -28,6 +28,8 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.activities.MainActivity;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
+import com.jesm3.newDualis.noten.Note;
+import com.jesm3.newDualis.noten.Semester;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
@@ -131,13 +133,28 @@ public class DualisConnection {
 			return false;
 		}
 	}
+	
 
 	// Parse Hauptmen�links von Startseite
 	public void getMainMenuLinks(String startPageContent) {
 		mlinks = new DualisLinks();
 		mlinks.setStundenPlan(dparse.parseLink(startPageContent, ".link000028"));
+		mlinks.setNoten(dparse.parseLink(startPageContent, ".link000307"));
 	}
 
+	public void loadNoten() {
+		String notenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten());
+		String[][] semester = dparse.parseSemesterLinks(notenContent);
+		ArrayList<Note> noten = new ArrayList<Note>();
+		for(int k=0 ; k < semester.length ; k++) {
+			String realNotenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten() + ",-N" + semester[k][0]);
+			Semester aktSemester = dparse.parseNoten(realNotenContent);
+			Log.d("noten", "Semester:"+aktSemester.toString());
+			noten.addAll(aktSemester.getNoten());
+		}
+		this.backend.getNotenManager().setNoten(noten);
+	}
+	
 	// Geht zur Monats�bersicht und parst den Stundenplan
 	public void loadStundenplan(int weeks) {
 		String stundenplanContent = getPage("https://dualis.dhbw.de"

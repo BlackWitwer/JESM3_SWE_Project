@@ -1,24 +1,12 @@
 package com.jesm3.newDualis.mail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Properties;
+import com.jesm3.newDualis.is.*;
 
-import javax.mail.Authenticator;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
+import java.io.*;
+import java.util.*;
 
-import android.content.res.Resources.Theme;
+import javax.mail.*;
 
-import com.jesm3.newDualis.is.User;
 
 public class MailManager {
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
@@ -26,14 +14,16 @@ public class MailManager {
 
 	private User user;
 	private Folder folder;
+	private Backend backend;
+	private UIDFolder idFolder;
 	
-	private HashMap<Integer, MessageContainer> messageIdMap;
+	private HashMap<Long, MailContainer> messageIdMap;
 
 	private boolean loggedIn = false;
 
-	public MailManager(User aUser) {
+	public MailManager(Backend aBackend, User aUser) {
 		this.user = aUser;
-
+		this.backend = aBackend;
 		// Login im Thread um ein hängen zu vermeiden.
 		new Thread(new Runnable() {
 
@@ -46,6 +36,11 @@ public class MailManager {
 	}
 
 	private void init() {
+		messageIdMap = new HashMap<Long, MailContainer>();
+		for (MailContainer eachMail : backend.getDbManager().getMailContainer()) {
+			messageIdMap.put(eachMail.getUId(), eachMail);
+		}
+		
 		try {
 			Properties props = new Properties();
 			props.setProperty("mail.imaps.host", getHost());
@@ -68,13 +63,14 @@ public class MailManager {
 			folder = store.getDefaultFolder();
 			folder = folder.getFolder("INBOX");
 
+			idFolder = (UIDFolder) folder;
+			
 			try {
 				folder.open(Folder.READ_WRITE);
 			} catch (MessagingException ex) {
 				folder.open(Folder.READ_ONLY);
 			}
 
-			messageIdMap = new HashMap<Integer, MessageContainer>();
 		} catch (Exception ex) {
 			System.out.println("Oops, got exception! " + ex.getMessage());
 			ex.printStackTrace();
@@ -87,15 +83,14 @@ public class MailManager {
 	 * @return true, wenn ungelesenen Nachrichten vorhanden sind. Ansonsten false.
 	 */
 	public boolean sync() {
-		try {
-			if (getFolder().getUnreadMessageCount() > 0) {
-				getMessagesFromTo(getMessageCount()-getFolder().getUnreadMessageCount(), getMessageCount());
-				return true;
+		long theHighKey = 0;
+		for (Map.Entry<Long, MailContainer> eachEntry : messageIdMap.entrySet()) {
+			if (eachEntry.getKey() > theHighKey) {
+				theHighKey = eachEntry.getKey();
 			}
-		} catch (MessagingException e) {
-			e.printStackTrace();
 		}
-		return false;
+		//HighKey+1 ist die erste Nachricht, die nach der neuesten geladenen Nachricht kommen müsste.
+		return getMessagesFromTo(theHighKey, UIDFolder.LASTUID).isEmpty();
 	}
 
 	/**
@@ -110,7 +105,8 @@ public class MailManager {
 
 			@Override
 			public void run() {
-				aListener.mailReceived(getMessagesFromTo(from, to));
+				getMessagesFromTo(from, to);
+				aListener.mailReceived();
 			}
 		}).start();
 	}
@@ -119,40 +115,105 @@ public class MailManager {
 	 * Läd alle Nachrichten aus dem Postfach die sich in dem angegebenen Bereich befinden inklusive der Grenzen. Die Nachrichten
 	 * werden in einer Map gespeichert, sollten sie nochmals gebraucht werden. Mit der Ausführung wird auf einen erfolgreichen Login
 	 * gewartet.
-	 * @param from untere Grenze.
+	 * @param aFrom untere Grenze.
 	 * @param to obere Grenze.
 	 * @return Liste der Nachrichten innerhalb der Grenzen.
 	 */
-	public ArrayList<MessageContainer> getMessagesFromTo(int from, int to) {
+	public ArrayList<MailContainer> getMessagesFromTo(long aFrom, long to) {
 		while (!loggedIn) {
 		}
 		
 		try {
-			int temp = to > getFolder().getMessageCount() ? getFolder()
-					.getMessageCount() : to;
+//			long temp = to > getFolder().getMessageCount() ? getFolder()
+//					.getMessageCount() : to;
 
-			ArrayList<MessageContainer> theMessageList = new ArrayList<MessageContainer>();
-			for (int i = from; i <= temp; i++) {
-				if (!messageIdMap.containsKey(i)) {
-					messageIdMap.put(i, new MessageContainer(getFolder().getMessage(i)));
-				}
-				theMessageList.add(messageIdMap.get(i));
+			ArrayList<MailContainer> theMessageList = new ArrayList<MailContainer>();
+			for (Message eachMessage : getIdFolder().getMessagesByUID(aFrom, to)) {
+				theMessageList.add(getMessage(eachMessage));
 			}
-			Collections.sort(theMessageList, new Comparator<MessageContainer>() {
-
-				@Override
-				public int compare(MessageContainer lhs, MessageContainer rhs) {
-					return lhs.getOriginalMessage().getMessageNumber() < rhs.getOriginalMessage().getMessageNumber() ? 1 : -1;
-				}
-			});
 			return theMessageList;
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<MailContainer>();
+	}
+	
+	public boolean refreshCache() {
+		try {
+			boolean theRefreshFlag = false;
+			List<Long> theDelKeyList = new ArrayList<Long>();
+			Message[] theMessages;
+			for (long eachKey : messageIdMap.keySet()) {
+				theMessages = getIdFolder().getMessagesByUID(eachKey, eachKey);
+				if (theMessages == null || theMessages.length == 0) {
+					theDelKeyList.add(eachKey);
+					theRefreshFlag = true;
+					
+					//Aus der Datenbank löschen falls die Mail gespeichert wurde.
+					if (messageIdMap.get(eachKey).getId() > 0) {
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(eachKey));
+					}
+				}
+			}
+			for (long eachKey : theDelKeyList) {
+				messageIdMap.remove(eachKey);
+			}
+				
+			return sync() || theRefreshFlag;
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public MailContainer loadOriginalMessage(MailContainer aMail) throws MessagingException {
+		if (aMail.getOriginalMessage() == null) {
+			aMail.setOriginalMessage(getIdFolder().getMessageByUID(aMail.getUId()));
+		}
+		return aMail;
+	}
+	
+	public MailContainer getMessage(long aMessageUId) throws MessagingException {
+		if (messageIdMap.containsKey(aMessageUId)) {
+			return messageIdMap.get(aMessageUId);
+		}
+		return getMessage(getIdFolder().getMessageByUID(aMessageUId));
+	}
+	
+	public MailContainer getMessage(Message aMessage) {
+		while (!loggedIn) {
+		}
+		
+		if (aMessage == null) {
+			return null;
+		}
+		
+		try {
+			MailContainer theMail = null;
+			long theUid = getIdFolder().getUID(aMessage);
+			if (!messageIdMap.containsKey(theUid)) {
+				theMail = new MailContainer(aMessage, theUid);
+				messageIdMap.put(theUid, theMail);
+				
+				int theMessageCount = getFolder().getMessageCount();
+				if (theMail.getMessageNumber() > theMessageCount - 10) {
+					backend.getDbManager().insertMailContainer(theMail);
+					if (messageIdMap.containsKey(theMessageCount-10)
+						&& messageIdMap.get(theMessageCount-10).getId() > 0) {
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+					}
+				}
+			} else if (messageIdMap.get(theUid).getOriginalMessage() == null) {
+				messageIdMap.get(theUid).setOriginalMessage(aMessage);
+			}
+			return messageIdMap.get(theUid);
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return new ArrayList<MessageContainer>();
+		return null;
 	}
 
 	/**
@@ -160,32 +221,43 @@ public class MailManager {
 	 * @param anAmount die Anzahl.
 	 * @return Liste der Nachrichten.
 	 */
-	public ArrayList<MessageContainer> getLatestMessages(int anAmount) {
-		if (anAmount > getMessageCount()) {
-			return getMessagesFromTo(1, getMessageCount());
-		}
-		return getMessagesFromTo(getMessageCount() - anAmount,
-				getMessageCount());
-	}
+//	public ArrayList<MailContainer> getLatestMessages(int anAmount) {
+//		if (anAmount > getMessageCount()) {
+//			return getMessagesFromTo(1, getMessageCount());
+//		}
+//		return getMessagesFromTo(getMessageCount() - anAmount,
+//				getMessageCount());
+//	}
 
 	/**
 	 * Gibt die Angegebene Anzahl von Nachrichten zurück. Angefangen bei der Neuesten. Wird in einem extra Thread ausgeführt.
 	 * Ergebnis wird per Listener zurückgegeben.
 	 * @param anAmount die Anzahl.
 	 * @return Liste der Nachrichten.
+	 * @throws MessagingException Bei Mail Fehler.
 	 */
-	public void getLatestMessages(int anAmount, MailListener aListener) {
+	public void getLatestMessages(int anAmount, MailListener aListener) throws MessagingException {
 		while (!loggedIn) {
 		}
 		
-		if (anAmount > getMessageCount()) {
-			getMessagesFromTo(1, getMessageCount(), aListener);
-		} else {
-			getMessagesFromTo(getMessageCount() - anAmount, getMessageCount(),
-					aListener);
+		MailContainer theMail = getMessage(getFolder().getMessage(getFolder().getMessageCount()));
+		long theId = theMail.getUId();
+		MailContainer theOldMail = null;
+		for (int i = anAmount; i > 0; i--) {
+			theOldMail = null;
+			while (theOldMail == null && theId > 0) {
+				theOldMail = getMessage(theId--);
+			}
 		}
+		aListener.mailReceived();
 	}
-
+	
+	public Collection<MailContainer> getCachedMails() {
+		while (!loggedIn) {
+		}
+		return messageIdMap.values();
+	}
+	
 	public int getMessageCount() {
 		try {
 			return getFolder().getMessageCount();
@@ -213,6 +285,10 @@ public class MailManager {
 
 	private Folder getFolder() {
 		return folder;
+	}
+	
+	private UIDFolder getIdFolder() {
+		return idFolder;
 	}
 
 	private class PassAuthenticator extends Authenticator {

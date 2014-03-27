@@ -60,8 +60,8 @@ public class LoginActivity extends Activity{
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		
-		User theUser = ((CustomApplication)getApplication()).getUserManager().loadUserData();
-		if (theUser != null) {
+		boolean theSuccessFlag = ((CustomApplication)getApplication()).getUserManager().loadUserData();
+		if (theSuccessFlag) {
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
 		}

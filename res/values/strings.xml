@@ -62,7 +62,7 @@
     <string name="app_close">Nochmal klicken um die App zu beenden&#8230;</string>
     <string name="name">Name</string>
     <string name="passwort">Passwort</string>
-    <string name="logindaten_merken">Logindaten merken</string>
+    <string name="logindaten_merken">Angemeldet bleiben</string>
     <string name="falsche_logindaten">Falsche Logindaten</string>
     <string name="login">Login</string>
     <string name="abbrechen">Abbrechen</string>
