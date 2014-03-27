@@ -18,6 +18,7 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
+import com.jesm3.newDualis.noten.Note;
 
 import de.greenrobot.dao.query.QueryBuilder;
 import com.jesm3.newDualis.mail.*;
@@ -31,6 +32,7 @@ public class DatabaseManager {
 	
 	private AbstractVorlesungDao vorlesungDAO;
 	private AbstractMailContainerDao mailDAO;
+	private AbstractNoteDao noteDAO;
 	
 	private Context context;
 	
@@ -40,6 +42,9 @@ public class DatabaseManager {
 		init();
 	}
 	
+	/**
+	 * Initalisierung der Datenbankensessions für Vorlesungen und Noten.
+	 */
 	private void init() {
 		DevOpenHelper theHelper = new DaoMaster.DevOpenHelper(context, "dualis-db", null);
 		db = theHelper.getWritableDatabase();
@@ -48,6 +53,17 @@ public class DatabaseManager {
 		
 		vorlesungDAO = sessionDAO.getAbstractVorlesungDao();
 		mailDAO = sessionDAO.getAbstractMailContainerDao();
+		noteDAO = sessionDAO.getAbstractNoteDao();
+	}
+	
+	/**
+	 * Speichert eine Liste von Vorlesungen in die Datenbank.
+	 * @param aVorlesungsList die gespeichert werden soll.
+	 * @return List der Vorlesungen mit DatenbankID.
+	 */
+	public List<Vorlesung> insertVorlesungen(List<Vorlesung> aVorlesungsList) {
+		vorlesungDAO.insertOrReplaceInTx(aVorlesungsList.toArray(new Vorlesung[0]));
+		return aVorlesungsList;
 	}
 	
 	/**
@@ -59,9 +75,38 @@ public class DatabaseManager {
 		vorlesungDAO.insert(aVorlesung);
 		return aVorlesung;
 	}
+	
 	/**
-	 * L�scht eine Vorlesung.
-	 * @param aVorlesung die gel�scht werden soll.
+	 * Löscht je nach Parameter eine Menge von Vorlesungen aus der Datenbank.
+	 * Wird der Parameter nicht erkannt passiert nichts.
+	 * @param aRequest der ReqeuestTyp.
+	 */
+	public void deleteVorlesungen(Requests aRequest) {
+		List<Vorlesung> removeList = new ArrayList<Vorlesung>();
+		
+		switch (aRequest) {
+		case REQUEST_ALL:
+			vorlesungDAO.deleteAll();
+			return;
+			
+		case REQUEST_NEXT:
+			removeList = getVorlesungen(Requests.REQUEST_NEXT);
+			vorlesungDAO.deleteInTx(removeList.toArray(new Vorlesung[0]));
+			return;
+			
+		case REQUEST_LAST:
+			removeList = getVorlesungen(Requests.REQUEST_LAST);
+			vorlesungDAO.deleteInTx(removeList.toArray(new Vorlesung[0]));
+			return;
+			
+		default:
+			return;	
+		}
+	}
+	
+	/**
+	 * Löscht die übergebene Vorlesung.
+	 * @param aVorlesung zu löschende Vorlesung.
 	 */
 	public void deleteVorlesung(Vorlesung aVorlesung) {
 		vorlesungDAO.delete(aVorlesung);
@@ -126,15 +171,31 @@ public class DatabaseManager {
 		return createConcretType(mailDAO.loadAll(), MailContainer.class);
 	}
 	
-//	private List<Vorlesung> createVorlesung(List<AbstractVorlesung> aList) {
-//		List<Vorlesung> theResultList = new ArrayList<Vorlesung>();
-//		
-//		for (AbstractVorlesung eachData : aList) {
-//			theResultList.add(new Vorlesung(eachData));
-//		}
-//		
-//		return theResultList;
-//	}
+	/**
+	 * Speichert eine Note in die Datenbank.
+	 * @param aNote, zu speichernde Note.
+	 * @return Note mit DatenbankID.
+	 */
+	public Note insertNote(Note aNote) {
+		noteDAO.insert(aNote);
+		return aNote;
+	}
+	
+	/**
+	 * Löscht eine Note aus der Datenbank.
+	 * @param aNote, zu löschende Note.
+	 */
+	public void deleteNote(Note aNote) {
+		noteDAO.delete(aNote);
+	}
+	
+	/**
+	 * Lädt alle Noten(Einträge) aus der Datenbank.
+	 * @return Noten als List<Noten>.
+	 */
+	public List<Note> getNoten () {
+		return createConcretType(noteDAO.loadAll(), Note.class);
+	}
 	
 	/**
 	 * Erstellt aus einer Liste von Abstracten Objekten eine Sub Type Klasse vom Typ T.
