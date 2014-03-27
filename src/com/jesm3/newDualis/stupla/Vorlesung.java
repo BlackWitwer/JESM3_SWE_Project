@@ -8,19 +8,28 @@ public class Vorlesung extends AbstractVorlesung {
 
 	public enum Requests {
 		/**
+<<<<<<< HEAD
 		 * 
+=======
+>>>>>>> branch 'b1203_mji_2' of https://github.com/BlackWitwer/JESM3_SWE_Project.git
 		 * Alle Eintraege der Datenbank werden geladen.
 		 */
 		REQUEST_ALL,
 
 		/**
+<<<<<<< HEAD
 		 * 
+=======
+>>>>>>> branch 'b1203_mji_2' of https://github.com/BlackWitwer/JESM3_SWE_Project.git
 		 * Alle zukuenftigen Eintraege inklusive des heutigen Tages.
 		 */
 		REQUEST_NEXT,
 
 		/**
+<<<<<<< HEAD
 		 * 
+=======
+>>>>>>> branch 'b1203_mji_2' of https://github.com/BlackWitwer/JESM3_SWE_Project.git
 		 * Alle vergangenen Eintraege exklusive des heutigen Tages.
 		 */
 		REQUEST_LAST
@@ -68,6 +77,7 @@ public class Vorlesung extends AbstractVorlesung {
 
 	public Vorlesung(AbstractVorlesung aVorlesung) {
 		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());
+
 	}
 
 	// TODO Wird diese Methode überhaupt gebraucht?? Wenn nicht löschen.

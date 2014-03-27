@@ -569,6 +569,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					new ArrayList<MailContainer>());
 			final MailExpandableListView expListView;
 			expListView = (MailExpandableListView) aView
+
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
