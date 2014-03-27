@@ -178,9 +178,6 @@ public class MailContainer extends AbstractMailContainer {
 		if (attachmentList == null) {
 			if (getOriginalMessage() != null) {
 				attachmentList = getAttachments(getOriginalMessage());
-			} else {
-				//FIXME die Liste sollte korrekt geladen werden. Dazu muss ggf. die Nachricht vom MailServer geholt werden.
-				attachmentList = new ArrayList<Part>();
 			}
 		}
 		return attachmentList;

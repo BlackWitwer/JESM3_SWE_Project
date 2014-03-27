@@ -74,20 +74,11 @@ public class UserManager {
 	private boolean saveUserData() {
 		if (user != null) {
 			// TODO Passwort verschl�sselung.
-			try {
-				Cipher theCipher = Cipher.getInstance("AES");
-//				theCipher
-				SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
-				Editor theEditor = thePrefs.edit();
-				theEditor.putString(PREFS_USERNAME, getUser().getUsername());
-				theEditor.putString(PREFS_PASSWORD, getUser().getPassword());
-				return theEditor.commit();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (NoSuchPaddingException e) {
-				e.printStackTrace();
-			}
-			
+			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
+			Editor theEditor = thePrefs.edit();
+			theEditor.putString(PREFS_USERNAME, getUser().getUsername());
+			theEditor.putString(PREFS_PASSWORD, getUser().getPassword());
+			return theEditor.commit();
 		}
 		return false;
 	}

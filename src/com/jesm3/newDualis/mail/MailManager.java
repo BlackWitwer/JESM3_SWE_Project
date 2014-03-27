@@ -166,15 +166,22 @@ public class MailManager {
 		}
 		return false;
 	}
+
+	public MailContainer loadOriginalMessage(MailContainer aMail) throws MessagingException {
+		if (aMail.getOriginalMessage() == null) {
+			aMail.setOriginalMessage(getIdFolder().getMessageByUID(aMail.getUId()));
+		}
+		return aMail;
+	}
 	
-	private MailContainer getMessage(long aMessageUId) throws MessagingException {
+	public MailContainer getMessage(long aMessageUId) throws MessagingException {
 		if (messageIdMap.containsKey(aMessageUId)) {
 			return messageIdMap.get(aMessageUId);
 		}
 		return getMessage(getIdFolder().getMessageByUID(aMessageUId));
 	}
 	
-	private MailContainer getMessage(Message aMessage) {
+	public MailContainer getMessage(Message aMessage) {
 		while (!loggedIn) {
 		}
 		

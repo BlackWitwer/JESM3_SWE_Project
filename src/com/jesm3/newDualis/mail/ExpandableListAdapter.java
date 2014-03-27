@@ -3,6 +3,7 @@ package com.jesm3.newDualis.mail;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.mail.MessagingException;
 import javax.mail.Part;
 
@@ -22,6 +23,8 @@ import android.webkit.WebView;
 import android.widget.*;
 
 import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.is.CustomApplication;
+
 import java.util.*;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -41,8 +44,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, final int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		final MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
+		MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
 
+		try {
+			theMail = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend().getMailManager().loadOriginalMessage(theMail);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}			
+		
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -106,11 +115,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 		if (groupPosition == getGroupCount()-1 && showProgress) {
-			System.out.println(convertView);
 			return convertView;
 		}
 				
 		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
+		
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
