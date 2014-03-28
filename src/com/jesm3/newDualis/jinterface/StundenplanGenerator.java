@@ -214,7 +214,7 @@ public class StundenplanGenerator {
 			theWochenplan.addToDay(Days.values()[theDay-2], eachVorlesung);
 		}
 		
-		//Finish Wochenpläne. Füllt leere Tage mit einer Freien Tag Vorlesung auf.
+		//Finish Wochenpläne. Fügt leere Wochen ein.
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(aContext);
 		int lastWeek = thePrefs.getInt(LAST_LOADED_WEEK, 0);
 		calendar.setTime(aVorlesungList.get(0).getUhrzeitBis());
@@ -234,6 +234,7 @@ public class StundenplanGenerator {
 			calendar.add(GregorianCalendar.WEEK_OF_YEAR, 1);
 		}
 		
+		//Füllt leere Tage mit einer Freien Tag Vorlesung auf.
 		List<Wochenplan> theWochenplaene = new ArrayList<Wochenplan>();
 		theWochenplaene.addAll(theWochenplanMap.values());
 		
