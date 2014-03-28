@@ -241,6 +241,10 @@ public class MailManager {
 		}
 		
 		MailContainer theMail = getMessage(getFolder().getMessage(getFolder().getMessageCount()));
+		if (theMail == null) {
+			return;
+		}
+		
 		long theId = theMail.getUId();
 		MailContainer theOldMail = null;
 		for (int i = anAmount; i > 0; i--) {

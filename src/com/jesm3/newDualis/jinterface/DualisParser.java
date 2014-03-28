@@ -190,7 +190,7 @@ public class DualisParser {
 				note = " - ";
 			} else if (note.equals("b"))
 			{
-				note = "bestanden";
+				note = "\u2714";
 			}
 			String credits = tds.get(3).text();
 			Note neueNote = new Note(nummer,kursName,note,credits);
