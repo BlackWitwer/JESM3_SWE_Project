@@ -44,7 +44,7 @@ public class UserManager {
 		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getConnnection().loadStundenplan(5);
+			app.getBackend().getConnnection().loadStundenplan(15);
 			app.getBackend().getConnnection().loadNoten();
 			user = aUser;
 			if (aPersistantFlag) {

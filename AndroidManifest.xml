@@ -36,6 +36,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter> >
         </activity>
+         <activity
+            android:label="@string/app_name"
+            android:name=".activities.SpecialActivity"
+            android:launchMode="singleInstance" >
+        </activity>
         <service android:name="com.jesm3.newDualis.synchronization.SyncService" />
 		<receiver android:name=".widget.WidgetProvider" >
             <intent-filter >

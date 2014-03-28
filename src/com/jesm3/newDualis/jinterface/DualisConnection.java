@@ -32,9 +32,13 @@ import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.Semester;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.widget.TextView;
@@ -210,8 +214,10 @@ public class DualisConnection {
 		}
 		wl.remove(wl.size()-1); // Letzte halbe Woche wieder löschen!
 		
-		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
+		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(backend.getCustomApplication());
+		thePrefs.edit().putInt(StundenplanGenerator.LAST_LOADED_WEEK, wl.get(wl.size()-1).getKalenderwoche()).commit();
 		
+//		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
 		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
 				Date anfangsDatum = eachWoche.getAnfangsDatum();
@@ -224,10 +230,13 @@ public class DualisConnection {
 				eachWoche.setAnfangsDatumDate(anfangsDatum);
 			}
 //			eachWoche = util.addDateToFreedays(eachWoche);
-			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+//			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
 		}
-		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(alleVorlesungen);
-		for (Wochenplan eachWoche : parsedWeeks) {
+//		backend.getDbManager().deleteVorlesungen(Requests.REQUEST_ALL);
+//		backend.getDbManager().insertVorlesungen(alleVorlesungen);
+//		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(backend.getDbManager().getVorlesungen(Requests.REQUEST_ALL), backend.getCustomApplication());
+//		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(alleVorlesungen);
+		for (Wochenplan eachWoche : wl) {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 //			new StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
 		}

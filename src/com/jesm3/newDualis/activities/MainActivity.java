@@ -115,15 +115,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		actionBar.show();
 
-		// Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt
-		// im Interface Thread Netzwerkaktivitäten zu verwenden.
-//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-//				.permitAll().build();
-//		StrictMode.setThreadPolicy(policy);
-		// -----------------------------------
-
-		// initMailView();
-
 		// start the SyncService
 		startService(new Intent(this, SyncService.class));
 		bindService(new Intent(this, SyncService.class),
@@ -232,6 +223,19 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		if (System.currentTimeMillis() - timestamp < 100) {
 			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
 					.show();
+		}
+		timestamp = System.currentTimeMillis();
+	}
+	
+	/**
+	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
+	 */
+	public void updateNoten(View v) {
+//		mBoundSyncService.manualSync();
+
+		// XXX
+		if (System.currentTimeMillis() - timestamp < 100) {
+			this.startActivity(new Intent(this, SpecialActivity.class));
 		}
 		timestamp = System.currentTimeMillis();
 	}

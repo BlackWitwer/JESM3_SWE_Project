@@ -155,7 +155,7 @@ public class DatabaseManager {
 	}
 	
 	public MailContainer insertMailContainer(MailContainer aMail) {
-		mailDAO.insertOrReplace(aMail);
+		mailDAO.insertOrReplaceInTx(new MailContainer[] {aMail});
 		return aMail;
 	}
 	
@@ -207,11 +207,15 @@ public class DatabaseManager {
 		List<T> theResultList = new ArrayList<T>();
 		
 		for (K eachData : aList) {
-			try {
-				theResultList.add(aClass.getConstructor(eachData.getClass()).newInstance(eachData));
-			} catch (Exception e) {
-				// Sollte bei richtiger Verwendung der Methode nicht vorkommen...
-				e.printStackTrace();
+			if (eachData.getClass().equals(aClass)) {
+				theResultList.add((T) eachData);
+			} else {
+				try {
+					theResultList.add(aClass.getConstructor(eachData.getClass()).newInstance(eachData));
+				} catch (Exception e) {
+					// Sollte bei richtiger Verwendung der Methode nicht vorkommen...
+					e.printStackTrace();
+				}				
 			}
 		}
 		

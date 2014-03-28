@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.jesm3.newDualis.is.Utilities;
@@ -22,6 +26,9 @@ import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
 public class StundenplanGenerator {
+	
+	public static final String LAST_LOADED_WEEK = "letzteGeladeneWoche";
+	
 	private Utilities util = new Utilities();
 	private Wochenplan std= new Wochenplan();
 	
@@ -173,18 +180,27 @@ public class StundenplanGenerator {
 		std.setKalenderwoche(gc.get(GregorianCalendar.WEEK_OF_YEAR));
 	}
 	
-	public List<Wochenplan> generateWochenplaene(List<Vorlesung> aVorlesungList) {
+	public List<Wochenplan> generateWochenplaene(List<Vorlesung> aVorlesungList, Context aContext) {
+		//Sortiere die Liste nach UhrzeitVon.
+		Collections.sort(aVorlesungList, new Comparator<Vorlesung>() {
+			@Override
+			public int compare(Vorlesung lhs, Vorlesung rhs) {
+				return lhs.getUhrzeitBis().compareTo(rhs.getUhrzeitVon());
+			}
+		});
+		
+		//Sortieren Vorlesungen in WochenplanMap.
 		Map<Integer, Wochenplan> theWochenplanMap = new HashMap<Integer, Wochenplan>();
 		GregorianCalendar calendar = new GregorianCalendar(Locale.GERMANY);
-		int week;
-		int day;
+		int theWeek;
+		int theDay;
 		for (Vorlesung eachVorlesung : aVorlesungList) {
 			calendar.setTime(eachVorlesung.getUhrzeitVon());
-			week = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
-			day = calendar.get(GregorianCalendar.DAY_OF_WEEK);
-			if (!theWochenplanMap.containsKey(week)) {
+			theWeek = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
+			theDay = calendar.get(GregorianCalendar.DAY_OF_WEEK);
+			if (!theWochenplanMap.containsKey(theWeek)) {
 				Wochenplan theWochenplan = new Wochenplan();
-				theWochenplanMap.put(week, theWochenplan);
+				theWochenplanMap.put(theWeek, theWochenplan);
 				//-2, da der Montag die Zahl 2 hat und im Fall des Montags nichts abgezogen werden soll.
 				calendar.add(GregorianCalendar.DAY_OF_WEEK, -(calendar.get(GregorianCalendar.DAY_OF_WEEK)-2));
 				theWochenplan.setAnfangsDatumDate(calendar.getTime());
@@ -193,12 +209,31 @@ public class StundenplanGenerator {
 				theWochenplan.setEndDatumDate(calendar.getTime());
 			}
 			
-			Wochenplan theWochenplan = theWochenplanMap.get(week);
+			Wochenplan theWochenplan = theWochenplanMap.get(theWeek);
 			//Der Tag minus 2 entspricht der Stelle im Array, da Montag im Gregorian Kalender die Nummer 2 hat und im Array die Nummer 0.
-			theWochenplan.addToDay(Days.values()[day-2], eachVorlesung);
+			theWochenplan.addToDay(Days.values()[theDay-2], eachVorlesung);
 		}
 		
 		//Finish Wochenpläne. Füllt leere Tage mit einer Freien Tag Vorlesung auf.
+		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(aContext);
+		int lastWeek = thePrefs.getInt(LAST_LOADED_WEEK, 0);
+		calendar.setTime(aVorlesungList.get(0).getUhrzeitBis());
+		int firstWeek = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
+		
+		for (int i = firstWeek; i <= lastWeek; i++) {
+			if (!theWochenplanMap.containsKey(i)) {
+				Wochenplan theWochenplan = new Wochenplan();
+				theWochenplanMap.put(i, theWochenplan);
+				//-2, da der Montag die Zahl 2 hat und im Fall des Montags nichts abgezogen werden soll.
+				calendar.add(GregorianCalendar.DAY_OF_WEEK, -(calendar.get(GregorianCalendar.DAY_OF_WEEK)-2));
+				theWochenplan.setAnfangsDatumDate(calendar.getTime());
+				theWochenplan.setKalenderwoche(calendar.get(GregorianCalendar.WEEK_OF_YEAR));
+				calendar.add(GregorianCalendar.DAY_OF_WEEK, 6);
+				theWochenplan.setEndDatumDate(calendar.getTime());
+			}
+			calendar.add(GregorianCalendar.WEEK_OF_YEAR, 1);
+		}
+		
 		List<Wochenplan> theWochenplaene = new ArrayList<Wochenplan>();
 		theWochenplaene.addAll(theWochenplanMap.values());
 		

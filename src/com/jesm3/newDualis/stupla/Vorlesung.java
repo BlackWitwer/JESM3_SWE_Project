@@ -55,9 +55,4 @@ public class Vorlesung extends AbstractVorlesung {
 	public Vorlesung(AbstractVorlesung aVorlesung) {
 		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());
 	}
-	
-//	TODO Wird diese Methode überhaupt gebraucht?? Wenn nicht löschen.
-//	public String toString(){
-//		return Name+": "+UhrzeitVon+" - "+UhrzeitBis+" von "+Dozent+" am "+Datum+" in "+Raum;
-//	}
 }

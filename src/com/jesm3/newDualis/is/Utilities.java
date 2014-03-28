@@ -13,6 +13,8 @@ import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class Utilities {
