@@ -578,7 +578,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		/**
 		 * Initialisiert die ExpandableListVi2ew der Mailansicht.
 		 */
-		public void initMailView(final View aView) {
+		private void initMailView(final View aView) {
 			MailManager manager = ((CustomApplication) getActivity().getApplication()).getBackend().getMailManager();
 			final ExpandableListAdapter listAdapter = new ExpandableListAdapter(getActivity(),
 					new ArrayList<MailContainer>());
@@ -588,23 +588,20 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 			listAdapter.setMessages(manager.getCachedMails());
-			try {
-				manager.getLatestMessages(10, new MailListener() {
-					@Override
-					public void mailReceived() {
-						listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
-						getActivity().runOnUiThread(new Runnable() {
-							
-							@Override
-							public void run() {
-								aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
-							}
-						});
-					}
-				});
-			} catch (MessagingException e) {
-				e.printStackTrace();
-			}
+			aView.findViewById(R.id.mailProgressBar).setVisibility(View.VISIBLE);
+			manager.getLatestMessages(10, new MailListener() {
+				@Override
+				public void mailReceived() {
+					listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
+						}
+					});
+				}
+			});
 			
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
 				

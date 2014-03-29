@@ -132,6 +132,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
+		} else {
+			return convertView;
 		}
 
 		TextView lblListFrom = (TextView) convertView
@@ -154,7 +156,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		}
 		lblListSubject.setText(theMessage.getSubject());
 		
-		lblListFrom.setText(theMessage.getFrom() + "    " + theMessage.getUId());
+		lblListFrom.setText(theMessage.getFrom());
 		
 		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				

@@ -236,24 +236,34 @@ public class MailManager {
 	 * @return Liste der Nachrichten.
 	 * @throws MessagingException Bei Mail Fehler.
 	 */
-	public void getLatestMessages(int anAmount, MailListener aListener) throws MessagingException {
-		while (!loggedIn) {
-		}
-		
-		MailContainer theMail = getMessage(getFolder().getMessage(getFolder().getMessageCount()));
-		if (theMail == null) {
-			return;
-		}
-		
-		long theId = theMail.getUId();
-		MailContainer theOldMail = null;
-		for (int i = anAmount; i > 0; i--) {
-			theOldMail = null;
-			while (theOldMail == null && theId > 0) {
-				theOldMail = getMessage(theId--);
+	public void getLatestMessages(final int anAmount, final MailListener aListener) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while (!loggedIn) {
+				}
+				
+				try {
+					MailContainer theMail = getMessage(getFolder().getMessage(getFolder().getMessageCount()));
+					if (theMail == null) {
+						return;
+					}
+					
+					long theId = theMail.getUId();
+					MailContainer theOldMail = null;
+					for (int i = anAmount; i > 0; i--) {
+						theOldMail = null;
+						while (theOldMail == null && theId > 0) {
+								theOldMail = getMessage(theId--);
+						}
+					}
+					aListener.mailReceived();
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
 			}
-		}
-		aListener.mailReceived();
+		}).start();
 	}
 	
 	public Collection<MailContainer> getCachedMails() {

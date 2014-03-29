@@ -19,7 +19,8 @@
 	<com.jesm3.newDualis.mail.MailExpandableListView
 	    android:id="@+id/mailExpandView"
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" >
+	    android:layout_height="match_parent" 
+	    android:overScrollHeader="@drawable/arrow_up">
 	</com.jesm3.newDualis.mail.MailExpandableListView>
 
 </LinearLayout>
