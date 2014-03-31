@@ -7,6 +7,7 @@ import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 public class Vorlesung extends AbstractVorlesung {
 
 	public enum Requests {
+
 		/**
 		 * Alle Eintraege der Datenbank werden geladen.
 		 */
@@ -16,6 +17,7 @@ public class Vorlesung extends AbstractVorlesung {
 		 * Alle zukuenftigen Eintraege inklusive des heutigen Tages.
 		 */
 		REQUEST_NEXT,
+
 
 		/**
 		 * Alle vergangenen Eintraege exklusive des heutigen Tages.
@@ -57,9 +59,11 @@ public class Vorlesung extends AbstractVorlesung {
 		this(uhrzeitVon,uhrzeitBis,dozent,name,"");
 	}
 
+
 	public Vorlesung() {
 		this(null,null,"","");
 	}
+
 
 	public Vorlesung(AbstractVorlesung aVorlesung) {
 		super(aVorlesung.getId(), aVorlesung.getName(), aVorlesung.getDozent(), aVorlesung.getUhrzeitVon(), aVorlesung.getUhrzeitBis(), aVorlesung.getRaum());

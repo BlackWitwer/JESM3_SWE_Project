@@ -1,28 +1,22 @@
 package com.jesm3.newDualis.persist;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao;
+import com.jesm3.newDualis.generatedDAO.AbstractNoteDao;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesungDao;
 import com.jesm3.newDualis.generatedDAO.DaoMaster;
 import com.jesm3.newDualis.generatedDAO.DaoMaster.DevOpenHelper;
 import com.jesm3.newDualis.generatedDAO.DaoSession;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.MailContainer;
+import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
-import com.jesm3.newDualis.noten.Note;
-
-import de.greenrobot.dao.query.QueryBuilder;
-import com.jesm3.newDualis.mail.*;
-import com.jesm3.newDualis.generatedDAO.*;
 
 public class DatabaseManager {
 	
