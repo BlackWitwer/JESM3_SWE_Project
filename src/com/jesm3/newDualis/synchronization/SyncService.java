@@ -202,7 +202,7 @@ public class SyncService extends Service implements
 				.getVorlesungen(Requests.REQUEST_NEXT);
 		
 		//TODO get new Data from Parser
-		List<Vorlesungen> newLectures = null;
+		List<Vorlesung> newLectures = null;
 		
 		//TODO save to database
 		dbManager.insertVorlesung(null);
