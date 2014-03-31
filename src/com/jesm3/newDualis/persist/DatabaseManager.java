@@ -1,9 +1,6 @@
 package com.jesm3.newDualis.persist;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -18,10 +15,6 @@ import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
-
-import de.greenrobot.dao.query.QueryBuilder;
-import com.jesm3.newDualis.mail.*;
-import com.jesm3.newDualis.generatedDAO.*;
 
 public class DatabaseManager {
 	
@@ -59,9 +52,12 @@ public class DatabaseManager {
 		vorlesungDAO.insert(aVorlesung);
 		return aVorlesung;
 	}
+	
 	/**
 	 * L�scht eine Vorlesung.
-	 * @param aVorlesung die gel�scht werden soll.
+	 * 
+	 * @param aVorlesung
+	 *            die geloescht werden soll.
 	 */
 	public void deleteVorlesung(Vorlesung aVorlesung) {
 		vorlesungDAO.delete(aVorlesung);

@@ -198,9 +198,16 @@ public class SyncService extends Service implements
 		int result = 0;
 		// TODO the actual Sync
 		// get the next lectures
-		List<Vorlesung> vorlesungen = dbManager
+		List<Vorlesung> lectures = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
-
+		
+		//TODO get new Data from Parser
+		List<Vorlesungen> newLectures = null;
+		
+		//TODO save to database
+		dbManager.insertVorlesung(null);
+		
+		
 		return result;
 	}
 
