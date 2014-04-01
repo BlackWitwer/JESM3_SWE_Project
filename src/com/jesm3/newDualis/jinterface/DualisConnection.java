@@ -161,7 +161,7 @@ public class DualisConnection {
 	}
 	
 	// Geht zur Monats�bersicht und parst den Stundenplan
-	public void loadStundenplan(int weeks) {
+	public ArrayList<Vorlesung> loadStundenplan(int weeks) {
 		String stundenplanContent = getPage("https://dualis.dhbw.de"
 				+ mlinks.getStundenPlan());
 
@@ -217,7 +217,7 @@ public class DualisConnection {
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(backend.getCustomApplication());
 		thePrefs.edit().putInt(StundenplanGenerator.LAST_LOADED_WEEK, wl.get(wl.size()-1).getKalenderwoche()).commit();
 		
-//		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
+		ArrayList<Vorlesung> alleVorlesungen = new ArrayList<Vorlesung>();
 		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
 				Date anfangsDatum = eachWoche.getAnfangsDatum();
@@ -229,8 +229,8 @@ public class DualisConnection {
 				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
 				eachWoche.setAnfangsDatumDate(anfangsDatum);
 			}
-//			eachWoche = util.addDateToFreedays(eachWoche);
-//			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+			eachWoche = util.addDateToFreedays(eachWoche);
+			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
 		}
 //		backend.getDbManager().deleteVorlesungen(Requests.REQUEST_ALL);
 //		backend.getDbManager().insertVorlesungen(alleVorlesungen);
@@ -240,6 +240,7 @@ public class DualisConnection {
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 //			new StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
 		}
+		return alleVorlesungen;
 	}
 
 	// L�d Seite ohne HTML Code zur�ckzugeben
