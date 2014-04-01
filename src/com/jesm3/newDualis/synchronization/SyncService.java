@@ -23,10 +23,12 @@ import android.widget.Toast;
 
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.jinterface.StundenplanGenerator;
 import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.settings.SettingsFragment;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
+import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class SyncService extends Service implements
 		OnSharedPreferenceChangeListener {
@@ -197,10 +199,33 @@ public class SyncService extends Service implements
 		Log.d(logname, "starting Sync");
 		int result = 0;
 		// TODO the actual Sync
-		// get the next lectures
+		// get the next lectures for safety
+		@SuppressWarnings("unused")
 		List<Vorlesung> vorlesungen = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
 
+		// get new lectures from dualis
+		// TODO settings: int weeks
+		List<Vorlesung> newLecturesList = backend.getConnnection()
+				.loadStundenplan(5);
+		if (newLecturesList != null) {
+			dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
+			dbManager.insertVorlesungen(newLecturesList);
+		} else {
+			return 1;
+		}
+
+		List<Wochenplan> parsedWeeks = new StundenplanGenerator()
+				.generateWochenplaene(
+						backend.getDbManager().getVorlesungen(
+								Requests.REQUEST_ALL),
+ customApplication);
+
+		for (Wochenplan eachWoche : parsedWeeks) {
+			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
+			// new
+			// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+		}
 		return result;
 	}
 
