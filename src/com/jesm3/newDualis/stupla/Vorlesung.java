@@ -7,6 +7,7 @@ import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 public class Vorlesung extends AbstractVorlesung {
 
 	public enum Requests {
+
 		/**
 		 * Alle Eintraege der Datenbank werden geladen.
 		 */

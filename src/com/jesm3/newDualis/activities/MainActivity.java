@@ -135,6 +135,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 						// Toast.makeText(mBoundSyncService,
 						// "Service Verbunden",
 						// Toast.LENGTH_SHORT).show();
+						// Toast.makeText(mBoundSyncService,
+						// "Service Verbunden",
+						// Toast.LENGTH_SHORT).show();
+
 					}
 				}, 0);
 	}
