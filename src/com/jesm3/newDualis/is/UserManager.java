@@ -1,10 +1,9 @@
 package com.jesm3.newDualis.is;
 
-import android.content.*;
-import android.content.SharedPreferences.*;
-import android.preference.*;
-import java.security.*;
-import javax.crypto.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 
 public class UserManager {
 
@@ -44,8 +43,8 @@ public class UserManager {
 		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getConnnection().loadStundenplan(5);
-			app.getBackend().getConnnection().loadNoten();
+			// app.getBackend().getConnnection().loadStundenplan(5);
+			// app.getBackend().getConnnection().loadNoten();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();

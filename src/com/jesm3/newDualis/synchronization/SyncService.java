@@ -62,8 +62,10 @@ public class SyncService extends Service implements
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
 
+		Log.d(logname, "Service Created");
 		customApplication = (CustomApplication) getApplication();
-		dbManager = customApplication.getBackend().getDbManager();
+		backend = customApplication.getBackend();
+		dbManager = backend.getDbManager();
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
@@ -83,7 +85,8 @@ public class SyncService extends Service implements
 	public IBinder onBind(Intent intent) {
 		Log.d(logname, "bound");
 		customApplication = (CustomApplication) getApplication();
-		dbManager = customApplication.getBackend().getDbManager();
+		backend = customApplication.getBackend();
+		dbManager = backend.getDbManager();
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
@@ -203,11 +206,13 @@ public class SyncService extends Service implements
 		@SuppressWarnings("unused")
 		List<Vorlesung> vorlesungen = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
+		Log.d(logname, "Vorlesungselement: " + vorlesungen.size());
 
 		// get new lectures from dualis
 		// TODO settings: int weeks
 		List<Vorlesung> newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
+		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		if (newLecturesList != null) {
 			dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
 			dbManager.insertVorlesungen(newLecturesList);
