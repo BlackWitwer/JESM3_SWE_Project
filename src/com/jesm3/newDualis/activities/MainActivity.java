@@ -94,6 +94,32 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// start the SyncService
+		Intent intent = new Intent(this, SyncService.class);
+
+		ComponentName cm = startService(intent);
+		Log.d(logname, "Service started with: " + cm.toString());
+		
+		ServiceConnection mConnection = new ServiceConnection() {
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				mBoundSyncService = null;
+			}
+
+			@Override
+			public void onServiceConnected(ComponentName name,
+					IBinder service) {
+				mBoundSyncService = ((SyncService.LocalBinder) service)
+						.getService();
+				Log.d(logname, "Service is bound " + mBoundSyncService.toString());
+
+
+			}
+		};
+		
+		bindService(intent, mConnection, 0);
 
 		actionBar = getActionBar();
 		actionBar.hide();
@@ -108,24 +134,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		actionBar.show();
 
-		// start the SyncService
-		startService(new Intent(this, SyncService.class));
-		bindService(new Intent(this, SyncService.class),
-				new ServiceConnection() {
-
-					@Override
-					public void onServiceDisconnected(ComponentName name) {
-						mBoundSyncService = null;
-					}
-
-					@Override
-					public void onServiceConnected(ComponentName name,
-							IBinder service) {
-						mBoundSyncService = ((SyncService.LocalBinder) service)
-								.getService();
-
-					}
-				}, 0);
 
 	}
 
@@ -247,6 +255,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		@Override
 		public Fragment getItem(int position) {
 			Fragment fragment = new SectionFragment();
+			((SectionFragment) fragment).setBoundSyncService(mBoundSyncService);
 			Bundle args = new Bundle();
 			args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
