@@ -83,6 +83,7 @@ public class SyncService extends Service implements
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		
 		Log.d(logname, "bound");
 		customApplication = (CustomApplication) getApplication();
 		backend = customApplication.getBackend();
@@ -102,9 +103,13 @@ public class SyncService extends Service implements
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
+		Log.d(logname, "Service started");
 		return Service.START_NOT_STICKY;
 	}
+	
+    @Override
+    public void onDestroy() {
+    }
 
 	/**
 	 * @return What kind of connection the device is using, 0=mobile 1=wifi
@@ -203,7 +208,6 @@ public class SyncService extends Service implements
 		int result = 0;
 		// TODO the actual Sync
 		// get the next lectures for safety
-		@SuppressWarnings("unused")
 		List<Vorlesung> vorlesungen = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
 		Log.d(logname, "Vorlesungselement: " + vorlesungen.size());
@@ -213,12 +217,8 @@ public class SyncService extends Service implements
 		List<Vorlesung> newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
-		if (newLecturesList != null) {
-			dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
-			dbManager.insertVorlesungen(newLecturesList);
-		} else {
-			return 1;
-		}
+		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
+		dbManager.insertVorlesungen(newLecturesList);
 
 		List<Wochenplan> parsedWeeks = new StundenplanGenerator()
 				.generateWochenplaene(
