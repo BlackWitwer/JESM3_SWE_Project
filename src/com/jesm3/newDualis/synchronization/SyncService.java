@@ -4,7 +4,9 @@ package com.jesm3.newDualis.synchronization;
  * @author mji
  */
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -273,6 +275,17 @@ public class SyncService extends Service implements
 		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
+		
+		GregorianCalendar theCalendar = new GregorianCalendar(Locale.GERMANY);
+		theCalendar.setTimeInMillis(System.currentTimeMillis());
+		//-2, da der Montag die Zahl 2 hat und im Fall des Montags nichts abgezogen werden soll.
+		theCalendar.add(GregorianCalendar.DAY_OF_WEEK, -(theCalendar.get(GregorianCalendar.DAY_OF_WEEK)-2));		
+		theCalendar.add(GregorianCalendar.HOUR_OF_DAY, -(theCalendar.get(GregorianCalendar.HOUR_OF_DAY)));
+		
+		for (Vorlesung eachVorlesung : dbManager.getVorlesungen(theCalendar.getTime(), null)) {
+			dbManager.deleteVorlesung(eachVorlesung);
+		}
+		
 		dbManager.insertVorlesungen(newLecturesList);
 
 		List<Wochenplan> parsedWeeks = new StundenplanGenerator()

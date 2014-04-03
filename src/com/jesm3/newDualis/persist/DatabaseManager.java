@@ -164,11 +164,11 @@ public class DatabaseManager {
 		List<AbstractVorlesung> theVorlesungsList;
 		if (aDateBis == null) {
 			theVorlesungsList = vorlesungDAO.queryBuilder().where(
-					AbstractVorlesungDao.Properties.UhrzeitVon.le(aDateVon)).list();
+					AbstractVorlesungDao.Properties.UhrzeitVon.gt(aDateVon)).list();
 		} else {
 			theVorlesungsList = vorlesungDAO.queryBuilder().where(
-					AbstractVorlesungDao.Properties.UhrzeitVon.le(aDateVon), 
-					AbstractVorlesungDao.Properties.UhrzeitBis.gt(aDateBis)).list();
+					AbstractVorlesungDao.Properties.UhrzeitVon.gt(aDateVon), 
+					AbstractVorlesungDao.Properties.UhrzeitBis.le(aDateBis)).list();
 		}
 		return createConcretType(theVorlesungsList, Vorlesung.class);
 	}
