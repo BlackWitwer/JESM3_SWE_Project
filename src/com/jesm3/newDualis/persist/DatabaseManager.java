@@ -161,9 +161,15 @@ public class DatabaseManager {
 	 * @return einer Liste der Vorlesungen.
 	 */
 	public List<Vorlesung> getVorlesungen(Date aDateVon, Date aDateBis) {
-		List<AbstractVorlesung> theVorlesungsList = vorlesungDAO.queryBuilder().where(
-				AbstractVorlesungDao.Properties.UhrzeitVon.le(aDateVon), 
-				AbstractVorlesungDao.Properties.UhrzeitBis.gt(aDateBis)).list();
+		List<AbstractVorlesung> theVorlesungsList;
+		if (aDateBis == null) {
+			theVorlesungsList = vorlesungDAO.queryBuilder().where(
+					AbstractVorlesungDao.Properties.UhrzeitVon.le(aDateVon)).list();
+		} else {
+			theVorlesungsList = vorlesungDAO.queryBuilder().where(
+					AbstractVorlesungDao.Properties.UhrzeitVon.le(aDateVon), 
+					AbstractVorlesungDao.Properties.UhrzeitBis.gt(aDateBis)).list();
+		}
 		return createConcretType(theVorlesungsList, Vorlesung.class);
 	}
 	
