@@ -14,14 +14,11 @@ import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -61,7 +58,6 @@ import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
 import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
-import com.jesm3.newDualis.synchronization.SyncService;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
@@ -106,7 +102,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		actionBar.show();
-
 
 	}
 
@@ -192,7 +187,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(View v) {
-		((CustomApplication) getApplication()).getSyncService().manualSync();
+		int result = ((CustomApplication) getApplication()).getSyncService()
+				.manualSync();
+		if (result != 0) {
+			Toast.makeText(
+					((CustomApplication) getApplication()).getSyncService(),
+					"Verbindung fehlgeschlagen", Toast.LENGTH_SHORT).show();
+		} else {
+
+		}
 
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
@@ -206,8 +209,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(View v) {
-//		mBoundSyncService.manualSync();
-
+		int result = ((CustomApplication) getApplication()).getSyncService()
+				.manualMarkSync();
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			this.startActivity(new Intent(this, SpecialActivity.class));
@@ -331,9 +334,14 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
-				((CustomApplication)getActivity().getApplication()).getSyncService().manualSync();
-				stupla = theVorlesungsplanManager.getWochenplan(cal
+				int result = ((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getLecturesforGui();
+				if (result == 0) {
+					stupla = theVorlesungsplanManager.getWochenplan(cal
 						.get(GregorianCalendar.WEEK_OF_YEAR));
+				} else {
+					stupla = new Wochenplan();
+				}
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
@@ -543,6 +551,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
+			if (noten.size() == 0) {
+				int result = ((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getMarksForGui();
+				Log.d(logname, "result from getMarksForGui is: " + result);
+				if (result == 0) {
+					noten.addAll(theNotenManager.getNoten());
+				}
+			}
+
 			//noten.addAll()
 			//VorlesungsplanManager.get
 			/*

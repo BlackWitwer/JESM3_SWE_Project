@@ -134,7 +134,7 @@ public class DualisConnection {
 		mlinks.setNoten(dparse.parseLink(startPageContent, ".link000307"));
 	}
 
-	public void loadNoten() {
+	public ArrayList<Note> loadNoten() {
 		String notenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten());
 		String[][] semester = dparse.parseSemesterLinks(notenContent);
 		ArrayList<Note> noten = new ArrayList<Note>();
@@ -144,7 +144,7 @@ public class DualisConnection {
 			Log.d("noten", "Semester:"+aktSemester.toString());
 			noten.addAll(aktSemester.getNoten());
 		}
-		this.backend.getNotenManager().setNoten(noten);
+		return noten;
 	}
 	
 	// Geht zur Monats�bersicht und parst den Stundenplan

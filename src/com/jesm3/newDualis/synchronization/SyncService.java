@@ -3,6 +3,7 @@ package com.jesm3.newDualis.synchronization;
 /**
  * @author mji
  */
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.jinterface.StundenplanGenerator;
+import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.settings.SettingsFragment;
 import com.jesm3.newDualis.stupla.Vorlesung;
@@ -111,6 +113,44 @@ public class SyncService extends Service implements
     public void onDestroy() {
     }
 
+	public int getLecturesforGui() {
+		int result = 0;
+		List<Wochenplan> parsedWeeks = null;
+		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
+				Requests.REQUEST_ALL);
+		if (oldVorlesungen.size() == 0) {
+			result = sync();
+		} else {
+			parsedWeeks = new StundenplanGenerator()
+					.generateWochenplaene(oldVorlesungen, customApplication);
+			for (Wochenplan eachWoche : parsedWeeks) {
+				this.backend.getVorlesungsplanManager()
+						.addWochenplan(eachWoche);
+				// new
+				// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * For refreshing the marks in the NotenManager
+	 * 
+	 * @return result (0 -> OK)
+	 */
+	public int getMarksForGui() {
+		int result = 0;
+		List<Note> noten = dbManager.getNoten();
+		if (noten.size() == 0) {
+			Log.d(logname, "noten sind " + noten.size());
+			result = markSync();
+		} else {
+			this.backend.getNotenManager().setNoten((ArrayList<Note>) noten);
+			Log.d(logname, "Noten übergeben: " + noten.size());
+		}
+		return result;
+	}
+
 	/**
 	 * @return What kind of connection the device is using, 0=mobile 1=wifi
 	 */
@@ -131,10 +171,12 @@ public class SyncService extends Service implements
 	 * starting the automated synchronization
 	 * 
 	 * @return the result (0 -> OK; -1 -> connection invalid; -2 -> unmatching
-	 *         settings)
+	 *         settings; -3 MarkSync or LectureSync failed)
 	 */
 	public int startAutoSync() {
 		int result = 0;
+		int resultLectures = 0;
+		int resultMarks = 0;
 		int connection = checkConnection();
 		String prefs = sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_CONNECTION, "0");
@@ -144,11 +186,13 @@ public class SyncService extends Service implements
 		if (valid && syncActive) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
-				result = sync();
+				resultLectures = sync();
+				resultMarks = markSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
-				result = sync();
+				resultLectures = sync();
+				resultMarks = markSync();
 
 			} else {
 				Log.d(logname, "unmatching settings");
@@ -159,7 +203,12 @@ public class SyncService extends Service implements
 			Log.d(logname, "connection invalid");
 			result = -1;
 		}
-		return result;
+		if (resultLectures == 0 && resultMarks == 0) {
+			return result;
+		} else {
+			result = -3;
+			return result;
+		}
 	}
 
 	private void refreshSyncTimer() {
@@ -179,7 +228,7 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * The manualSync Called for manual synchronization
+	 * The manualSync Called for manual synchronization of lectures
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
@@ -199,12 +248,12 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * Doing the actual synchronization
+	 * Doing the actual synchronization of lectures
 	 * 
 	 * @return the result (0 -> OK)
 	 */
 	private int sync() {
-		Log.d(logname, "starting Sync");
+		Log.d(logname, "starting Sync of lectures");
 		int result = 0;
 		// TODO the actual Sync
 		// get the next lectures for safety
@@ -214,8 +263,14 @@ public class SyncService extends Service implements
 
 		// get new lectures from dualis
 		// TODO settings: int weeks
-		List<Vorlesung> newLecturesList = backend.getConnnection()
+		List<Vorlesung> newLecturesList = null;
+		try {
+			newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
+		} catch (Exception e) {
+			result = 1;
+			return result;
+		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
 		dbManager.insertVorlesungen(newLecturesList);
@@ -235,12 +290,58 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * To get the next Lectures
+	 * The manualSync Called for manual synchronization of marks
 	 * 
-	 * @return the next lectures
+	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public List<Vorlesung> getNextLectures() {
-		return null;
+	public int manualMarkSync() {
+		int connection = checkConnection();
+		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
+		Log.d(logname, "Connection: " + connection);
+		int result = 0;
+		if (valid) {
+			result = markSync();
+		} else {
+			result = 1;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Doing the actual MarkSync
+	 * 
+	 * @return the result (0 -> OK)
+	 */
+	public int markSync() {
+		Log.d(logname, "starting Sync of Marks");
+		int result = 0;
+		// TODO the actual Sync
+		// get the next lectures for safety
+		List<Note> oldMarks = dbManager.getNoten();
+		Log.d(logname, "Notenelemente: " + oldMarks.size());
+
+		// get new marks from dualis
+		ArrayList<Note> newMarksList = null;
+		try {
+			newMarksList = backend.getConnnection().loadNoten();
+		} catch (Exception e) {
+			result = 1;
+			return result;
+		}
+		Log.d(logname, "newLecturesList: " + newMarksList.size());
+		for (Note oldMark : oldMarks) {
+			dbManager.deleteNote(oldMark);
+		}
+		for (Note newMark : newMarksList) {
+			dbManager.insertNote(newMark);
+		}
+		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
+
+		this.backend.getNotenManager().setNoten(newMarksList);
+
+		return result;
+
 	}
 
 	@Override
@@ -254,8 +355,8 @@ public class SyncService extends Service implements
 			syncIntervallMin = Integer.parseInt(sharedPreferences.getString(
 					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 
-			refreshSyncTimer();
 
+			refreshSyncTimer();
 			Log.d(logname, "syncintervall changed to " + syncIntervallMin
 					+ " minutes");
 		} else if (key.equals(SettingsFragment.KEY_PREF_SYNC_ONOFF)
