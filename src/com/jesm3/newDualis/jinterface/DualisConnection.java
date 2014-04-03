@@ -174,7 +174,7 @@ public class DualisConnection {
 		GregorianCalendar gcnow = new GregorianCalendar();
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
 		
-		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
+		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()-1==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
 			Log.d("parsetest", "Erste Wochenhälfte fehlt, springe einen Monat zurück!!!");
 			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowLeft");
 			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
