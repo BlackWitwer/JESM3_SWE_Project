@@ -86,7 +86,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	ActionBar actionBar;
 
 	private boolean doubleClicked;
-	private SyncService mBoundSyncService;
 	private static String logname = "mainActivity";
 	// for nude purpose only
 	private long timestamp = 0;
@@ -94,32 +93,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// start the SyncService
-		Intent intent = new Intent(this, SyncService.class);
-
-		ComponentName cm = startService(intent);
-		Log.d(logname, "Service started with: " + cm.toString());
-		
-		ServiceConnection mConnection = new ServiceConnection() {
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				mBoundSyncService = null;
-			}
-
-			@Override
-			public void onServiceConnected(ComponentName name,
-					IBinder service) {
-				mBoundSyncService = ((SyncService.LocalBinder) service)
-						.getService();
-				Log.d(logname, "Service is bound " + mBoundSyncService.toString());
-
-
-			}
-		};
-		
-		bindService(intent, mConnection, 0);
 
 		actionBar = getActionBar();
 		actionBar.hide();
@@ -219,11 +192,11 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(View v) {
-		mBoundSyncService.manualSync();
+		((CustomApplication) getApplication()).getSyncService().manualSync();
 
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
-			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
+			Toast.makeText(((CustomApplication) getApplication()).getSyncService(), "( . )( . )", Toast.LENGTH_SHORT)
 					.show();
 		}
 		timestamp = System.currentTimeMillis();
@@ -255,7 +228,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		@Override
 		public Fragment getItem(int position) {
 			Fragment fragment = new SectionFragment();
-			((SectionFragment) fragment).setBoundSyncService(mBoundSyncService);
 			Bundle args = new Bundle();
 			args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
@@ -290,7 +262,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 		private Wochenplan stupla;
 		private ArrayList<Note> noten;
-		private SyncService mBoundSyncService = null;
 
 		/**
 		 * The fragment argument representing the section number for this
@@ -300,10 +271,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 
 		public SectionFragment() {
-		}
-
-		public void setBoundSyncService(SyncService boundSyncService) {
-			this.mBoundSyncService = boundSyncService;
 		}
 
 		private void setLecturesOnGUI(View aContainer) {
@@ -364,10 +331,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
-				mBoundSyncService.manualSync();
+				((CustomApplication)getActivity().getApplication()).getSyncService().manualSync();
 				stupla = theVorlesungsplanManager.getWochenplan(cal
 						.get(GregorianCalendar.WEEK_OF_YEAR));
-
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
