@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -72,6 +73,10 @@ import com.jesm3.newDualis.noten.NotenManager;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
+	interface Test {
+		
+	}
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -95,6 +100,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	private boolean doubleClicked;
 	private SyncService mBoundSyncService;
 	private String logname = "mainActivity";
+	private Test test;
 	// for nude purpose only
 	private long timestamp = 0;
 
@@ -217,8 +223,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
 	 */
 	public void updateStupla(View v) {
+		mSectionsPagerAdapter.getItem(0);
 		mBoundSyncService.manualSync();
-
+		getFragmentManager().findFragmentById(R.layout.stundenplan_main);
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
@@ -232,7 +239,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 */
 	public void updateNoten(View v) {
 //		mBoundSyncService.manualSync();
-
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			this.startActivity(new Intent(this, SpecialActivity.class));
@@ -246,16 +252,22 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+		private Map<Integer, Fragment> fragmentMap = new HashMap<Integer, Fragment>();
+		
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public Fragment getItem(int position) {
+			if (fragmentMap.containsKey(position)) {
+				return fragmentMap.get(position);
+			}
 			Fragment fragment = new SectionFragment();
 			Bundle args = new Bundle();
 			args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
+			fragmentMap.put(position, fragment);
 			return fragment;
 		}
 
@@ -297,7 +309,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		public SectionFragment() {
 		}
 
-		private void setLecturesOnGUI(View aContainer) {
+		protected void setLecturesOnGUI(View aContainer) {
     		LinearLayout lay_montag = (LinearLayout) aContainer.findViewById(R.id.lay_montag);
     		LinearLayout lay_dienstag = (LinearLayout) aContainer.findViewById(R.id.lay_dienstag);
     		LinearLayout lay_mittwoch = (LinearLayout) aContainer.findViewById(R.id.lay_mittwoch);
@@ -340,12 +352,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     		lay_freitag.addView(text_freitag);
     		lay_samstag.addView(text_samstag);
     		
-    		generateDay(stupla.getDay(Days.MONTAG), lay_montag);
-    		generateDay(stupla.getDay(Days.DIENSTAG), lay_dienstag);
-    		generateDay(stupla.getDay(Days.MITTWOCH), lay_mittwoch);
-    		generateDay(stupla.getDay(Days.DONNERSTAG), lay_donnerstag);
-    		generateDay(stupla.getDay(Days.FREITAG), lay_freitag);
-    		generateDay(stupla.getDay(Days.SAMSTAG), lay_samstag);
+    		if (stupla != null) {
+    			generateDay(stupla.getDay(Days.MONTAG), lay_montag);
+    			generateDay(stupla.getDay(Days.DIENSTAG), lay_dienstag);
+    			generateDay(stupla.getDay(Days.MITTWOCH), lay_mittwoch);
+    			generateDay(stupla.getDay(Days.DONNERSTAG), lay_donnerstag);
+    			generateDay(stupla.getDay(Days.FREITAG), lay_freitag);
+    			generateDay(stupla.getDay(Days.SAMSTAG), lay_samstag);
+    			
+    		}
     		
     	}
         
@@ -466,7 +481,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			return rootView;
 		}
 
-		private void setMarksOnGui(View aContainer) {
+		protected void setMarksOnGui(View aContainer) {
 			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
 			addHeaderRow(lay_table);
 			
