@@ -1,7 +1,5 @@
 package com.jesm3.newDualis.persist;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,19 +8,20 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao;
+import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao.Properties;
+import com.jesm3.newDualis.generatedDAO.AbstractNoteDao;
+import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesungDao;
 import com.jesm3.newDualis.generatedDAO.DaoMaster;
 import com.jesm3.newDualis.generatedDAO.DaoMaster.DevOpenHelper;
 import com.jesm3.newDualis.generatedDAO.DaoSession;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.mail.MailContainer;
+import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Vorlesung.Requests;
-import com.jesm3.newDualis.noten.Note;
 
-import de.greenrobot.dao.query.QueryBuilder;
-import com.jesm3.newDualis.mail.*;
-import com.jesm3.newDualis.generatedDAO.*;
+import de.greenrobot.dao.query.WhereCondition;
 
 public class DatabaseManager {
 	
@@ -152,6 +151,26 @@ public class DatabaseManager {
 		default:
 			return new ArrayList<Vorlesung>();
 		}
+	}
+	
+	/**
+	 * Gibt alle Vorlesungen in dem angegebenen Zeitraum zurück.
+	 * Ist aDateBis null werden alle zukünftigen geladen.
+	 * @param aDateVon Datum von.
+	 * @param aDateBis Datum bis.
+	 * @return einer Liste der Vorlesungen.
+	 */
+	public List<Vorlesung> getVorlesungen(Date aDateVon, Date aDateBis) {
+		List<AbstractVorlesung> theVorlesungsList;
+		if (aDateBis == null) {
+			theVorlesungsList = vorlesungDAO.queryBuilder().where(
+					AbstractVorlesungDao.Properties.UhrzeitVon.gt(aDateVon)).list();
+		} else {
+			theVorlesungsList = vorlesungDAO.queryBuilder().where(
+					AbstractVorlesungDao.Properties.UhrzeitVon.gt(aDateVon), 
+					AbstractVorlesungDao.Properties.UhrzeitBis.le(aDateBis)).list();
+		}
+		return createConcretType(theVorlesungsList, Vorlesung.class);
 	}
 	
 	public MailContainer insertMailContainer(MailContainer aMail) {
