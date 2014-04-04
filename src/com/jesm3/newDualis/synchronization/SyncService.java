@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.activities.MainActivity.GUICallbackIF;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.jinterface.StundenplanGenerator;
@@ -234,7 +235,7 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualSync() {
+	public int manualSync(GUICallbackIF aCallbackIF) {
 		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
@@ -246,7 +247,7 @@ public class SyncService extends Service implements
 		} else {
 			result = 1;
 		}
-
+		aCallbackIF.refreshLectures();
 		return result;
 	}
 
@@ -308,7 +309,7 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualMarkSync() {
+	public int manualMarkSync(GUICallbackIF aCallbackIF) {
 		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
@@ -320,6 +321,7 @@ public class SyncService extends Service implements
 			result = 1;
 		}
 
+		aCallbackIF.refreshMarks();
 		return result;
 	}
 

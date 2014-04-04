@@ -59,7 +59,6 @@ public class LoginActivity extends Activity{
 				ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
-		
 		boolean theSuccessFlag = ((CustomApplication)getApplication()).getUserManager().loadUserData();
 		if (theSuccessFlag) {
 			startActivity(new Intent(this, MainActivity.class));
