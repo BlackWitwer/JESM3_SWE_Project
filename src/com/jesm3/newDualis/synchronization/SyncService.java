@@ -233,6 +233,7 @@ public class SyncService extends Service implements
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
 	public int manualSync() {
+		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
@@ -295,6 +296,7 @@ public class SyncService extends Service implements
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
 	public int manualMarkSync() {
+		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
