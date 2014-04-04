@@ -4,6 +4,11 @@ import com.jesm3.newDualis.generatedDAO.AbstractNote;
 
 public class Note extends AbstractNote {
 	
+	public Note(AbstractNote aNote) {
+		super(aNote.getId(), aNote.getTitel(), aNote.getNote(), aNote
+				.getCredits());
+	}
+
 	public Note() {
 		this("","","","");
 	}

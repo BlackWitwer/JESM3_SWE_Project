@@ -3,6 +3,10 @@ package com.jesm3.newDualis.synchronization;
 /**
  * @author mji
  */
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,17 +24,30 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.is.Backend;
+import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.jinterface.StundenplanGenerator;
+import com.jesm3.newDualis.noten.Note;
+import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.settings.SettingsFragment;
+import com.jesm3.newDualis.stupla.Vorlesung;
+import com.jesm3.newDualis.stupla.Vorlesung.Requests;
+import com.jesm3.newDualis.stupla.Wochenplan;
 
 public class SyncService extends Service implements
 		OnSharedPreferenceChangeListener {
 
 	private ConnectivityManager connectivityManager;
+
 	SharedPreferences sharedPrefs;
 	private Timer timer = new Timer();
 	// The SyncIntervall in minutes
 	private int syncIntervallMin;
 	private boolean syncActive;
+	private Backend backend;
+
+	private DatabaseManager dbManager;
+	private CustomApplication customApplication;
 
 	private String logname = "SyncService";
 
@@ -48,6 +65,12 @@ public class SyncService extends Service implements
 	 * Called when the service is first created.
 	 * */
 	public void onCreate(Bundle savedInstanceState) {
+
+		Log.d(logname, "Service Created");
+		customApplication = (CustomApplication) getApplication();
+		backend = customApplication.getBackend();
+		dbManager = backend.getDbManager();
+
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
@@ -64,7 +87,11 @@ public class SyncService extends Service implements
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		
 		Log.d(logname, "bound");
+		customApplication = (CustomApplication) getApplication();
+		backend = customApplication.getBackend();
+		dbManager = backend.getDbManager();
 
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
@@ -80,8 +107,50 @@ public class SyncService extends Service implements
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
+		Log.d(logname, "Service started");
 		return Service.START_NOT_STICKY;
+	}
+	
+    @Override
+    public void onDestroy() {
+    }
+
+	public int getLecturesforGui() {
+		int result = 0;
+		List<Wochenplan> parsedWeeks = null;
+		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
+				Requests.REQUEST_ALL);
+		if (oldVorlesungen.size() == 0) {
+			result = sync();
+		} else {
+			parsedWeeks = new StundenplanGenerator()
+					.generateWochenplaene(oldVorlesungen, customApplication);
+			for (Wochenplan eachWoche : parsedWeeks) {
+				this.backend.getVorlesungsplanManager()
+						.addWochenplan(eachWoche);
+				// new
+				// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * For refreshing the marks in the NotenManager
+	 * 
+	 * @return result (0 -> OK)
+	 */
+	public int getMarksForGui() {
+		int result = 0;
+		List<Note> noten = dbManager.getNoten();
+		if (noten.size() == 0) {
+			Log.d(logname, "noten sind " + noten.size());
+			result = markSync();
+		} else {
+			this.backend.getNotenManager().setNoten((ArrayList<Note>) noten);
+			Log.d(logname, "Noten übergeben: " + noten.size());
+		}
+		return result;
 	}
 
 	/**
@@ -104,10 +173,12 @@ public class SyncService extends Service implements
 	 * starting the automated synchronization
 	 * 
 	 * @return the result (0 -> OK; -1 -> connection invalid; -2 -> unmatching
-	 *         settings)
+	 *         settings; -3 MarkSync or LectureSync failed)
 	 */
 	public int startAutoSync() {
 		int result = 0;
+		int resultLectures = 0;
+		int resultMarks = 0;
 		int connection = checkConnection();
 		String prefs = sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_CONNECTION, "0");
@@ -117,11 +188,13 @@ public class SyncService extends Service implements
 		if (valid && syncActive) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
-				result = sync();
+				resultLectures = sync();
+				resultMarks = markSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
-				result = sync();
+				resultLectures = sync();
+				resultMarks = markSync();
 
 			} else {
 				Log.d(logname, "unmatching settings");
@@ -132,7 +205,12 @@ public class SyncService extends Service implements
 			Log.d(logname, "connection invalid");
 			result = -1;
 		}
-		return result;
+		if (resultLectures == 0 && resultMarks == 0) {
+			return result;
+		} else {
+			result = -3;
+			return result;
+		}
 	}
 
 	private void refreshSyncTimer() {
@@ -152,11 +230,12 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * The manualSync Called for manual synchronization
+	 * The manualSync Called for manual synchronization of lectures
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
 	public int manualSync() {
+		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
@@ -172,16 +251,112 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * Doing the actual synchronization
+	 * Doing the actual synchronization of lectures
 	 * 
 	 * @return the result (0 -> OK)
 	 */
 	private int sync() {
-		Log.d(logname, "starting Sync");
+		Log.d(logname, "starting Sync of lectures");
 		int result = 0;
 		// TODO the actual Sync
+		// get the next lectures for safety
+		List<Vorlesung> vorlesungen = dbManager
+				.getVorlesungen(Requests.REQUEST_NEXT);
+		Log.d(logname, "Vorlesungselement: " + vorlesungen.size());
+
+		// get new lectures from dualis
+		// TODO settings: int weeks
+		List<Vorlesung> newLecturesList = null;
+		try {
+			newLecturesList = backend.getConnnection()
+				.loadStundenplan(5);
+		} catch (Exception e) {
+			result = 1;
+			return result;
+		}
+		Log.d(logname, "newLecturesList: " + newLecturesList.size());
+		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
+		
+		GregorianCalendar theCalendar = new GregorianCalendar(Locale.GERMANY);
+		theCalendar.setTimeInMillis(System.currentTimeMillis());
+		//-2, da der Montag die Zahl 2 hat und im Fall des Montags nichts abgezogen werden soll.
+		theCalendar.add(GregorianCalendar.DAY_OF_WEEK, -(theCalendar.get(GregorianCalendar.DAY_OF_WEEK)-2));		
+		theCalendar.add(GregorianCalendar.HOUR_OF_DAY, -(theCalendar.get(GregorianCalendar.HOUR_OF_DAY)));
+		
+		for (Vorlesung eachVorlesung : dbManager.getVorlesungen(theCalendar.getTime(), null)) {
+			dbManager.deleteVorlesung(eachVorlesung);
+		}
+		
+		dbManager.insertVorlesungen(newLecturesList);
+
+		List<Wochenplan> parsedWeeks = new StundenplanGenerator()
+				.generateWochenplaene(
+						backend.getDbManager().getVorlesungen(
+								Requests.REQUEST_ALL),
+ customApplication);
+
+		for (Wochenplan eachWoche : parsedWeeks) {
+			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
+			// new
+			// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+		}
+		return result;
+	}
+
+	/**
+	 * The manualSync Called for manual synchronization of marks
+	 * 
+	 * @return the result (0 -> OK, 1 -> invalid network)
+	 */
+	public int manualMarkSync() {
+		// TODO asynchronous in extra Thread
+		int connection = checkConnection();
+		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
+		Log.d(logname, "Connection: " + connection);
+		int result = 0;
+		if (valid) {
+			result = markSync();
+		} else {
+			result = 1;
+		}
 
 		return result;
+	}
+
+	/**
+	 * Doing the actual MarkSync
+	 * 
+	 * @return the result (0 -> OK)
+	 */
+	public int markSync() {
+		Log.d(logname, "starting Sync of Marks");
+		int result = 0;
+		// TODO the actual Sync
+		// get the next lectures for safety
+		List<Note> oldMarks = dbManager.getNoten();
+		Log.d(logname, "Notenelemente: " + oldMarks.size());
+
+		// get new marks from dualis
+		ArrayList<Note> newMarksList = null;
+		try {
+			newMarksList = backend.getConnnection().loadNoten();
+		} catch (Exception e) {
+			result = 1;
+			return result;
+		}
+		Log.d(logname, "newLecturesList: " + newMarksList.size());
+		for (Note oldMark : oldMarks) {
+			dbManager.deleteNote(oldMark);
+		}
+		for (Note newMark : newMarksList) {
+			dbManager.insertNote(newMark);
+		}
+		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
+
+		this.backend.getNotenManager().setNoten(newMarksList);
+
+		return result;
+
 	}
 
 	@Override
@@ -195,8 +370,8 @@ public class SyncService extends Service implements
 			syncIntervallMin = Integer.parseInt(sharedPreferences.getString(
 					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 
-			refreshSyncTimer();
 
+			refreshSyncTimer();
 			Log.d(logname, "syncintervall changed to " + syncIntervallMin
 					+ " minutes");
 		} else if (key.equals(SettingsFragment.KEY_PREF_SYNC_ONOFF)

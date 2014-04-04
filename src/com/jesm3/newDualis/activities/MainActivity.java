@@ -11,23 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-
 import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -41,10 +33,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -57,19 +47,18 @@ import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.CustomApplication;
 import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.mail.ExpandableListAdapter;
+import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
+import com.jesm3.newDualis.noten.Note;
+import com.jesm3.newDualis.noten.NotenManager;
 import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
-import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
 import com.jesm3.newDualis.stupla.Wochenplan;
-import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
-import com.jesm3.newDualis.synchronization.SyncService;
-import com.jesm3.newDualis.noten.Note;
-import com.jesm3.newDualis.noten.NotenManager;
+import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
@@ -98,8 +87,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	ActionBar actionBar;
 
 	private boolean doubleClicked;
-	private SyncService mBoundSyncService;
-	private String logname = "mainActivity";
+	private static String logname = "mainActivity";
 	private Test test;
 	// for nude purpose only
 	private long timestamp = 0;
@@ -121,25 +109,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		actionBar.show();
 
-		// start the SyncService
-		startService(new Intent(this, SyncService.class));
-		bindService(new Intent(this, SyncService.class),
-				new ServiceConnection() {
-
-					@Override
-					public void onServiceDisconnected(ComponentName name) {
-						mBoundSyncService = null;
-					}
-
-					@Override
-					public void onServiceConnected(ComponentName name,
-							IBinder service) {
-						mBoundSyncService = ((SyncService.LocalBinder) service)
-								.getService();
-//						Toast.makeText(mBoundSyncService, "Service Verbunden",
-//								Toast.LENGTH_SHORT).show();
-					}
-				}, 0);
 	}
 
 	/*
@@ -220,15 +189,24 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	}
 	
 	/**
-	 * Die Funktion, welche vom Aktualisieren Button aufgerufen wird.
+	 * Die Funktion, welche vom Aktualisieren Button des Wochenplans aufgerufen
+	 * wird.
 	 */
 	public void updateStupla(View v) {
 		mSectionsPagerAdapter.getItem(0);
-		mBoundSyncService.manualSync();
+		int result = ((CustomApplication) getApplication()).getSyncService()
+				.manualSync();
+		if (result != 0) {
+			Toast.makeText(
+					((CustomApplication) getApplication()).getSyncService(),
+					"Verbindung fehlgeschlagen", Toast.LENGTH_SHORT).show();
+		} else {
+
+		}
 		getFragmentManager().findFragmentById(R.layout.stundenplan_main);
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
-			Toast.makeText(mBoundSyncService, "( . )( . )", Toast.LENGTH_SHORT)
+			Toast.makeText(((CustomApplication) getApplication()).getSyncService(), "( . )( . )", Toast.LENGTH_SHORT)
 					.show();
 		}
 		timestamp = System.currentTimeMillis();
@@ -238,7 +216,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(View v) {
-//		mBoundSyncService.manualSync();
+		int result = ((CustomApplication) getApplication()).getSyncService()
+				.manualMarkSync();
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			this.startActivity(new Intent(this, SpecialActivity.class));
@@ -306,6 +285,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		 */
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
+
 		public SectionFragment() {
 		}
 
@@ -368,7 +348,17 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
         	final GregorianCalendar cal = new GregorianCalendar();
     		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
-			
+			if (stupla == null) {
+				Log.d(logname, "stupla is null");
+				int result = ((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getLecturesforGui();
+				if (result == 0) {
+					stupla = theVorlesungsplanManager.getWochenplan(cal
+						.get(GregorianCalendar.WEEK_OF_YEAR));
+				} else {
+					stupla = new Wochenplan();
+				}
+			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
     		Set<Entry<Integer, Wochenplan>> theEntrySet = theWochenMap.entrySet();
@@ -577,6 +567,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
+			if (noten.size() == 0) {
+				int result = ((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getMarksForGui();
+				Log.d(logname, "result from getMarksForGui is: " + result);
+				if (result == 0) {
+					noten.addAll(theNotenManager.getNoten());
+				}
+			}
+
 			//noten.addAll()
 			//VorlesungsplanManager.get
 			/*

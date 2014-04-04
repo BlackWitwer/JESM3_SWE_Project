@@ -2,16 +2,10 @@ package com.jesm3.newDualis.jinterface;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.xml.transform.TransformerException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,24 +18,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.jesm3.newDualis.R;
-import com.jesm3.newDualis.activities.MainActivity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.User;
+import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.noten.Semester;
-import com.jesm3.newDualis.is.Utilities;
 import com.jesm3.newDualis.stupla.Vorlesung;
-import com.jesm3.newDualis.stupla.Vorlesung.Requests;
 import com.jesm3.newDualis.stupla.Wochenplan;
-import com.jesm3.newDualis.stupla.Wochenplan.Days;
-
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
-import android.text.Html;
-import android.util.Log;
-import android.widget.TextView;
 
 public class DualisConnection {
 
@@ -147,7 +134,7 @@ public class DualisConnection {
 		mlinks.setNoten(dparse.parseLink(startPageContent, ".link000307"));
 	}
 
-	public void loadNoten() {
+	public ArrayList<Note> loadNoten() {
 		String notenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten());
 		String[][] semester = dparse.parseSemesterLinks(notenContent);
 		ArrayList<Note> noten = new ArrayList<Note>();
@@ -157,7 +144,7 @@ public class DualisConnection {
 			Log.d("noten", "Semester:"+aktSemester.toString());
 			noten.addAll(aktSemester.getNoten());
 		}
-		this.backend.getNotenManager().setNoten(noten);
+		return noten;
 	}
 	
 	// Geht zur Monats�bersicht und parst den Stundenplan
@@ -174,7 +161,7 @@ public class DualisConnection {
 		GregorianCalendar gcnow = new GregorianCalendar();
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
 		
-		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()-1==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
+		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
 			Log.d("parsetest", "Erste Wochenhälfte fehlt, springe einen Monat zurück!!!");
 			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowLeft");
 			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
@@ -236,10 +223,7 @@ public class DualisConnection {
 //		backend.getDbManager().insertVorlesungen(alleVorlesungen);
 //		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(backend.getDbManager().getVorlesungen(Requests.REQUEST_ALL), backend.getCustomApplication());
 //		List<Wochenplan> parsedWeeks= new StundenplanGenerator().generateWochenplaene(alleVorlesungen);
-		for (Wochenplan eachWoche : wl) {
-			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
-//			new StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
-		}
+
 		return alleVorlesungen;
 	}
 

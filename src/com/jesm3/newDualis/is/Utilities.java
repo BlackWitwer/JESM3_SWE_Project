@@ -70,7 +70,7 @@ public class Utilities {
 			e.printStackTrace();
 		}
 		//Der Java Kalender beginnt bei Tag/Monat/Jahr 0 heisst: 1.10.2013 --> 0.9.2012
-		GregorianCalendar gc = new GregorianCalendar();
+		GregorianCalendar gc = new GregorianCalendar(LOCALE_GERMANY);
 		gc.setTime(dateD);
 		return gc;
 	}

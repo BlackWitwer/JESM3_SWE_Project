@@ -1,10 +1,14 @@
 package com.jesm3.newDualis.is;
 
-import android.content.*;
-import android.content.SharedPreferences.*;
-import android.preference.*;
-import java.security.*;
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+
 
 public class UserManager {
 
@@ -44,8 +48,8 @@ public class UserManager {
 		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
 			//TODO entfernen sobald Sync funktioniert.
-			app.getBackend().getConnnection().loadStundenplan(5);
-			app.getBackend().getConnnection().loadNoten();
+			// app.getBackend().getConnnection().loadStundenplan(5);
+			// app.getBackend().getConnnection().loadNoten();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();
@@ -73,11 +77,15 @@ public class UserManager {
 	 */
 	private boolean saveUserData() {
 		if (user != null) {
-			// TODO Passwort verschl�ｽsselung.
+			// TODO Passwort verschlüsselung.
 			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor theEditor = thePrefs.edit();
 			theEditor.putString(PREFS_USERNAME, getUser().getUsername());
-			theEditor.putString(PREFS_PASSWORD, getUser().getPassword());
+			try {
+				theEditor.putString(PREFS_PASSWORD, encrypt(getUser().getPassword()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return theEditor.commit();
 		}
 		return false;
@@ -92,10 +100,33 @@ public class UserManager {
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String theUsername = thePrefs.getString(PREFS_USERNAME, "");
 		String thePassword = thePrefs.getString(PREFS_PASSWORD, "");
+		try {
+			thePassword = decrypt(thePassword);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if ("".equals(theUsername) || "".equals(thePassword)) {
 			return false;
 		}
 		User theUser = new User(theUsername, thePassword);
 		return login(theUser, false, false);
+	}
+	
+	private String context1 = new String("xyzabcdefghijklm");
+	
+	public String encrypt(String aWord) throws Exception {
+		SecretKeySpec skeySpec = new SecretKeySpec(context1.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+        byte[] encrypted = cipher.doFinal(aWord.getBytes());
+        return Base64.encodeToString(encrypted, Base64.DEFAULT);
+	}
+	
+	public String decrypt(String aWord) throws Exception {
+		SecretKeySpec skeySpec = new SecretKeySpec(context1.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+        byte[] decrypted = cipher.doFinal(Base64.decode(aWord, Base64.DEFAULT));
+        return new String(decrypted);
 	}
 }
