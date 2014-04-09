@@ -113,11 +113,11 @@ public class Utilities {
 	public int calcMonthsToGo(int weeks){
 		Calendar c = Calendar.getInstance();
 		Date d = new Date();
-		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
+//		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
 		int actualmonth = d.getMonth();
 		Date tarMonth = addDaysToDate(d,7*weeks);
 		int monthToGo = tarMonth.getMonth();
-		Log.d("parsetest", "Zieldatum: "+tarMonth.toString());
+//		Log.d("parsetest", "Zieldatum: "+tarMonth.toString());
 		if(monthToGo<actualmonth){
 			monthToGo = monthToGo + 12 - actualmonth;
 		}

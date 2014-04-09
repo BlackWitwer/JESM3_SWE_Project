@@ -50,7 +50,7 @@ public class StundenplanGenerator {
 				std = new Wochenplan();
 				std.setAnfangsDatumDate(alleVorlesungen.get(i).getUhrzeitVon());
 			}
-			Log.d("gstd", alleVorlesungen.get(i).getUhrzeitVon().toGMTString());
+//			Log.d("gstd", alleVorlesungen.get(i).getUhrzeitVon().toGMTString());
 			addVorlesung(day, alleVorlesungen.get(i));
 			lastDay = day;
 		}
