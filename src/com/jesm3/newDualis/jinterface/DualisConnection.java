@@ -36,13 +36,13 @@ public class DualisConnection {
 	private DualisParser dparse;
 	private DualisLinks mlinks;
 	private Backend backend;
-	Utilities util;
+	private boolean loggedIn;
 
 	public DualisConnection(Backend aBackend) {
+		loggedIn = false;
 		httpClient = new DefaultHttpClient();
 		dparse = new DualisParser();
 		this.backend = aBackend;
-		util = new Utilities();
 	}
 
 	/**
@@ -115,6 +115,7 @@ public class DualisConnection {
 			// Parse Hauptmen�links von Startseite
 			getMainMenuLinks(EntityUtils.toString(redirectEntity));
 
+			loggedIn = true;
 			return true;
 			// Erfolgreich eingeloggt.
 		} catch (ClientProtocolException e) {
@@ -128,13 +129,16 @@ public class DualisConnection {
 	
 
 	// Parse Hauptmen�links von Startseite
-	public void getMainMenuLinks(String startPageContent) {
+	private void getMainMenuLinks(String startPageContent) {
 		mlinks = new DualisLinks();
 		mlinks.setStundenPlan(dparse.parseLink(startPageContent, ".link000028"));
 		mlinks.setNoten(dparse.parseLink(startPageContent, ".link000307"));
 	}
 
 	public ArrayList<Note> loadNoten() {
+		if (!loggedIn) {
+			login(backend.getCustomApplication().getUserManager().getUser());
+		}
 		String notenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten());
 		String[][] semester = dparse.parseSemesterLinks(notenContent);
 		ArrayList<Note> noten = new ArrayList<Note>();
@@ -149,6 +153,10 @@ public class DualisConnection {
 	
 	// Geht zur Monats�bersicht und parst den Stundenplan
 	public ArrayList<Vorlesung> loadStundenplan(int weeks) {
+		if (!loggedIn) {
+			login(backend.getCustomApplication().getUserManager().getUser());
+		}
+		
 		String stundenplanContent = getPage("https://dualis.dhbw.de"
 				+ mlinks.getStundenPlan());
 
@@ -156,7 +164,7 @@ public class DualisConnection {
 		String monatsansichtContent = getPage("https://dualis.dhbw.de"
 				+ parseLink);
 		ArrayList<Wochenplan> wl = dparse.parseMonth(monatsansichtContent);
-		int monthsToGo = util.calcMonthsToGo(weeks);
+		int monthsToGo = Utilities.calcMonthsToGo(weeks);
 		
 		GregorianCalendar gcnow = new GregorianCalendar();
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
@@ -176,7 +184,7 @@ public class DualisConnection {
 				wl.remove(0);
 			}
 			else{
-				if(util.dateToString(wl.get(0).getAnfangsDatum()).matches("01.([0-9].){1}.[0-9]*")==false) {
+				if(Utilities.dateToString(wl.get(0).getAnfangsDatum()).matches("01.([0-9].){1}.[0-9]*")==false) {
 					wl.remove(0);
 				}
 			}
@@ -208,16 +216,16 @@ public class DualisConnection {
 		for (Wochenplan eachWoche : wl) {
 			if(eachWoche.getEndDatum()==null){
 				Date anfangsDatum = eachWoche.getAnfangsDatum();
-				Date endDatum = util.addDaysToDate(anfangsDatum, 7);
+				Date endDatum = Utilities.addDaysToDate(anfangsDatum, 7);
 				eachWoche.setEndDatumDate(endDatum);
 			}
 			if(eachWoche.getAnfangsDatum()==null){
 				Date endDatum = eachWoche.getEndDatum();
-				Date anfangsDatum = util.addDaysToDate(endDatum, -7);
+				Date anfangsDatum = Utilities.addDaysToDate(endDatum, -7);
 				eachWoche.setAnfangsDatumDate(anfangsDatum);
 			}
-			eachWoche = util.addDateToFreedays(eachWoche);
-			alleVorlesungen.addAll(util.vorlesungenToList(eachWoche));
+			eachWoche = Utilities.addDateToFreedays(eachWoche);
+			alleVorlesungen.addAll(Utilities.vorlesungenToList(eachWoche));
 		}
 //		backend.getDbManager().deleteVorlesungen(Requests.REQUEST_ALL);
 //		backend.getDbManager().insertVorlesungen(alleVorlesungen);
@@ -228,7 +236,7 @@ public class DualisConnection {
 	}
 
 	// L�d Seite ohne HTML Code zur�ckzugeben
-	public void loadPage(String url) {
+	private void loadPage(String url) {
 		HttpGet startseite = new HttpGet(url);
 		try {
 			httpClient.execute(startseite);
@@ -240,7 +248,7 @@ public class DualisConnection {
 	}
 
 	// L�d Seite und gibt deren HTML Code als String zur�ck
-	public String getPage(String url) {
+	private String getPage(String url) {
 		String pageContent = "";
 		try {
 			HttpGet target = new HttpGet(url);
@@ -256,7 +264,7 @@ public class DualisConnection {
 	}
 
 	// Generiert POST f�r Login
-	public HttpPost generateLoginPost(String user, String pw) {
+	private HttpPost generateLoginPost(String user, String pw) {
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("usrname", user));
 		nameValuePairs.add(new BasicNameValuePair("pass", pw));

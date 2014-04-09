@@ -39,17 +39,8 @@ public class UserManager {
 		return login(new User(aUsername, aPassword), aPersistantFlag);
 	}
 	
-	public boolean login(User aUser, boolean aPersistantFlag) {
-		return login(aUser, aPersistantFlag, true);
-	}
-	
-	private boolean login(User aUser, boolean aPersistantFlag, boolean anOnlineFlag) {
-		//TODO auf checkLogin() umstellen sobald Sync funktioniert.
-		// if (getUser() == null && (!anOnlineFlag || app.getBackend().login(aUser))) {
+	private boolean login(User aUser, boolean aPersistantFlag) {
 		if (getUser() == null && (app.getBackend().login(aUser))) {
-			//TODO entfernen sobald Sync funktioniert.
-			// app.getBackend().getConnnection().loadStundenplan(5);
-			// app.getBackend().getConnnection().loadNoten();
 			user = aUser;
 			if (aPersistantFlag) {
 				saveUserData();
@@ -77,7 +68,6 @@ public class UserManager {
 	 */
 	private boolean saveUserData() {
 		if (user != null) {
-			// TODO Passwort verschlüsselung.
 			SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor theEditor = thePrefs.edit();
 			theEditor.putString(PREFS_USERNAME, getUser().getUsername());
@@ -92,8 +82,8 @@ public class UserManager {
 	}
 	
 	/**
-	 * Liest den Benutzernamen aus den SharedPrefs und erstellt daraus ein User objekt. Dieser User wird direkt eingeloggt. Sind keine Benutzerdaten in 
-	 * den SharedPrefs wird null zur�ｽckgegeben.
+	 * Liest den Benutzernamen aus den SharedPrefs und erstellt daraus ein User objekt. Sind keine Benutzerdaten in 
+	 * den SharedPrefs wird null zurückgegeben.
 	 * @return ein User Objekt, wenn Benutzerdaten vorhanden sind.
 	 */
 	public boolean loadUserData() {
@@ -108,8 +98,8 @@ public class UserManager {
 		if ("".equals(theUsername) || "".equals(thePassword)) {
 			return false;
 		}
-		User theUser = new User(theUsername, thePassword);
-		return login(theUser, false, false);
+		user = new User(theUsername, thePassword);
+		return true;
 	}
 	
 	private String context1 = new String("xyzabcdefghijklm");

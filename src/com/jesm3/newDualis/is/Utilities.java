@@ -110,7 +110,7 @@ public class Utilities {
 		return "";
 	}
 	
-	public int calcMonthsToGo(int weeks){
+	public static int calcMonthsToGo(int weeks){
 		Calendar c = Calendar.getInstance();
 		Date d = new Date();
 		Log.d("parsetest", "Aktuelles Datum: "+d.toString());
@@ -143,7 +143,7 @@ public class Utilities {
 	    return newDate;
 	}
 	
-	public ArrayList<Vorlesung> vorlesungenToList(Wochenplan wl){
+	public static ArrayList<Vorlesung> vorlesungenToList(Wochenplan wl){
 		ArrayList<Vorlesung> vll = new ArrayList<Vorlesung>();
 		for (Days eachDay : Days.values()) {
 			vll.addAll(wl.getDay(eachDay));
