@@ -145,7 +145,7 @@ public class DualisConnection {
 		for(int k=0 ; k < semester.length ; k++) {
 			String realNotenContent = getPage("https://dualis.dhbw.de" + mlinks.getNoten() + ",-N" + semester[k][0]);
 			Semester aktSemester = dparse.parseNoten(realNotenContent);
-			Log.d("noten", "Semester:"+aktSemester.toString());
+//			Log.d("noten", "Semester:"+aktSemester.toString());
 			noten.addAll(aktSemester.getNoten());
 		}
 		return noten;
@@ -170,7 +170,7 @@ public class DualisConnection {
 		int kalenderWocheNow = gcnow.get(GregorianCalendar.WEEK_OF_YEAR);
 		
 		if (wl.get(0).getAnfangsDatum()==null&&wl.get(0).getKalenderwoche()==kalenderWocheNow){ //prüfe ob woche überhaupt derzeitige kalenderwoche!
-			Log.d("parsetest", "Erste Wochenhälfte fehlt, springe einen Monat zurück!!!");
+//			Log.d("parsetest", "Erste Wochenhälfte fehlt, springe einen Monat zurück!!!");
 			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowLeft");
 			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink);
 			monthsToGo++;
@@ -189,10 +189,10 @@ public class DualisConnection {
 				}
 			}
 		}
-		Log.d("parsetest", "Monate die geladen werden müssen: "+monthsToGo);
+	//	Log.d("parsetest", "Monate die geladen werden müssen: "+monthsToGo);
 		for (int i=0; i<monthsToGo; i++) {
 			parseLink = dparse.parseLink(monatsansichtContent, ".img_arrowRight");
-			Log.d("parsetest", "Nächster Monat: "+parseLink);
+//			Log.d("parsetest", "Nächster Monat: "+parseLink);
 			monatsansichtContent = getPage("https://dualis.dhbw.de" + parseLink); // GEHT AUS IRGENDEINEM GRUND AUF DEN NÄCHSTEN TAG???
 			ArrayList<Wochenplan> wl2 = dparse.parseMonth(monatsansichtContent);
 			Wochenplan mergeWeek = new StundenplanGenerator().mergeWeeks(wl.get(wl.size()-1), wl2.get(0));

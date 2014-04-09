@@ -67,9 +67,9 @@ public class DualisParser {
 				int kalenderWocheNow = gcnow
 						.get(GregorianCalendar.WEEK_OF_YEAR);
 				int jahrNow = gcnow.get(GregorianCalendar.YEAR);
-				Log.d("parsetest", "kalenderWoche:" + kalenderWoche
-						+ " kalenderWocheNow" + kalenderWocheNow + "jahr"
-						+ jahr + " jahrNow" + jahrNow);
+//				Log.d("parsetest", "kalenderWoche:" + kalenderWoche
+//						+ " kalenderWocheNow" + kalenderWocheNow + "jahr"
+//						+ jahr + " jahrNow" + jahrNow);
 				if (kalenderWoche < kalenderWocheNow && jahr == jahrNow) {
 					addWeek = false;
 				}
@@ -107,14 +107,14 @@ public class DualisParser {
 			if (addWeek) {
 				stdl.add(stdgr.getStd());
 			} else {
-				Log.d("parsetest", "Wochenplan wird nicht geaddet");
+//				Log.d("parsetest", "Wochenplan wird nicht geaddet");
 			}
 		}
 		String out = "";
 		for (int i = 0; i < stdl.size(); i++) {
 			out = out + "Kalenderwoche\n" + stdl.get(i).toString() + "\n\n";
 		}
-		Log.d("parsetest", out.toString());
+//		Log.d("parsetest", out.toString());
 		return stdl;
 		// Wenn Erste/Letzte Woche nicht komplett, diese Funktion erneut
 		// ausf�hren und
@@ -180,7 +180,7 @@ public class DualisParser {
 		Element link = doc.select("tbody").first();
 		Elements ergebnisse = doc.select("tr");
 		for(int i=1;i < ergebnisse.size() - 1;i++){
-			Log.d("noten", "test");
+//			Log.d("noten", "test");
 			Elements tds = ergebnisse.get(i).select("td");
 			String nummer = tds.get(0).text();
 			String kursName = tds.get(1).text();
