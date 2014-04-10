@@ -381,14 +381,13 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
-				int result = ((CustomApplication) getActivity()
+				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getLecturesforGui();
-				if (result == 0) {
+				while(stupla == null) {
 					stupla = theVorlesungsplanManager.getWochenplan(cal
 						.get(GregorianCalendar.WEEK_OF_YEAR));
-				} else {
-					stupla = new Wochenplan();
 				}
+				stupla = new Wochenplan();
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
@@ -566,7 +565,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setBackgroundResource(R.drawable.border);
 			credits.setBackgroundResource(R.drawable.border);
 			
-			// TextViews in das Layout einfügen...
+			// TextViews in das Layout einfÃ¼gen...
 			row.addView(fach);
 			row.addView(note);
 			row.addView(credits);
@@ -590,7 +589,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setText(aVal2);
 			credits.setText(aVal3);
 			
-			// Die fertige TableRow in das parentLayout einfügen...
+			// Die fertige TableRow in das parentLayout einfÃ¼gen...
 			aLayout.addView(row);
 		}
 		
@@ -600,10 +599,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
 			if (noten.size() == 0) {
-				int result = ((CustomApplication) getActivity()
+				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getMarksForGui();
-				Log.d(logname, "result from getMarksForGui is: " + result);
-				if (result == 0) {
+				while (noten.size() == 0){
 					noten.addAll(theNotenManager.getNoten());
 				}
 			}
@@ -705,7 +703,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 	@Override
 	public void onDialogPositiveClick(SemesterplanExportDialog dialog) {
-		// TODO MBA/Zeitdieb Semesterplan Export anstoßen hier
+		// TODO MBA/Zeitdieb Semesterplan Export anstoÃŸen hier
 		Log.d("TestMBA", "Pos" + dialog.getmSelectedItems());
 	}
 

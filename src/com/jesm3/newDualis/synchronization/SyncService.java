@@ -116,13 +116,12 @@ public class SyncService extends Service implements
     public void onDestroy() {
     }
 
-	public int getLecturesforGui() {
-		int result = 0;
+	public void getLecturesforGui() {
 		List<Wochenplan> parsedWeeks = null;
 		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
 				Requests.REQUEST_ALL);
 		if (oldVorlesungen.size() == 0) {
-			result = sync();
+			sync();
 		} else {
 			parsedWeeks = new StundenplanGenerator()
 					.generateWochenplaene(oldVorlesungen, customApplication);
@@ -133,7 +132,6 @@ public class SyncService extends Service implements
 				// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
 			}
 		}
-		return result;
 	}
 
 	/**
@@ -141,17 +139,15 @@ public class SyncService extends Service implements
 	 * 
 	 * @return result (0 -> OK)
 	 */
-	public int getMarksForGui() {
-		int result = 0;
+	public void getMarksForGui() {
 		List<Note> noten = dbManager.getNoten();
 		if (noten.size() == 0) {
 			Log.d(logname, "noten sind " + noten.size());
-			result = markSync();
+			markSync();
 		} else {
 			this.backend.getNotenManager().setNoten((ArrayList<Note>) noten);
-			Log.d(logname, "Noten übergeben: " + noten.size());
+			Log.d(logname, "Noten Ã¼bergeben: " + noten.size());
 		}
-		return result;
 	}
 
 	/**
@@ -189,13 +185,13 @@ public class SyncService extends Service implements
 		if (valid && syncActive) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
-				resultLectures = sync();
-				resultMarks = markSync();
+				sync();
+				markSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
-				resultLectures = sync();
-				resultMarks = markSync();
+				sync();
+				markSync();
 
 			} else {
 				Log.d(logname, "unmatching settings");
@@ -235,20 +231,30 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualSync(GUICallbackIF aCallbackIF) {
-		// TODO asynchronous in extra Thread
+
+	public int manualSync(final GUICallbackIF aCallbackIF) {
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
 		int result = 0;
 		if (valid) {
-			result = sync();
-			refreshSyncTimer();
+			new Thread(new Runnable() {
+				public void run() {
+					sync();
+					refreshSyncTimer();
+					if (aCallbackIF != null)
+						refreshLectures(aCallbackIF);
+					}
+			}).start();
 		} else {
 			result = 1;
 		}
-		aCallbackIF.refreshLectures();
+
 		return result;
+	}
+	
+	private void refreshLectures(GUICallbackIF aCallbackIF) {
+		aCallbackIF.refreshLectures();		
 	}
 
 	/**
@@ -256,9 +262,8 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK)
 	 */
-	private int sync() {
+	private void sync() {
 		Log.d(logname, "starting Sync of lectures");
-		int result = 0;
 		// TODO the actual Sync
 		// get the next lectures for safety
 		List<Vorlesung> vorlesungen = dbManager
@@ -272,8 +277,7 @@ public class SyncService extends Service implements
 			newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
 		} catch (Exception e) {
-			result = 1;
-			return result;
+			Log.e(logname, e.getMessage());
 		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
@@ -300,8 +304,9 @@ public class SyncService extends Service implements
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 			// new
 			// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+
+
 		}
-		return result;
 	}
 
 	/**
@@ -309,20 +314,29 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualMarkSync(GUICallbackIF aCallbackIF) {
+
+	public int manualMarkSync(final GUICallbackIF aCallbackIF) {
 		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
 		int result = 0;
 		if (valid) {
-			result = markSync();
+			new Thread(new Runnable() {
+				public void run() {
+					markSync();
+					if (aCallbackIF != null)
+						refreshMarks(aCallbackIF);
+				}
+			}).start();
 		} else {
 			result = 1;
 		}
 
-		aCallbackIF.refreshMarks();
 		return result;
+	}
+	private void refreshMarks(GUICallbackIF aCallbackIF) {
+		aCallbackIF.refreshMarks();
 	}
 
 	/**
@@ -333,7 +347,6 @@ public class SyncService extends Service implements
 	public int markSync() {
 		Log.d(logname, "starting Sync of Marks");
 		int result = 0;
-		// TODO the actual Sync
 		// get the next lectures for safety
 		List<Note> oldMarks = dbManager.getNoten();
 		Log.d(logname, "Notenelemente: " + oldMarks.size());
@@ -356,6 +369,7 @@ public class SyncService extends Service implements
 		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
 
 		this.backend.getNotenManager().setNoten(newMarksList);
+	
 
 		return result;
 
