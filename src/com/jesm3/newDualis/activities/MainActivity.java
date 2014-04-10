@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -61,6 +62,12 @@ import com.jesm3.newDualis.stupla.WochenplanArrayAdapter;
 
 public class MainActivity extends FragmentActivity implements SemesterplanExportDialog.NoticeDialogListener{
 
+	public interface GUICallbackIF {
+		public void refreshMarks();
+		
+		public void refreshLectures();
+	}
+	
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -113,7 +120,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	@Override
 	public void onBackPressed() {
 		if (doubleClicked) {
-			super.onBackPressed();
+			Intent startMain = new Intent(Intent.ACTION_MAIN);
+			startMain.addCategory(Intent.CATEGORY_HOME);
+			startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(startMain);
 			return;
 		}
 		this.doubleClicked = true;
@@ -186,9 +196,24 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button des Wochenplans aufgerufen
 	 * wird.
 	 */
-	public void updateStupla(View v) {
+	public void updateStupla(final View v) {
+		GUICallbackIF guiCallback = new GUICallbackIF() {
+			
+			@Override
+			public void refreshMarks() {
+				//Nichts...
+			}
+			
+			@Override
+			public void refreshLectures() {
+				((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeLectures(v.getRootView());
+				((SectionFragment) mSectionsPagerAdapter.getItem(0)).setLecturesOnGui(v.getRootView());
+			}
+		};
+		
+		mSectionsPagerAdapter.getItem(0);
 		int result = ((CustomApplication) getApplication()).getSyncService()
-				.manualSync();
+				.manualSync(guiCallback);
 		if (result != 0) {
 			Toast.makeText(
 					((CustomApplication) getApplication()).getSyncService(),
@@ -196,7 +221,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		} else {
 
 		}
-
+		getFragmentManager().findFragmentById(R.layout.stundenplan_main);
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			Toast.makeText(((CustomApplication) getApplication()).getSyncService(), "( . )( . )", Toast.LENGTH_SHORT)
@@ -208,9 +233,22 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	/**
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
-	public void updateNoten(View v) {
+	public void updateNoten(final View v) {
+		GUICallbackIF guiCallback = new GUICallbackIF() {
+			
+			@Override
+			public void refreshMarks() {
+				((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeMarks();
+				((SectionFragment) mSectionsPagerAdapter.getItem(0)).setMarksOnGui(v.getRootView());
+			}
+			
+			@Override
+			public void refreshLectures() {
+				//Nichts...
+			}
+		};
 		int result = ((CustomApplication) getApplication()).getSyncService()
-				.manualMarkSync();
+				.manualMarkSync(guiCallback);
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
 			this.startActivity(new Intent(this, SpecialActivity.class));
@@ -224,16 +262,22 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+		private Map<Integer, Fragment> fragmentMap = new HashMap<Integer, Fragment>();
+		
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
 		@Override
 		public Fragment getItem(int position) {
+			if (fragmentMap.containsKey(position)) {
+				return fragmentMap.get(position);
+			}
 			Fragment fragment = new SectionFragment();
 			Bundle args = new Bundle();
 			args.putInt(SectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
+			fragmentMap.put(position, fragment);
 			return fragment;
 		}
 
@@ -276,7 +320,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		public SectionFragment() {
 		}
 
-		private void setLecturesOnGUI(View aContainer) {
+		protected void setLecturesOnGui(View aContainer) {
     		LinearLayout lay_montag = (LinearLayout) aContainer.findViewById(R.id.lay_montag);
     		LinearLayout lay_dienstag = (LinearLayout) aContainer.findViewById(R.id.lay_dienstag);
     		LinearLayout lay_mittwoch = (LinearLayout) aContainer.findViewById(R.id.lay_mittwoch);
@@ -319,12 +363,15 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     		lay_freitag.addView(text_freitag);
     		lay_samstag.addView(text_samstag);
     		
-    		generateDay(stupla.getDay(Days.MONTAG), lay_montag);
-    		generateDay(stupla.getDay(Days.DIENSTAG), lay_dienstag);
-    		generateDay(stupla.getDay(Days.MITTWOCH), lay_mittwoch);
-    		generateDay(stupla.getDay(Days.DONNERSTAG), lay_donnerstag);
-    		generateDay(stupla.getDay(Days.FREITAG), lay_freitag);
-    		generateDay(stupla.getDay(Days.SAMSTAG), lay_samstag);
+    		if (stupla != null) {
+    			generateDay(stupla.getDay(Days.MONTAG), lay_montag);
+    			generateDay(stupla.getDay(Days.DIENSTAG), lay_dienstag);
+    			generateDay(stupla.getDay(Days.MITTWOCH), lay_mittwoch);
+    			generateDay(stupla.getDay(Days.DONNERSTAG), lay_donnerstag);
+    			generateDay(stupla.getDay(Days.FREITAG), lay_freitag);
+    			generateDay(stupla.getDay(Days.SAMSTAG), lay_samstag);
+    			
+    		}
     		
     	}
         
@@ -334,14 +381,13 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
-				int result = ((CustomApplication) getActivity()
+				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getLecturesforGui();
-				if (result == 0) {
+				while(stupla == null) {
 					stupla = theVorlesungsplanManager.getWochenplan(cal
 						.get(GregorianCalendar.WEEK_OF_YEAR));
-				} else {
-					stupla = new Wochenplan();
 				}
+				stupla = new Wochenplan();
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
@@ -372,7 +418,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				public void onItemSelected(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
 					stupla = (Wochenplan) arg0.getSelectedItem();
-					setLecturesOnGUI(aContainer);
+					setLecturesOnGui(aContainer);
 				}
 
 				@Override
@@ -431,7 +477,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				rootView = inflater.inflate(R.layout.stundenplan_main,
 						container, false);
 				initializeLectures(rootView);
-            	setLecturesOnGUI(rootView);
+            	setLecturesOnGui(rootView);
             	rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
 			case 2:
@@ -455,8 +501,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			return rootView;
 		}
 
-		private void setMarksOnGui(View aContainer) {
+		protected void setMarksOnGui(View aContainer) {
 			TableLayout lay_table = (TableLayout) aContainer.findViewById(R.id.noten_table);
+			lay_table.removeAllViews();
 			addHeaderRow(lay_table);
 			
 			for(Note eachMark : noten) {
@@ -518,7 +565,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setBackgroundResource(R.drawable.border);
 			credits.setBackgroundResource(R.drawable.border);
 			
-			// TextViews in das Layout einfügen...
+			// TextViews in das Layout einfÃ¼gen...
 			row.addView(fach);
 			row.addView(note);
 			row.addView(credits);
@@ -542,7 +589,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setText(aVal2);
 			credits.setText(aVal3);
 			
-			// Die fertige TableRow in das parentLayout einfügen...
+			// Die fertige TableRow in das parentLayout einfÃ¼gen...
 			aLayout.addView(row);
 		}
 		
@@ -552,10 +599,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
 			if (noten.size() == 0) {
-				int result = ((CustomApplication) getActivity()
+				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getMarksForGui();
-				Log.d(logname, "result from getMarksForGui is: " + result);
-				if (result == 0) {
+				while (noten.size() == 0){
 					noten.addAll(theNotenManager.getNoten());
 				}
 			}
@@ -633,7 +679,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 	@Override
 	public void onDialogPositiveClick(SemesterplanExportDialog dialog) {
-		// TODO MBA/Zeitdieb Semesterplan Export anstoßen hier
+		// TODO MBA/Zeitdieb Semesterplan Export anstoÃŸen hier
 		Log.d("TestMBA", "Pos" + dialog.getmSelectedItems());
 	}
 
