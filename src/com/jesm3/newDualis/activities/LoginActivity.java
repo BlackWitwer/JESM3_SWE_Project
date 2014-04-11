@@ -1,14 +1,5 @@
 package com.jesm3.newDualis.activities;
 
-import java.util.ArrayList;
-
-import com.jesm3.newDualis.R;
-import com.jesm3.newDualis.activities.MainActivity;
-import com.jesm3.newDualis.activities.MainActivity.SectionsPagerAdapter;
-import com.jesm3.newDualis.is.CustomApplication;
-import com.jesm3.newDualis.is.User;
-import com.jesm3.newDualis.jinterface.DualisConnection;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -23,6 +14,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+
+import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.is.CustomApplication;
 
 public class LoginActivity extends Activity{
 	
@@ -87,7 +81,7 @@ public class LoginActivity extends Activity{
     	final String thePassword = thePW.getText().toString();
     	final boolean theFlag = theSaveFlag.isChecked();
     	final Activity theActivity = this;
-    	//Im Fall einer Frage nicht zu MBA oder SEW kommen!
+		// Im Fall einer Frage zu MBA oder SEW kommen!
     	new Thread(new Runnable() {
 			
 			@Override
