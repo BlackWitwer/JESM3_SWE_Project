@@ -367,11 +367,30 @@ public class SyncService extends Service implements
 			dbManager.insertNote(newMark);
 		}
 		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
+		// make notification if new mark is available
+		if (oldMarks.size() != 0) {
+			for (int i = 0; i < oldMarks.size(); i++) {
+				Note oldMark = oldMarks.get(i);
+				Note newMark = newMarksList.get(i);
+				if (oldMark.getTitel().equals(newMark.getTitel())
+						&& !oldMark.getCredits().equals(newMark.getCredits())) {
+					// trigger Notification
+					createMarkNotification();
+				}
+			}
+		}
 
 		this.backend.getNotenManager().setNoten(newMarksList);
 	
 
 		return result;
+
+	}
+
+	/**
+	 * Makes the new mark arrived Notification
+	 */
+	private void createMarkNotification() {
 
 	}
 
