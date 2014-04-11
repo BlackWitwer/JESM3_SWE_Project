@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -197,6 +198,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(final View v) {
+		final Activity theActivity = this;
+
 		GUICallbackIF guiCallback = new GUICallbackIF() {
 			
 			@Override
@@ -206,8 +209,16 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			
 			@Override
 			public void refreshLectures() {
-				((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeLectures(v.getRootView());
-				((SectionFragment) mSectionsPagerAdapter.getItem(0)).setLecturesOnGui(v.getRootView());
+				theActivity.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.initializeLectures(v.getRootView());
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.setLecturesOnGui(v.getRootView());
+					}
+				});
 			}
 		};
 		
@@ -234,12 +245,20 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(final View v) {
+		final Activity theActivity = this;
 		GUICallbackIF guiCallback = new GUICallbackIF() {
 			
 			@Override
 			public void refreshMarks() {
-				((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeMarks();
-				((SectionFragment) mSectionsPagerAdapter.getItem(0)).setMarksOnGui(v.getRootView());
+				theActivity.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeMarks();
+						((SectionFragment) mSectionsPagerAdapter.getItem(0)).setMarksOnGui(v.getRootView());						
+					}
+				});
+				
 			}
 			
 			@Override
