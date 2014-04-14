@@ -669,7 +669,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * ActionBar.
 	 */
 	public void logout() {
-		((CustomApplication) getApplication()).getUserManager().logout();
+		((CustomApplication) getApplication()).logout();
 		startActivity(new Intent(this, LoginActivity.class));
 		finish();
 		actionBar.hide();

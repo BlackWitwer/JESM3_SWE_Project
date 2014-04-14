@@ -217,7 +217,7 @@ public class StundenplanGenerator {
 		//Finish Wochenpläne. Fügt leere Wochen ein.
 		SharedPreferences thePrefs = PreferenceManager.getDefaultSharedPreferences(aContext);
 		int lastWeek = thePrefs.getInt(LAST_LOADED_WEEK, 0);
-		calendar.setTime(aVorlesungList.get(0).getUhrzeitBis());
+		calendar.setTime(new Date(System.currentTimeMillis()));
 		int firstWeek = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
 		
 		for (int i = firstWeek; i <= lastWeek; i++) {

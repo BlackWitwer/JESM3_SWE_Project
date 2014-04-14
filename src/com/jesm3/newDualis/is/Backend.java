@@ -42,6 +42,9 @@ public class Backend {
 	}
 	
 	public VorlesungsplanManager getVorlesungsplanManager() {
+		if (vorlesungsplanManager == null) {
+			vorlesungsplanManager = new VorlesungsplanManager();
+		}
 		return vorlesungsplanManager;
 	}
 	
@@ -54,6 +57,9 @@ public class Backend {
 	}
 	
 	public NotenManager getNotenManager() {
+		if (notenManager == null) {
+			notenManager = new NotenManager();
+		}
 		return notenManager;
 	}
 	
@@ -62,5 +68,11 @@ public class Backend {
 			mailManager = new MailManager(this, getCustomApplication().getUserManager().getUser());
 		}
 		return mailManager;
+	}
+	
+	public void logout() {
+		notenManager = null;
+		mailManager = null;
+		vorlesungsplanManager = null;
 	}
 }

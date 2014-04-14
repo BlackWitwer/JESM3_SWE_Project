@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.internet.MailDateFormat;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.jesm3.newDualis.generatedDAO.AbstractMailContainer;
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao;
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao.Properties;
+import com.jesm3.newDualis.generatedDAO.AbstractNote;
 import com.jesm3.newDualis.generatedDAO.AbstractNoteDao;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesung;
 import com.jesm3.newDualis.generatedDAO.AbstractVorlesungDao;
@@ -243,5 +247,20 @@ public class DatabaseManager {
 	
 	public DaoMaster getMaster() {
 		return masterDAO;
+	}
+
+	public void logout() {
+//		for (AbstractNote eachNote : noteDAO.loadAll()) {
+//			noteDAO.delete(eachNote);
+//		}
+//		for (AbstractVorlesung eachVorlesung : vorlesungDAO.loadAll()) {
+//			vorlesungDAO.delete(eachVorlesung);
+//		}
+//		for (AbstractMailContainer eachMail : mailDAO.loadAll()) {
+//			mailDAO.delete(eachMail);
+//		}
+		noteDAO.deleteAll();
+		vorlesungDAO.deleteAll();
+		mailDAO.deleteAll();
 	}
 }

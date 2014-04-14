@@ -61,4 +61,10 @@ public class CustomApplication extends Application {
 	public SyncService getSyncService() {
 		return mBoundSyncService;
 	}
+	
+	public void logout() {
+		getUserManager().logout();
+		getBackend().getDbManager().logout();
+		getBackend().logout();
+	}
 }
