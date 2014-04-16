@@ -48,11 +48,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
 
-		//TODO SEW gibt es hier keine schönere Möglichkeit?
 		try {
 			Backend theBackend = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend();
 			theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
-			if (theMail.getId() > 0) {
+			if (theMail.getId() != null) {
 				theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
 				theBackend.getDbManager().insertMailContainer(theMail);				
 			}
@@ -132,8 +131,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
-		} else {
-			return convertView;
 		}
 
 		TextView lblListFrom = (TextView) convertView
@@ -160,6 +157,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		
 		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
+		} else {
+			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);	
 		}
 		lblListDate.setText(theMessage.getDeltaTime());
 		return convertView;
@@ -293,7 +292,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void run() {
 				notifyDataSetChanged();
-				System.out.println("RUNNNNN");
 			}
 			
 		});

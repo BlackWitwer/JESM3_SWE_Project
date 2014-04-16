@@ -61,6 +61,10 @@ public class MailExpandableListView extends ExpandableListView {
 			refreshFlag = false;
 		}
 		
+		if (scrollY > 0) {
+			deltaY = 0;
+		}
+	
 		return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
 				scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
 	}

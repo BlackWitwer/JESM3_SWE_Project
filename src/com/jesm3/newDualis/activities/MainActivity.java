@@ -633,7 +633,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-//			listAdapter.setMessages(manager.getCachedMails());
+			listAdapter.setMessages(manager.getCachedMails());
 			aView.findViewById(R.id.mailProgressBar).setVisibility(View.VISIBLE);
 			manager.getLatestMessages(10, new MailListener() {
 				@Override
