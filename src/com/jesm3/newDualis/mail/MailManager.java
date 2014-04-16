@@ -217,19 +217,6 @@ public class MailManager {
 	}
 
 	/**
-	 * Gibt die Angegebene Anzahl von Nachrichten zurück. Angefangen bei der Neuesten.
-	 * @param anAmount die Anzahl.
-	 * @return Liste der Nachrichten.
-	 */
-//	public ArrayList<MailContainer> getLatestMessages(int anAmount) {
-//		if (anAmount > getMessageCount()) {
-//			return getMessagesFromTo(1, getMessageCount());
-//		}
-//		return getMessagesFromTo(getMessageCount() - anAmount,
-//				getMessageCount());
-//	}
-
-	/**
 	 * Gibt die Angegebene Anzahl von Nachrichten zurück. Angefangen bei der Neuesten. Wird in einem extra Thread ausgeführt.
 	 * Ergebnis wird per Listener zurückgegeben.
 	 * @param anAmount die Anzahl.
@@ -264,6 +251,24 @@ public class MailManager {
 				}
 			}
 		}).start();
+	}
+	
+	/**
+	 * Läd die übergebene Anzahl alter Nachrichten.
+	 * @param anAmount die Anzahl.
+	 */
+	public void getNextOlderMessage(int anAmount) {
+		long theLowKey = Long.MAX_VALUE;
+		for (MailContainer eachMail : getCachedMails()) {
+			if (eachMail.getUId() < theLowKey) {
+				theLowKey = eachMail.getUId();
+			}
+		}
+		
+		int theResult = 0;
+		while (theResult < anAmount && theLowKey >= 0) {
+			theResult += getMessagesFromTo(theLowKey-anAmount-1, theLowKey-1).size();
+		}
 	}
 	
 	public Collection<MailContainer> getCachedMails() {

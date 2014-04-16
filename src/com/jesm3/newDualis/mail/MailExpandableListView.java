@@ -47,28 +47,6 @@ public class MailExpandableListView extends ExpandableListView {
         
 		mMaxYOverscrollDistance = (int) (density * MAX_Y_OVERSCROLL_DISTANCE);
 	}
-
-	/* (non-Javadoc)
-	 * @see android.widget.AbsListView#onOverScrolled(int, int, boolean, boolean)
-	 */
-	@Override
-	protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
-			boolean clampedY) {
-		super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
-//		final Activity theActivity = (Activity) getContext();
-//		theActivity.runOnUiThread(new Runnable() {
-//			public void run() {
-//				theActivity.findViewById(R.id.mailProgressBar).setVisibility(VISIBLE);
-//			}
-//		});
-//		getMailManager().refreshCache();
-//		((ExpandableListAdapter) getExpandableListAdapter()).setMessages(getMailManager().getCachedMails());
-//		theActivity.runOnUiThread(new Runnable() {
-//			public void run() {
-//				theActivity.findViewById(R.id.mailProgressBar).setVisibility(GONE);
-//			}
-//		});
-	}
 	
 	@Override
 	protected boolean overScrollBy(int deltaX, int deltaY, int scrollX,
@@ -77,10 +55,12 @@ public class MailExpandableListView extends ExpandableListView {
 		if (!refreshFlag && scrollY <= -mMaxYOverscrollDistance) {
 			getMailManager().refreshCache();
 			refreshFlag = true;
+			((ExpandableListAdapter) getExpandableListAdapter()).setMessages(getMailManager().getCachedMails());
 		} else if (scrollY > -mMaxYOverscrollDistance/5) {
 			//Setzt das Flag zurück wenn der Overscroll ein Stück zurück gescrollt wurde.
 			refreshFlag = false;
 		}
+		
 		return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
 				scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
 	}

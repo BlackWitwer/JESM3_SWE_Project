@@ -293,6 +293,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void run() {
 				notifyDataSetChanged();
+				System.out.println("RUNNNNN");
 			}
 			
 		});
