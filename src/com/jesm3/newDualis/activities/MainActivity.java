@@ -198,8 +198,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(final View v) {
-		v.findViewById(R.id.progressSync).setVisibility(View.VISIBLE);
-		v.findViewById(R.id.update_stupla).setEnabled(false);
+		v.getRootView().findViewById(R.id.progressSync)
+				.setVisibility(View.VISIBLE);
+		v.getRootView().findViewById(R.id.update_stupla).setEnabled(false);
 		final Activity theActivity = this;
 
 		GUICallbackIF guiCallback = new GUICallbackIF() {
@@ -247,8 +248,9 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(final View v) {
-		v.findViewById(R.id.progressMarkSync).setVisibility(View.VISIBLE);
-		v.findViewById(R.id.update_marks).setEnabled(false);
+		v.getRootView().findViewById(R.id.progressMarkSync)
+				.setVisibility(View.VISIBLE);
+		v.getRootView().findViewById(R.id.update_marks).setEnabled(false);
 		final Activity theActivity = this;
 		GUICallbackIF guiCallback = new GUICallbackIF() {
 			
