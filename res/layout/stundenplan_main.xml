@@ -162,4 +162,13 @@
             android:text="@string/aktualisieren" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressSync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/lay_buttons"
+        android:layout_toRightOf="@+id/lay_buttons"
+        android:visibility="invisible" />
+
 </RelativeLayout>
