@@ -198,6 +198,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(final View v) {
+		v.findViewById(R.id.progressSync).setVisibility(View.VISIBLE);
+		v.findViewById(R.id.update_stupla).setEnabled(false);
 		final Activity theActivity = this;
 
 		GUICallbackIF guiCallback = new GUICallbackIF() {
@@ -245,6 +247,8 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(final View v) {
+		v.findViewById(R.id.progressMarkSync).setVisibility(View.VISIBLE);
+		v.findViewById(R.id.update_marks).setEnabled(false);
 		final Activity theActivity = this;
 		GUICallbackIF guiCallback = new GUICallbackIF() {
 			
@@ -254,8 +258,11 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					
 					@Override
 					public void run() {
-						((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeMarks();
-						((SectionFragment) mSectionsPagerAdapter.getItem(0)).setMarksOnGui(v.getRootView());						
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.initializeMarks(v.getRootView());
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.setMarksOnGui(v.getRootView());
+
 					}
 				});
 				
@@ -402,11 +409,14 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				Log.d(logname, "stupla is null");
 				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getLecturesforGui();
-				while(stupla == null) {
-					stupla = theVorlesungsplanManager.getWochenplan(cal
-						.get(GregorianCalendar.WEEK_OF_YEAR));
-				}
+
+				aContainer.findViewById(R.id.progressSync).setVisibility(
+						View.VISIBLE);
 				stupla = new Wochenplan();
+			} else {
+				aContainer.findViewById(R.id.progressSync).setVisibility(
+						View.INVISIBLE);
+				aContainer.findViewById(R.id.update_stupla).setEnabled(true);
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
@@ -502,7 +512,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			case 2:
 				rootView = inflater.inflate(R.layout.noten_main, container,
 						false);
-				initializeMarks();
+				initializeMarks(rootView);
 				setMarksOnGui(rootView);
 				rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
@@ -612,7 +622,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			aLayout.addView(row);
 		}
 		
-		private void initializeMarks() {
+		private void initializeMarks(final View aContainer) {
 			//TODO Hier muss noch die anzeige gemacht werden
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
@@ -620,9 +630,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			if (noten.size() == 0) {
 				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getMarksForGui();
-				while (noten.size() == 0){
-					noten.addAll(theNotenManager.getNoten());
-				}
+			} else {
+				aContainer.findViewById(R.id.progressMarkSync).setVisibility(
+						View.INVISIBLE);
+				aContainer.findViewById(R.id.update_marks).setEnabled(true);
 			}
 
 			//noten.addAll()

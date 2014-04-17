@@ -34,4 +34,13 @@
 
     </ScrollView>
 
+    <ProgressBar
+        android:id="@+id/progressMarkSync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/update_marks"
+        android:layout_toRightOf="@+id/update_marks"
+        android:visibility="invisible" />
+
+
 </RelativeLayout>
