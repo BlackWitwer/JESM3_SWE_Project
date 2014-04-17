@@ -202,4 +202,9 @@ public class MailContainer extends AbstractMailContainer {
 		}
 		return super.getText();
 	}
+	
+	@Override
+	public String toString() {
+		return getFrom() + " " + getSubject() + " " + getDeltaTime();
+	}
 }

@@ -33,13 +33,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private ArrayList<MailContainer> messageList;
-	private boolean showProgress;
 	
 	public ExpandableListAdapter(Context context,
 			ArrayList<MailContainer> someMessages) {
 		this.context = context;
 		this.messageList = someMessages;
-		this.showProgress = false;
 	}
 
 	@Override
@@ -48,12 +46,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		MailContainer theMail = (MailContainer) getChild(groupPosition, childPosition);
 
-		//TODO SEW gibt es hier keine schönere Möglichkeit?
 		try {
 			Backend theBackend = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend();
 			theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
-			if (theMail.getId() > 0) {
-				theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
+			theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
+				if (theMail.getId() != null) {
 				theBackend.getDbManager().insertMailContainer(theMail);				
 			}
 		} catch (MessagingException e) {
@@ -122,9 +119,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
-		if (groupPosition == getGroupCount()-1 && showProgress) {
-			return convertView;
-		}
 				
 		MailContainer theMessage = (MailContainer) getGroup(groupPosition);
 		
@@ -253,20 +247,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		return getGroupCount()-1 == groupPosition && showProgress ? 0 : 1;
+		return 1;
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		if (getGroupCount()-1 == groupPosition && showProgress) {
-			return null;
-		}
 		return messageList.get(groupPosition);
 	}
 
 	@Override
 	public int getGroupCount() {
-		return messageList.size() + (showProgress ? 1 : 0);
+		return messageList.size();
 	}
 
 	@Override
@@ -293,7 +284,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void run() {
 				notifyDataSetChanged();
-				System.out.println("RUNNNNN");
 			}
 			
 		});
@@ -304,7 +294,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public int compare(MailContainer lhs, MailContainer rhs) {
-				return lhs.getMessageNumber() < rhs.getMessageNumber() ? 1 : -1;
+				return lhs.getUId() < rhs.getUId() ? 1 : -1;
 			}
 		});
 	}

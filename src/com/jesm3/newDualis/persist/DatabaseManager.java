@@ -250,15 +250,6 @@ public class DatabaseManager {
 	}
 
 	public void logout() {
-//		for (AbstractNote eachNote : noteDAO.loadAll()) {
-//			noteDAO.delete(eachNote);
-//		}
-//		for (AbstractVorlesung eachVorlesung : vorlesungDAO.loadAll()) {
-//			vorlesungDAO.delete(eachVorlesung);
-//		}
-//		for (AbstractMailContainer eachMail : mailDAO.loadAll()) {
-//			mailDAO.delete(eachMail);
-//		}
 		noteDAO.deleteAll();
 		vorlesungDAO.deleteAll();
 		mailDAO.deleteAll();
