@@ -70,14 +70,15 @@ public class DatabaseManager {
 	}
 	
 	/**
+	 * WIRD MOMENTAN NICHT VERWENDET.
 	 * Speichert eine Vorlesung in die Datenbank.
 	 * @param aVorlesung die gespeichert werden soll.
 	 * @return Vorlesung mit DatenbankID.
 	 */
-	public Vorlesung insertVorlesung(Vorlesung aVorlesung) {
-		vorlesungDAO.insert(aVorlesung);
-		return aVorlesung;
-	}
+//	public Vorlesung insertVorlesung(Vorlesung aVorlesung) {
+//		vorlesungDAO.insert(aVorlesung);
+//		return aVorlesung;
+//	}
 	
 	/**
 	 * Löscht je nach Parameter eine Menge von Vorlesungen aus der Datenbank.
@@ -114,6 +115,7 @@ public class DatabaseManager {
 	public void deleteVorlesung(Vorlesung aVorlesung) {
 		vorlesungDAO.delete(aVorlesung);
 	}
+	
 	
 	/**
 	 * Gibt je nach Parameter eine Menge von Vorlesungen zurück.
