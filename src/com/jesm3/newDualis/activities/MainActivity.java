@@ -412,8 +412,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getLecturesforGui();
 
-				aContainer.findViewById(R.id.progressSync).setVisibility(
-						View.VISIBLE);
 				stupla = new Wochenplan();
 			} else {
 				aContainer.findViewById(R.id.progressSync).setVisibility(
@@ -629,6 +627,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
+			Log.d(logname, "noten.size()" + noten.size());
 			if (noten.size() == 0) {
 				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getMarksForGui();
