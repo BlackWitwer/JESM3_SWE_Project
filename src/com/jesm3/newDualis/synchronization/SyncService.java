@@ -217,7 +217,8 @@ public class SyncService extends Service implements
 	private void refreshSyncTimer() {
 
 		timer.cancel();
-		if (syncActive) {
+
+		if (syncActive && syncIntervallMin != 0) {
 			timer = new Timer();
 			timer.schedule(new TimerTask() {
 
