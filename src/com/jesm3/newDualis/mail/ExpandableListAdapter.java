@@ -32,7 +32,7 @@ import java.util.*;
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
-	private ArrayList<MailContainer> messageList;
+	private List<MailContainer> messageList;
 	
 	public ExpandableListAdapter(Context context,
 			ArrayList<MailContainer> someMessages) {
@@ -50,7 +50,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			Backend theBackend = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend();
 			theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
 			theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
-				if (theMail.getId() != null) {
+			if (theMail.getId() != null) {
 				theBackend.getDbManager().insertMailContainer(theMail);				
 			}
 		} catch (MessagingException e) {
@@ -126,8 +126,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			LayoutInflater infalInflater = (LayoutInflater) this.context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.mail_list_group, null);
-		} else {
-			return convertView;
 		}
 
 		TextView lblListFrom = (TextView) convertView
@@ -154,6 +152,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		
 		if (theMessage.getAttachment()) {
 			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(R.drawable.logo, 0, 0, 0);				
+		} else {
+			lblListAttach.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);	
 		}
 		lblListDate.setText(theMessage.getDeltaTime());
 		return convertView;
@@ -276,9 +276,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	}
 
 	public void setMessages(Collection<MailContainer> someMessages) {
-		messageList.clear();
-		messageList.addAll(someMessages);
-		sortMessages();
+		List<MailContainer> theNewList = new ArrayList<MailContainer>();
+		theNewList.addAll(someMessages);
+		sortMessages(theNewList);
+		messageList = theNewList;
 		((Activity) context).runOnUiThread(new Runnable() {
 
 			@Override
@@ -289,8 +290,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		});
 	}
 	
-	private void sortMessages() {
-		Collections.sort(messageList, new Comparator<MailContainer>() {
+	private void sortMessages(List<MailContainer> aList) {
+		Collections.sort(aList, new Comparator<MailContainer>() {
 			
 			@Override
 			public int compare(MailContainer lhs, MailContainer rhs) {
