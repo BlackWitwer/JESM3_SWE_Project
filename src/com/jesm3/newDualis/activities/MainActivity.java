@@ -18,6 +18,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.AvoidXfermode;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -404,13 +405,33 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     	}
         
         private void initializeLectures(final View aContainer) {
+    		final SectionFragment theSectionFragment = this;
+    		GUICallbackIF guiCallback = new GUICallbackIF() {
+    			
+    			@Override
+    			public void refreshMarks() {
+    				//Nichts...
+    			}
+    			
+    			@Override
+    			public void refreshLectures() {
+    				theSectionFragment.getActivity().runOnUiThread(new Runnable() {
+
+    					@Override
+    					public void run() {
+    						initializeLectures(aContainer);
+    						setLecturesOnGui(aContainer);
+    					}
+    				});
+    			}
+    		};
         	final GregorianCalendar cal = new GregorianCalendar();
     		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
 				((CustomApplication) getActivity()
-						.getApplication()).getSyncService().getLecturesforGui();
+						.getApplication()).getSyncService().getLecturesforGui(guiCallback);
 
 				stupla = new Wochenplan();
 			} else {
@@ -623,6 +644,30 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		}
 		
 		private void initializeMarks(final View aContainer) {
+			
+			final SectionFragment theSectionFragment = this;
+			GUICallbackIF guiCallback = new GUICallbackIF() {
+				
+				@Override
+				public void refreshMarks() {
+					theSectionFragment.getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							initializeMarks(aContainer);
+							setMarksOnGui(aContainer);
+
+						}
+					});
+					
+				}
+
+				@Override
+				public void refreshLectures() {
+					//not needed					
+				}
+			};
+				
 			//TODO Hier muss noch die anzeige gemacht werden
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
@@ -630,7 +675,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			Log.d(logname, "noten.size()" + noten.size());
 			if (noten.size() == 0) {
 				((CustomApplication) getActivity()
-						.getApplication()).getSyncService().getMarksForGui();
+						.getApplication()).getSyncService().getMarksForGui(guiCallback);
 			} else {
 				aContainer.findViewById(R.id.progressMarkSync).setVisibility(
 						View.INVISIBLE);
