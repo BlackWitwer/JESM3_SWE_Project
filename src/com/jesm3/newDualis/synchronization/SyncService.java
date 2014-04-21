@@ -116,12 +116,18 @@ public class SyncService extends Service implements
     public void onDestroy() {
     }
 
-	public void getLecturesforGui() {
+	public void getLecturesforGui(final GUICallbackIF aCallbackIF) {
 		List<Wochenplan> parsedWeeks = null;
 		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
 				Requests.REQUEST_ALL);
 		if (oldVorlesungen.size() == 0) {
-			sync();
+			new Thread(new Runnable() {
+				public void run() {
+					sync();
+					if (aCallbackIF != null)
+						refreshLectures(aCallbackIF);
+					}
+			}).start();
 		} else {
 			parsedWeeks = new StundenplanGenerator()
 					.generateWochenplaene(oldVorlesungen, customApplication);
@@ -139,11 +145,17 @@ public class SyncService extends Service implements
 	 * 
 	 * @return result (0 -> OK)
 	 */
-	public void getMarksForGui() {
+	public void getMarksForGui(final GUICallbackIF aCallbackIF) {
 		List<Note> noten = dbManager.getNoten();
 		if (noten.size() == 0) {
 			Log.d(logname, "noten sind " + noten.size());
-			markSync();
+			new Thread(new Runnable() {
+				public void run() {
+					markSync();
+					if (aCallbackIF != null) 
+						refreshMarks(aCallbackIF);
+					}
+			}).start();
 		} else {
 			this.backend.getNotenManager().setNoten((ArrayList<Note>) noten);
 			Log.d(logname, "Noten Ã¼bergeben: " + noten.size());
@@ -263,7 +275,6 @@ public class SyncService extends Service implements
 	 */
 	private void sync() {
 		Log.d(logname, "starting Sync of lectures");
-		// TODO the actual Sync
 		// get the next lectures for safety
 		List<Vorlesung> vorlesungen = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
@@ -276,7 +287,8 @@ public class SyncService extends Service implements
 			newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
 		} catch (Exception e) {
-			Log.e(logname, e.getMessage());
+			Log.e(logname, "Parsing failed");
+			return;
 		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
