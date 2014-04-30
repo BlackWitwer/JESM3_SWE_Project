@@ -400,9 +400,26 @@ public class SyncService extends Service implements
 	}
 
 	/**
+	 * starts the Sync of mails
+	 */
+	private void mailSync() {
+		// TODO mailSync
+
+		// if new mail
+		createMailNotification();
+	}
+
+	/**
 	 * Makes the new mark arrived Notification
 	 */
 	private void createMarkNotification() {
+
+	}
+
+	/**
+	 * Males the new mail arrived Notification
+	 */
+	private void createMailNotification() {
 
 	}
 
