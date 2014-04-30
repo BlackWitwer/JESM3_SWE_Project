@@ -18,7 +18,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.AvoidXfermode;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -276,7 +275,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				//Nichts...
 			}
 		};
-		int result = ((CustomApplication) getApplication()).getSyncService()
+		((CustomApplication) getApplication()).getSyncService()
 				.manualMarkSync(guiCallback);
 		// XXX
 		if (System.currentTimeMillis() - timestamp < 100) {
