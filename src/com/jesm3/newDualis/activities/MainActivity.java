@@ -198,6 +198,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * wird.
 	 */
 	public void updateStupla(final View v) {
+
+		v.getRootView().findViewById(R.id.progressSync)
+				.setVisibility(View.VISIBLE);
+		v.getRootView().findViewById(R.id.update_stupla).setEnabled(false);
 		final Activity theActivity = this;
 
 		GUICallbackIF guiCallback = new GUICallbackIF() {
@@ -245,6 +249,10 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	 * Die Funktion, welche vom Aktualisieren Button der Notenseite aufgerufen wird.
 	 */
 	public void updateNoten(final View v) {
+
+		v.getRootView().findViewById(R.id.progressMarkSync)
+				.setVisibility(View.VISIBLE);
+		v.getRootView().findViewById(R.id.update_marks).setEnabled(false);
 		final Activity theActivity = this;
 		GUICallbackIF guiCallback = new GUICallbackIF() {
 			
@@ -254,8 +262,11 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					
 					@Override
 					public void run() {
-						((SectionFragment) mSectionsPagerAdapter.getItem(0)).initializeMarks();
-						((SectionFragment) mSectionsPagerAdapter.getItem(0)).setMarksOnGui(v.getRootView());						
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.initializeMarks(v.getRootView());
+						((SectionFragment) mSectionsPagerAdapter.getItem(0))
+								.setMarksOnGui(v.getRootView());
+
 					}
 				});
 				
@@ -395,19 +406,39 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
     	}
         
         private void initializeLectures(final View aContainer) {
+    		final SectionFragment theSectionFragment = this;
+    		GUICallbackIF guiCallback = new GUICallbackIF() {
+    			
+    			@Override
+    			public void refreshMarks() {
+    				//Nichts...
+    			}
+    			
+    			@Override
+    			public void refreshLectures() {
+    				theSectionFragment.getActivity().runOnUiThread(new Runnable() {
+
+    					@Override
+    					public void run() {
+    						initializeLectures(aContainer);
+    						setLecturesOnGui(aContainer);
+    					}
+    				});
+    			}
+    		};
         	final GregorianCalendar cal = new GregorianCalendar();
     		final VorlesungsplanManager theVorlesungsplanManager = ((CustomApplication)getActivity().getApplication()).getBackend().getVorlesungsplanManager();
 			stupla = theVorlesungsplanManager.getWochenplan(cal.get(GregorianCalendar.WEEK_OF_YEAR));
 			if (stupla == null) {
 				Log.d(logname, "stupla is null");
-				int result = ((CustomApplication) getActivity()
-						.getApplication()).getSyncService().getLecturesforGui();
-				if (result == 0) {
-					stupla = theVorlesungsplanManager.getWochenplan(cal
-						.get(GregorianCalendar.WEEK_OF_YEAR));
-				} else {
-					stupla = new Wochenplan();
-				}
+				((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getLecturesforGui(guiCallback);
+
+				stupla = new Wochenplan();
+			} else {
+				aContainer.findViewById(R.id.progressSync).setVisibility(
+						View.INVISIBLE);
+				aContainer.findViewById(R.id.update_stupla).setEnabled(true);
 			}
     		HashMap<Integer, Wochenplan> theWochenMap = theVorlesungsplanManager.getWochenMap();
     		
@@ -503,7 +534,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			case 2:
 				rootView = inflater.inflate(R.layout.noten_main, container,
 						false);
-				initializeMarks();
+				initializeMarks(rootView);
 				setMarksOnGui(rootView);
 				rootView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 				break;
@@ -585,7 +616,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setBackgroundResource(R.drawable.border);
 			credits.setBackgroundResource(R.drawable.border);
 			
-			// TextViews in das Layout einfügen...
+			// TextViews in das Layout einfÃ¼gen...
 			row.addView(fach);
 			row.addView(note);
 			row.addView(credits);
@@ -609,22 +640,47 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			note.setText(aVal2);
 			credits.setText(aVal3);
 			
-			// Die fertige TableRow in das parentLayout einfügen...
+			// Die fertige TableRow in das parentLayout einfÃ¼gen...
 			aLayout.addView(row);
 		}
 		
-		private void initializeMarks() {
+		private void initializeMarks(final View aContainer) {
+			
+			final SectionFragment theSectionFragment = this;
+			GUICallbackIF guiCallback = new GUICallbackIF() {
+				
+				@Override
+				public void refreshMarks() {
+					theSectionFragment.getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							initializeMarks(aContainer);
+							setMarksOnGui(aContainer);
+
+						}
+					});
+					
+				}
+
+				@Override
+				public void refreshLectures() {
+					//not needed					
+				}
+			};
+				
 			//TODO Hier muss noch die anzeige gemacht werden
 			noten = new ArrayList<Note>();
 			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
 			noten.addAll(theNotenManager.getNoten()); 
+			Log.d(logname, "noten.size()" + noten.size());
 			if (noten.size() == 0) {
-				int result = ((CustomApplication) getActivity()
-						.getApplication()).getSyncService().getMarksForGui();
-				Log.d(logname, "result from getMarksForGui is: " + result);
-				if (result == 0) {
-					noten.addAll(theNotenManager.getNoten());
-				}
+				((CustomApplication) getActivity()
+						.getApplication()).getSyncService().getMarksForGui(guiCallback);
+			} else {
+				aContainer.findViewById(R.id.progressMarkSync).setVisibility(
+						View.INVISIBLE);
+				aContainer.findViewById(R.id.update_marks).setEnabled(true);
 			}
 
 			//noten.addAll()
@@ -720,7 +776,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 
 	@Override
 	public void onDialogPositiveClick(SemesterplanExportDialog dialog) {
-		// TODO MBA/Zeitdieb Semesterplan Export anstoßen hier
+		// TODO MBA/Zeitdieb Semesterplan Export anstoÃŸen hier
 		Log.d("TestMBA", "Pos" + dialog.getmSelectedItems());
 	}
 
