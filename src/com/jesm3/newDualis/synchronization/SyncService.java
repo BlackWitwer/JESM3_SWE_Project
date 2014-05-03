@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +23,13 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.activities.LoginActivity;
 import com.jesm3.newDualis.activities.MainActivity.GUICallbackIF;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
@@ -329,7 +335,6 @@ public class SyncService extends Service implements
 	 */
 
 	public int manualMarkSync(final GUICallbackIF aCallbackIF) {
-		// TODO asynchronous in extra Thread
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
@@ -346,6 +351,8 @@ public class SyncService extends Service implements
 			result = 1;
 		}
 
+		createMarkNotification();
+		
 		return result;
 	}
 	private void refreshMarks(GUICallbackIF aCallbackIF) {
@@ -414,7 +421,37 @@ public class SyncService extends Service implements
 	 * Makes the new mark arrived Notification
 	 */
 	private void createMarkNotification() {
+		
+		int mId = 1;
+		
+		NotificationCompat.Builder mBuilder =
+		        new NotificationCompat.Builder(this)
+		        .setSmallIcon(R.drawable.logo)
+		        .setContentTitle("My notification")
+		        .setContentText("Hello World!");
+		// Creates an explicit intent for an Activity in your app
+		Intent resultIntent = new Intent(this, LoginActivity.class);
 
+		// The stack builder object will contain an artificial back stack for the
+		// started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// your application to the Home screen.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(LoginActivity.class);
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent =
+		        stackBuilder.getPendingIntent(
+		            0,
+		            PendingIntent.FLAG_UPDATE_CURRENT
+		        );
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager =
+		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// mId allows you to update the notification later on.
+		mNotificationManager.notify(mId, mBuilder.build());
+		
 	}
 
 	/**
