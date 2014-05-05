@@ -92,7 +92,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 	private boolean doubleClicked;
 	private static String logname = "mainActivity";
 	// for nude purpose only
-	private long timestamp = 0;
+	// private long timestamp = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -230,19 +230,24 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		int result = ((CustomApplication) getApplication()).getSyncService()
 				.manualSync(guiCallback);
 		if (result != 0) {
+			// failed
 			Toast.makeText(
 					((CustomApplication) getApplication()).getSyncService(),
 					"Verbindung fehlgeschlagen", Toast.LENGTH_SHORT).show();
+			v.getRootView().findViewById(R.id.progressSync)
+					.setVisibility(View.INVISIBLE);
+			v.getRootView().findViewById(R.id.update_stupla).setEnabled(true);
 		} else {
-
+			// succeeded
 		}
 		getFragmentManager().findFragmentById(R.layout.stundenplan_main);
-		// XXX
-		if (System.currentTimeMillis() - timestamp < 100) {
-			Toast.makeText(((CustomApplication) getApplication()).getSyncService(), "( . )( . )", Toast.LENGTH_SHORT)
-					.show();
-		}
-		timestamp = System.currentTimeMillis();
+		// // XXX
+		// if (System.currentTimeMillis() - timestamp < 100) {
+		// Toast.makeText(((CustomApplication)
+		// getApplication()).getSyncService(), "( . )( . )", Toast.LENGTH_SHORT)
+		// .show();
+		// }
+		// timestamp = System.currentTimeMillis();
 	}
 	
 	/**
@@ -278,13 +283,26 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				//Nichts...
 			}
 		};
-		((CustomApplication) getApplication()).getSyncService()
+		int result = ((CustomApplication) getApplication()).getSyncService()
 				.manualMarkSync(guiCallback);
-		// XXX
-		if (System.currentTimeMillis() - timestamp < 100) {
-			this.startActivity(new Intent(this, SpecialActivity.class));
+
+		if (result != 0) {
+			// failed
+			Toast.makeText(
+					((CustomApplication) getApplication()).getSyncService(),
+					"Verbindung fehlgeschlagen", Toast.LENGTH_SHORT).show();
+			v.getRootView().findViewById(R.id.progressMarkSync)
+					.setVisibility(View.INVISIBLE);
+			v.getRootView().findViewById(R.id.update_marks).setEnabled(true);
+		} else {
+			// succeeded
 		}
-		timestamp = System.currentTimeMillis();
+
+		// XXX
+		// if (System.currentTimeMillis() - timestamp < 100) {
+		// this.startActivity(new Intent(this, SpecialActivity.class));
+		// }
+		// timestamp = System.currentTimeMillis();
 	}
 
 	/**

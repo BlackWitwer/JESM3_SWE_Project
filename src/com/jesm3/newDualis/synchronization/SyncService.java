@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
@@ -139,8 +141,8 @@ public class SyncService extends Service implements
 		if (oldVorlesungen.size() == 0) {
 			new Thread(new Runnable() {
 				public void run() {
-					sync();
-					if (aCallbackIF != null)
+					int result = sync();
+					if (aCallbackIF != null && result == 0)
 						refreshLectures(aCallbackIF);
 					}
 			}).start();
@@ -167,8 +169,8 @@ public class SyncService extends Service implements
 			Log.d(logname, "noten sind " + noten.size());
 			new Thread(new Runnable() {
 				public void run() {
-					markSync();
-					if (aCallbackIF != null) 
+					int result = markSync();
+					if (aCallbackIF != null && result == 0)
 						refreshMarks(aCallbackIF);
 					}
 			}).start();
@@ -308,7 +310,8 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK)
 	 */
-	private void sync() {
+	private int sync() {
+		int result = 0;
 		Log.d(logname, "starting Sync of lectures");
 		// get the next lectures for safety
 		List<Vorlesung> vorlesungen = dbManager
@@ -320,12 +323,15 @@ public class SyncService extends Service implements
 		List<Vorlesung> newLecturesList = null;
 		try {
 			newLecturesList = backend.getConnnection()
-				.loadStundenplan(5);
+.loadStundenplan(5);
 		} catch (Exception e) {
-			Toast.makeText(this, "Synchronisierung fehlgeschlagen",
-					Toast.LENGTH_LONG).show();
+			result = 1;
+			// TODO find solution for this Toast
+			// Toast.makeText(this,
+			// "Stundenplan Synchronisierung fehlgeschlagen",
+			// Toast.LENGTH_LONG).show();
 			Log.e(logname, "Parsing failed");
-			return;
+			return result;
 		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
 		dbManager.deleteVorlesungen(Requests.REQUEST_NEXT);
@@ -355,6 +361,7 @@ public class SyncService extends Service implements
 
 
 		}
+		return result;
 	}
 
 	/**
@@ -380,7 +387,6 @@ public class SyncService extends Service implements
 			result = 1;
 		}
 
-		createMarkNotification();
 		
 		return result;
 	}
@@ -405,6 +411,9 @@ public class SyncService extends Service implements
 		try {
 			newMarksList = backend.getConnnection().loadNoten();
 		} catch (Exception e) {
+			// TODO find solution for this Toast
+			// Toast.makeText(this, "Noten Synchronisierung fehlgeschlagen",
+			// Toast.LENGTH_LONG).show();
 			result = 1;
 			return result;
 		}
@@ -452,12 +461,15 @@ public class SyncService extends Service implements
 	private void createMarkNotification() {
 		
 		int mId = 1;
-		
+		Bitmap bm = BitmapFactory.decodeResource(getResources(),
+				R.drawable.icon);
+
 		NotificationCompat.Builder mBuilder =
 		        new NotificationCompat.Builder(this)
-		        .setSmallIcon(R.drawable.logo)
-		        .setContentTitle("My notification")
-		        .setContentText("Hello World!");
+.setSmallIcon(R.drawable.icon)
+				.setContentTitle("YourDualis")
+				.setContentText("Neue Noten verfügbar")
+.setLargeIcon(bm);
 		// Creates an explicit intent for an Activity in your app
 		Intent resultIntent = new Intent(this, LoginActivity.class);
 
