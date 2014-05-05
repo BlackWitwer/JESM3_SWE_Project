@@ -639,7 +639,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			} else {
 				aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
 			}
-			manager.getLatestMessages(10, new MailListener() {
+			manager.getLatestMessages(MailManager.PERSIST_COUNT, new MailListener() {
 				@Override
 				public void mailReceived() {
 					listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
