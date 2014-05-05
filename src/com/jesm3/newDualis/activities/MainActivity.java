@@ -202,6 +202,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				.setVisibility(View.VISIBLE);
 		v.getRootView().findViewById(R.id.update_stupla).setEnabled(false);
 
+
 		final Activity theActivity = this;
 
 		GUICallbackIF guiCallback = new GUICallbackIF() {
@@ -257,6 +258,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 		v.getRootView().findViewById(R.id.progressMarkSync)
 				.setVisibility(View.VISIBLE);
 		v.getRootView().findViewById(R.id.update_marks).setEnabled(false);
+
 
 		final Activity theActivity = this;
 		GUICallbackIF guiCallback = new GUICallbackIF() {
