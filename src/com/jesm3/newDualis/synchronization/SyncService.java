@@ -47,10 +47,13 @@ public class SyncService extends Service implements
 	private ConnectivityManager connectivityManager;
 
 	SharedPreferences sharedPrefs;
-	private Timer timer = new Timer();
+	private Timer syncTimer = new Timer();
+	private Timer mailTimer = new Timer();
 	// The SyncIntervall in minutes
 	private int syncIntervallMin;
+	private int mailSyncIntervallMin;
 	private boolean syncActive;
+	private boolean mailSyncActive;
 	private Backend backend;
 
 	private DatabaseManager dbManager;
@@ -81,9 +84,12 @@ public class SyncService extends Service implements
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		mailSyncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
-
+		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_MAIL, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		Toast.makeText(this, "Service gestartet", Toast.LENGTH_LONG).show();
@@ -103,8 +109,12 @@ public class SyncService extends Service implements
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		mailSyncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
+		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_MAIL, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -230,18 +240,35 @@ public class SyncService extends Service implements
 
 	private void refreshSyncTimer() {
 
-		timer.cancel();
+		syncTimer.cancel();
 
 		if (syncActive && syncIntervallMin != 0) {
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
+			syncTimer = new Timer();
+			syncTimer.schedule(new TimerTask() {
 
 				@Override
 				public void run() {
 					startAutoSync();
 				}
 			}, syncIntervallMin * 60 * 1000, syncIntervallMin * 60 * 1000);
-			Log.d(logname, "Timer aktualisiert");
+			Log.d(logname, "SyncTimer aktualisiert");
+		}
+	}
+
+	private void refreshMailSyncTimer() {
+		mailTimer.cancel();
+		
+		if (mailSyncActive && mailSyncIntervallMin != 0) {
+			mailTimer = new Timer();
+			mailTimer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					//TODO Mailsync
+					
+				}
+			}, mailSyncIntervallMin * 60 * 1000,
+					mailSyncIntervallMin * 60 * 1000);
 		}
 	}
 
@@ -295,6 +322,8 @@ public class SyncService extends Service implements
 			newLecturesList = backend.getConnnection()
 				.loadStundenplan(5);
 		} catch (Exception e) {
+			Toast.makeText(this, "Synchronisierung fehlgeschlagen",
+					Toast.LENGTH_LONG).show();
 			Log.e(logname, "Parsing failed");
 			return;
 		}
@@ -455,7 +484,7 @@ public class SyncService extends Service implements
 	}
 
 	/**
-	 * Males the new mail arrived Notification
+	 * Makes the new mail arrived Notification
 	 */
 	private void createMailNotification() {
 
