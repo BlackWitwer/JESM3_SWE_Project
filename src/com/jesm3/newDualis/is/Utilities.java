@@ -13,13 +13,26 @@ import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.Wochenplan;
 import com.jesm3.newDualis.stupla.Wochenplan.Days;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class Utilities {
 	public static final Locale LOCALE_GERMANY = Locale.GERMANY;
 
+	/**
+	 * @return true, wenn eine Internetverbindung besteht.
+	 */
+	public static boolean checkConnection(Context aContext) {
+		ConnectivityManager connectivityManager = 
+				(ConnectivityManager) aContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+		return activeNetwork != null && activeNetwork.isConnected();
+	}
+	
 	public static boolean sameDate(Date date1, Date date2) {
 		Calendar cal1 = Calendar.getInstance();
 		Calendar cal2 = Calendar.getInstance();

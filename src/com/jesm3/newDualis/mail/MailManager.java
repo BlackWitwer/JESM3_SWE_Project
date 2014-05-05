@@ -1,5 +1,9 @@
 package com.jesm3.newDualis.mail;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.jesm3.newDualis.is.*;
 
 import java.io.*;
@@ -123,6 +127,11 @@ public class MailManager {
 		while (!loggedIn) {
 		}
 		
+		//keine Internetverbindung.
+		if (!Utilities.checkConnection(backend.getCustomApplication())) {
+			return new ArrayList<MailContainer>();
+		}
+		
 		try {
 //			long temp = to > getFolder().getMessageCount() ? getFolder()
 //					.getMessageCount() : to;
@@ -140,6 +149,11 @@ public class MailManager {
 	}
 	
 	public boolean refreshCache() {
+		//keine Internetverbindung.
+		if (!Utilities.checkConnection(backend.getCustomApplication())) {
+			return false;
+		}
+		
 		try {
 			boolean theRefreshFlag = false;
 			List<Long> theDelKeyList = new ArrayList<Long>();
@@ -229,6 +243,11 @@ public class MailManager {
 			@Override
 			public void run() {
 				while (!loggedIn) {
+				}
+				
+				//keine Internetverbindung.
+				if (!Utilities.checkConnection(backend.getCustomApplication())) {
+					return;
 				}
 				
 				try {
