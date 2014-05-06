@@ -39,8 +39,8 @@ public class DatabaseManager {
 	
 	private Context context;
 	
-	public DatabaseManager(CustomApplication anApplication) {
-		context = anApplication.getApplicationContext();
+	public DatabaseManager(Context anContext) {
+		context = anContext;
 		
 		init();
 	}
