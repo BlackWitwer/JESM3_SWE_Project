@@ -467,7 +467,7 @@ public class SyncService extends Service implements
 		NotificationCompat.Builder mBuilder =
 		        new NotificationCompat.Builder(this)
 .setSmallIcon(R.drawable.icon)
-				.setContentTitle("YourDualis")
+				.setContentTitle(getString(R.string.app_name))
 				.setContentText("Neue Noten verfügbar")
 .setLargeIcon(bm);
 		// Creates an explicit intent for an Activity in your app
