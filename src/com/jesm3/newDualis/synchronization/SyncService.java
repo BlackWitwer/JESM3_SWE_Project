@@ -272,6 +272,7 @@ public class SyncService extends Service implements
 	/**
 	 * The refreshtimer Method for mail
 	 */
+	@SuppressWarnings("unused")
 	private void refreshMailSyncTimer() {
 		mailTimer.cancel();
 		
