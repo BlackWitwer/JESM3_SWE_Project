@@ -227,7 +227,6 @@ public class SyncService extends Service implements
 					&& (prefs.equals("1") || prefs.equals("2"))) {
 				sync();
 				markSync();
-				mailSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
