@@ -55,6 +55,7 @@ public class SyncService extends Service implements
 	private int syncIntervallMin;
 	private int mailSyncIntervallMin;
 	private boolean syncActive;
+	private String prefs;
 	private boolean mailSyncActive;
 	private Backend backend;
 
@@ -88,6 +89,8 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -113,6 +116,8 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -207,8 +212,7 @@ public class SyncService extends Service implements
 		int resultLectures = 0;
 		int resultMarks = 0;
 		int connection = checkConnection();
-		String prefs = sharedPrefs.getString(
-				SettingsFragment.KEY_PREF_CONNECTION, "0");
+
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection in autoSync " + connection);
 		Log.d(logname, "Preferences " + prefs);
@@ -521,6 +525,9 @@ public class SyncService extends Service implements
 				&& syncActive != sharedPreferences.getBoolean(key, false)) {
 			syncActive = sharedPreferences.getBoolean(key, false);
 			refreshSyncTimer();
+		} else if (key.equals(SettingsFragment.KEY_PREF_CONNECTION)
+				&& !prefs.equals(sharedPreferences.getString(key, "0"))) {
+			prefs = sharedPreferences.getString(key, "0");
 		}
 	}
 }
