@@ -7,7 +7,9 @@ import java.util.List;
 import javax.mail.internet.MailDateFormat;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainer;
 import com.jesm3.newDualis.generatedDAO.AbstractMailContainerDao;
@@ -20,6 +22,7 @@ import com.jesm3.newDualis.generatedDAO.DaoMaster;
 import com.jesm3.newDualis.generatedDAO.DaoMaster.DevOpenHelper;
 import com.jesm3.newDualis.generatedDAO.DaoSession;
 import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.is.UserManager;
 import com.jesm3.newDualis.mail.MailContainer;
 import com.jesm3.newDualis.noten.Note;
 import com.jesm3.newDualis.stupla.Vorlesung;

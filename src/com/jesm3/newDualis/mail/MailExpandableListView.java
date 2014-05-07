@@ -4,8 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.widget.ExpandableListView;
+
 import com.jesm3.newDualis.is.*;
+
 import android.app.*;
+
 import com.jesm3.newDualis.*;
 
 public class MailExpandableListView extends ExpandableListView {
@@ -17,6 +20,7 @@ public class MailExpandableListView extends ExpandableListView {
     private Context mContext;
 	private int mMaxYOverscrollDistance;
 	private boolean refreshFlag;
+	private Thread mailLoaderThread;
 	
 	public MailExpandableListView(Context context) {
 		super(context);
@@ -64,7 +68,6 @@ public class MailExpandableListView extends ExpandableListView {
 		if (scrollY > 0) {
 			deltaY = 0;
 		}
-	
 		return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
 				scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
 	}
@@ -76,4 +79,28 @@ public class MailExpandableListView extends ExpandableListView {
 		return mailManager;
 	}
 
+	public void startMailLoaderThread() {
+		if (mailLoaderThread == null) {
+			mailLoaderThread = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					while (true) {
+						ExpandableListAdapter listAdapter = ((ExpandableListAdapter) getExpandableListAdapter());
+						if (getLastVisiblePosition() >= listAdapter.getGroupCount()-2) {
+							getMailManager().getNextOlderMessage(2);
+							listAdapter.setMessages(getMailManager().getCachedMails());
+						}
+						
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			mailLoaderThread.start();
+		}
+	}
 }

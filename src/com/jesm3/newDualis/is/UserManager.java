@@ -12,8 +12,8 @@ import android.util.Base64;
 
 public class UserManager {
 
-	private static final String PREFS_USERNAME = "sharedPrefsUsername";
-	private static final String PREFS_PASSWORD = "sharedPrefsPasswordii";
+	public static final String PREFS_USERNAME = "sharedPrefsUsername";
+	public static final String PREFS_PASSWORD = "sharedPrefsPasswordii";
 	
 	private User user;
 	private Context context;

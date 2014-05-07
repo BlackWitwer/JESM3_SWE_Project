@@ -733,6 +733,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					.findViewById(R.id.mailExpandView);
 			expListView.setAdapter(listAdapter);
 			expListView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+			expListView.startMailLoaderThread();
 			listAdapter.setMessages(manager.getCachedMails());
 			if (manager.getCachedMails().isEmpty()) {
 				aView.findViewById(R.id.mailProgressBar).setVisibility(View.VISIBLE);
@@ -752,26 +753,6 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 					});
 				}
 			});
-			
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					while (true) {
-						if (expListView.getLastVisiblePosition() >= listAdapter.getGroupCount()-1) {
-							System.out.println("LADEN");
-							manager.getNextOlderMessage(2);
-							listAdapter.setMessages(manager.getCachedMails());
-						}
-						
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}).start();
 			
 			expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
 				

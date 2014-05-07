@@ -76,12 +76,16 @@ public class LoginActivity extends Activity{
 		}
     	EditText thePW = (EditText) findViewById(R.id.passwort);
     	CheckBox theSaveFlag = (CheckBox) findViewById(R.id.checkbox_save);
-    	
+
     	final String theName = theUsername;
     	final String thePassword = thePW.getText().toString();
     	final boolean theFlag = theSaveFlag.isChecked();
     	final Activity theActivity = this;
-		// Im Fall einer Frage zu MBA oder SEW kommen!
+    	
+    	//Lösche alle Daten aus der Datenbank.
+    	((CustomApplication) getApplication()).getBackend().getDbManager().logout();
+		
+    	// Im Fall einer Frage zu MBA oder SEW kommen!
     	new Thread(new Runnable() {
 			
 			@Override
