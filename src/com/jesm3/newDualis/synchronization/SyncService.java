@@ -221,17 +221,17 @@ public class SyncService extends Service implements
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection in autoSync " + connection);
 		Log.d(logname, "Preferences " + prefs);
-		if (valid && syncActive) {
+		if (syncActive && valid) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
 				sync();
 				markSync();
-				mailSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
 				sync();
 				markSync();
+				mailSync();
 
 			} else {
 				Log.d(logname, "unmatching settings");
@@ -442,9 +442,11 @@ public class SyncService extends Service implements
 		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
 		// make notification if new mark is available
 		if (oldMarks.size() != 0) {
+			
 			for (int i = 0; i < oldMarks.size(); i++) {
 				Note oldMark = oldMarks.get(i);
 				Note newMark = newMarksList.get(i);
+
 				if (oldMark.getTitel().equals(newMark.getTitel())
 						&& !oldMark.getCredits().equals(newMark.getCredits())) {
 					// trigger Notification
