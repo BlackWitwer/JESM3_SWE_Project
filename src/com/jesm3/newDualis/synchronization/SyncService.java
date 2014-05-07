@@ -171,7 +171,6 @@ public class SyncService extends Service implements
 
 	/**
 	 * For refreshing the marks in the NotenManager
-	 * 
 	 * @return result (0 -> OK)
 	 */
 	public void getMarksForGui(final GUICallbackIF aCallbackIF) {
