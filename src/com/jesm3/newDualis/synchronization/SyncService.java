@@ -57,6 +57,7 @@ public class SyncService extends Service implements
 	private boolean syncActive;
 	private String prefs;
 	private boolean mailSyncActive;
+	private boolean doNotification;
 	private Backend backend;
 
 	private DatabaseManager dbManager;
@@ -89,6 +90,8 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		doNotification = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_NOTIF_ONOFF, false);
 		prefs = sharedPrefs
 				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -116,6 +119,8 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		doNotification = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_NOTIF_ONOFF, false);
 		prefs = sharedPrefs
 				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -262,6 +267,9 @@ public class SyncService extends Service implements
 		}
 	}
 
+	/**
+	 * The refreshtimer Method for mail
+	 */
 	private void refreshMailSyncTimer() {
 		mailTimer.cancel();
 		
@@ -438,7 +446,9 @@ public class SyncService extends Service implements
 				if (oldMark.getTitel().equals(newMark.getTitel())
 						&& !oldMark.getCredits().equals(newMark.getCredits())) {
 					// trigger Notification
-					createMarkNotification();
+					if (doNotification) {
+						createMarkNotification();
+					}
 				}
 			}
 		}
@@ -457,7 +467,9 @@ public class SyncService extends Service implements
 		// TODO mailSync
 
 		// if new mail
-		createMailNotification();
+		if (doNotification) {
+			createMailNotification();
+		}
 	}
 
 	/**
@@ -529,6 +541,9 @@ public class SyncService extends Service implements
 		} else if (key.equals(SettingsFragment.KEY_PREF_CONNECTION)
 				&& !prefs.equals(sharedPreferences.getString(key, "0"))) {
 			prefs = sharedPreferences.getString(key, "0");
+		} else if (key.equals(SettingsFragment.KEY_PREF_NOTIF_ONOFF)
+				&& doNotification != sharedPreferences.getBoolean(key, false)) {
+			doNotification = sharedPreferences.getBoolean(key, false);
 		}
 	}
 }
