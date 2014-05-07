@@ -10,20 +10,28 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.jesm3.newDualis.R;
+import com.jesm3.newDualis.activities.LoginActivity;
 import com.jesm3.newDualis.activities.MainActivity.GUICallbackIF;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
@@ -41,10 +49,14 @@ public class SyncService extends Service implements
 	private ConnectivityManager connectivityManager;
 
 	SharedPreferences sharedPrefs;
-	private Timer timer = new Timer();
+	private Timer syncTimer = new Timer();
+	private Timer mailTimer = new Timer();
 	// The SyncIntervall in minutes
 	private int syncIntervallMin;
+	private int mailSyncIntervallMin;
 	private boolean syncActive;
+	private String prefs;
+	private boolean mailSyncActive;
 	private Backend backend;
 
 	private DatabaseManager dbManager;
@@ -75,9 +87,14 @@ public class SyncService extends Service implements
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		mailSyncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
-
+		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_MAIL, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		Toast.makeText(this, "Service gestartet", Toast.LENGTH_LONG).show();
@@ -97,8 +114,14 @@ public class SyncService extends Service implements
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		syncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
+		mailSyncActive = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
+		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
+				SettingsFragment.KEY_PREF_INTERVALL_MAIL, "720"));
 		connectivityManager = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -116,13 +139,18 @@ public class SyncService extends Service implements
     public void onDestroy() {
     }
 
-	public int getLecturesforGui() {
-		int result = 0;
+	public void getLecturesforGui(final GUICallbackIF aCallbackIF) {
 		List<Wochenplan> parsedWeeks = null;
 		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
 				Requests.REQUEST_ALL);
 		if (oldVorlesungen.size() == 0) {
-			result = sync();
+			new Thread(new Runnable() {
+				public void run() {
+					int result = sync();
+					if (aCallbackIF != null && result == 0)
+						refreshLectures(aCallbackIF);
+					}
+			}).start();
 		} else {
 			parsedWeeks = new StundenplanGenerator()
 					.generateWochenplaene(oldVorlesungen, customApplication);
@@ -133,7 +161,6 @@ public class SyncService extends Service implements
 				// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
 			}
 		}
-		return result;
 	}
 
 	/**
@@ -141,17 +168,21 @@ public class SyncService extends Service implements
 	 * 
 	 * @return result (0 -> OK)
 	 */
-	public int getMarksForGui() {
-		int result = 0;
+	public void getMarksForGui(final GUICallbackIF aCallbackIF) {
 		List<Note> noten = dbManager.getNoten();
 		if (noten.size() == 0) {
 			Log.d(logname, "noten sind " + noten.size());
-			result = markSync();
+			new Thread(new Runnable() {
+				public void run() {
+					int result = markSync();
+					if (aCallbackIF != null && result == 0)
+						refreshMarks(aCallbackIF);
+					}
+			}).start();
 		} else {
 			this.backend.getNotenManager().setNoten((ArrayList<Note>) noten);
-			Log.d(logname, "Noten übergeben: " + noten.size());
+			Log.d(logname, "Noten Ã¼bergeben: " + noten.size());
 		}
-		return result;
 	}
 
 	/**
@@ -181,21 +212,20 @@ public class SyncService extends Service implements
 		int resultLectures = 0;
 		int resultMarks = 0;
 		int connection = checkConnection();
-		String prefs = sharedPrefs.getString(
-				SettingsFragment.KEY_PREF_CONNECTION, "0");
+
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection in autoSync " + connection);
 		Log.d(logname, "Preferences " + prefs);
 		if (valid && syncActive) {
 			if (connection == ConnectivityManager.TYPE_MOBILE
 					&& (prefs.equals("1") || prefs.equals("2"))) {
-				resultLectures = sync();
-				resultMarks = markSync();
+				sync();
+				markSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
-				resultLectures = sync();
-				resultMarks = markSync();
+				sync();
+				markSync();
 
 			} else {
 				Log.d(logname, "unmatching settings");
@@ -216,17 +246,35 @@ public class SyncService extends Service implements
 
 	private void refreshSyncTimer() {
 
-		timer.cancel();
-		if (syncActive) {
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
+		syncTimer.cancel();
+
+		if (syncActive && syncIntervallMin != 0) {
+			syncTimer = new Timer();
+			syncTimer.schedule(new TimerTask() {
 
 				@Override
 				public void run() {
 					startAutoSync();
 				}
 			}, syncIntervallMin * 60 * 1000, syncIntervallMin * 60 * 1000);
-			Log.d(logname, "Timer aktualisiert");
+			Log.d(logname, "SyncTimer aktualisiert");
+		}
+	}
+
+	private void refreshMailSyncTimer() {
+		mailTimer.cancel();
+		
+		if (mailSyncActive && mailSyncIntervallMin != 0) {
+			mailTimer = new Timer();
+			mailTimer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					//TODO Mailsync
+					
+				}
+			}, mailSyncIntervallMin * 60 * 1000,
+					mailSyncIntervallMin * 60 * 1000);
 		}
 	}
 
@@ -235,20 +283,30 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualSync(GUICallbackIF aCallbackIF) {
-		// TODO asynchronous in extra Thread
+
+	public int manualSync(final GUICallbackIF aCallbackIF) {
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
 		int result = 0;
 		if (valid) {
-			result = sync();
-			refreshSyncTimer();
+			new Thread(new Runnable() {
+				public void run() {
+					sync();
+					refreshSyncTimer();
+					if (aCallbackIF != null)
+						refreshLectures(aCallbackIF);
+					}
+			}).start();
 		} else {
 			result = 1;
 		}
-		aCallbackIF.refreshLectures();
+
 		return result;
+	}
+	
+	private void refreshLectures(GUICallbackIF aCallbackIF) {
+		aCallbackIF.refreshLectures();		
 	}
 
 	/**
@@ -257,9 +315,8 @@ public class SyncService extends Service implements
 	 * @return the result (0 -> OK)
 	 */
 	private int sync() {
-		Log.d(logname, "starting Sync of lectures");
 		int result = 0;
-		// TODO the actual Sync
+		Log.d(logname, "starting Sync of lectures");
 		// get the next lectures for safety
 		List<Vorlesung> vorlesungen = dbManager
 				.getVorlesungen(Requests.REQUEST_NEXT);
@@ -270,9 +327,14 @@ public class SyncService extends Service implements
 		List<Vorlesung> newLecturesList = null;
 		try {
 			newLecturesList = backend.getConnnection()
-				.loadStundenplan(5);
+.loadStundenplan(5);
 		} catch (Exception e) {
 			result = 1;
+			// TODO find solution for this Toast
+			// Toast.makeText(this,
+			// "Stundenplan Synchronisierung fehlgeschlagen",
+			// Toast.LENGTH_LONG).show();
+			Log.e(logname, "Parsing failed");
 			return result;
 		}
 		Log.d(logname, "newLecturesList: " + newLecturesList.size());
@@ -300,6 +362,8 @@ public class SyncService extends Service implements
 			this.backend.getVorlesungsplanManager().addWochenplan(eachWoche);
 			// new
 			// StundenplanGenerator().generateWochenplaene(eachWoche.getDay(Days.MONTAG));
+
+
 		}
 		return result;
 	}
@@ -309,20 +373,29 @@ public class SyncService extends Service implements
 	 * 
 	 * @return the result (0 -> OK, 1 -> invalid network)
 	 */
-	public int manualMarkSync(GUICallbackIF aCallbackIF) {
-		// TODO asynchronous in extra Thread
+
+	public int manualMarkSync(final GUICallbackIF aCallbackIF) {
 		int connection = checkConnection();
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection: " + connection);
 		int result = 0;
 		if (valid) {
-			result = markSync();
+			new Thread(new Runnable() {
+				public void run() {
+					markSync();
+					if (aCallbackIF != null)
+						refreshMarks(aCallbackIF);
+				}
+			}).start();
 		} else {
 			result = 1;
 		}
 
-		aCallbackIF.refreshMarks();
+		
 		return result;
+	}
+	private void refreshMarks(GUICallbackIF aCallbackIF) {
+		aCallbackIF.refreshMarks();
 	}
 
 	/**
@@ -333,7 +406,6 @@ public class SyncService extends Service implements
 	public int markSync() {
 		Log.d(logname, "starting Sync of Marks");
 		int result = 0;
-		// TODO the actual Sync
 		// get the next lectures for safety
 		List<Note> oldMarks = dbManager.getNoten();
 		Log.d(logname, "Notenelemente: " + oldMarks.size());
@@ -343,6 +415,9 @@ public class SyncService extends Service implements
 		try {
 			newMarksList = backend.getConnnection().loadNoten();
 		} catch (Exception e) {
+			// TODO find solution for this Toast
+			// Toast.makeText(this, "Noten Synchronisierung fehlgeschlagen",
+			// Toast.LENGTH_LONG).show();
 			result = 1;
 			return result;
 		}
@@ -354,10 +429,80 @@ public class SyncService extends Service implements
 			dbManager.insertNote(newMark);
 		}
 		Log.d(logname, "Elemente in DB: " + dbManager.getNoten().size());
+		// make notification if new mark is available
+		if (oldMarks.size() != 0) {
+			for (int i = 0; i < oldMarks.size(); i++) {
+				Note oldMark = oldMarks.get(i);
+				Note newMark = newMarksList.get(i);
+				if (oldMark.getTitel().equals(newMark.getTitel())
+						&& !oldMark.getCredits().equals(newMark.getCredits())) {
+					// trigger Notification
+					createMarkNotification();
+				}
+			}
+		}
 
 		this.backend.getNotenManager().setNoten(newMarksList);
+	
 
 		return result;
+
+	}
+
+	/**
+	 * starts the Sync of mails
+	 */
+	private void mailSync() {
+		// TODO mailSync
+
+		// if new mail
+		createMailNotification();
+	}
+
+	/**
+	 * Makes the new mark arrived Notification
+	 */
+	private void createMarkNotification() {
+		
+		int mId = 1;
+		Bitmap bm = BitmapFactory.decodeResource(getResources(),
+				R.drawable.icon);
+
+		NotificationCompat.Builder mBuilder =
+		        new NotificationCompat.Builder(this)
+.setSmallIcon(R.drawable.icon)
+				.setContentTitle("YourDualis")
+				.setContentText("Neue Noten verfügbar")
+.setLargeIcon(bm);
+		// Creates an explicit intent for an Activity in your app
+		Intent resultIntent = new Intent(this, LoginActivity.class);
+
+		// The stack builder object will contain an artificial back stack for the
+		// started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// your application to the Home screen.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(LoginActivity.class);
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent =
+		        stackBuilder.getPendingIntent(
+		            0,
+		            PendingIntent.FLAG_UPDATE_CURRENT
+		        );
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager =
+		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// mId allows you to update the notification later on.
+		mNotificationManager.notify(mId, mBuilder.build());
+		
+	}
+
+	/**
+	 * Makes the new mail arrived Notification
+	 */
+	private void createMailNotification() {
 
 	}
 
@@ -380,6 +525,9 @@ public class SyncService extends Service implements
 				&& syncActive != sharedPreferences.getBoolean(key, false)) {
 			syncActive = sharedPreferences.getBoolean(key, false);
 			refreshSyncTimer();
+		} else if (key.equals(SettingsFragment.KEY_PREF_CONNECTION)
+				&& !prefs.equals(sharedPreferences.getString(key, "0"))) {
+			prefs = sharedPreferences.getString(key, "0");
 		}
 	}
 }
