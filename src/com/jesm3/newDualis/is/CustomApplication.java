@@ -5,9 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 
-import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.synchronization.SyncService;
 
 public class CustomApplication extends Application {
