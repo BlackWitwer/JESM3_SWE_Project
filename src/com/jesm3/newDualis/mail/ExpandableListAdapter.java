@@ -26,6 +26,7 @@ import android.widget.*;
 import com.jesm3.newDualis.R;
 import com.jesm3.newDualis.is.Backend;
 import com.jesm3.newDualis.is.CustomApplication;
+import com.jesm3.newDualis.is.Utilities;
 
 import java.util.*;
 
@@ -48,10 +49,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		try {
 			Backend theBackend = ((CustomApplication) ((Activity) parent.getContext()).getApplication()).getBackend();
-			theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
-			theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
-			if (theMail.getId() != null) {
-				theBackend.getDbManager().insertMailContainer(theMail);				
+			
+			if (Utilities.checkConnection(context)) {
+				theMail = theBackend.getMailManager().loadOriginalMessage(theMail);
+				theMail.setSeen(theMail.getOriginalMessage().getFlags().contains(Flag.SEEN));
+				if (theMail.getId() != null) {
+					theBackend.getDbManager().insertMailContainer(theMail);				
+				}
 			}
 		} catch (MessagingException e) {
 			e.printStackTrace();
@@ -89,29 +93,31 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		final View superView = convertView;
 		//FIXME Nach dem Laden aus der DB sind die Attachments erstmal nicht geladen.
-		try {
-			for (final Part eachPart : theMail.getAttachmentList()) {
-				Button theButton = new Button(layout.getContext());
-				theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-				layout.addView(theButton);
-
-				theButton.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						downloadAttachment(superView, eachPart);					
+		if (Utilities.checkConnection(context)) {
+			try {
+				for (final Part eachPart : theMail.getAttachmentList()) {
+					Button theButton = new Button(layout.getContext());
+					theButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+					layout.addView(theButton);
+					
+					theButton.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							downloadAttachment(superView, eachPart);					
+						}
+					});
+					
+					try {
+						theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
+					} catch (MessagingException e) {
+						e.printStackTrace();
 					}
-				});
-
-				try {
-					theButton.setText(eachPart.getFileName() + " " + convertToMinSize(eachPart.getSize()));
-				} catch (MessagingException e) {
-					e.printStackTrace();
 				}
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return convertView;
 	}	

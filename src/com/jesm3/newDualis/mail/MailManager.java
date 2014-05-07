@@ -15,6 +15,8 @@ import javax.mail.*;
 public class MailManager {
 	private final String host = "lehre-mail.dhbw-stuttgart.de";
 	private final int port = 993;
+	
+	public static final int PERSIST_COUNT = 10;
 
 	private User user;
 	private Folder folder;
@@ -211,11 +213,13 @@ public class MailManager {
 				messageIdMap.put(theUid, theMail);
 				
 				int theMessageCount = getFolder().getMessageCount();
-				if (theMail.getMessageNumber() > theMessageCount - 10) {
+				if (theMail.getMessageNumber() > theMessageCount - PERSIST_COUNT) {
+					//Einmal den Text laden, damit dieser mit in der DB gespeichert wird.
+					theMail.getMessageText();
 					backend.getDbManager().insertMailContainer(theMail);
-					if (messageIdMap.containsKey(theMessageCount-10)
-						&& messageIdMap.get(theMessageCount-10).getId() > 0) {
-						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-10));
+					if (messageIdMap.containsKey(theMessageCount-PERSIST_COUNT)
+						&& messageIdMap.get(theMessageCount-PERSIST_COUNT).getId() > 0) {
+						backend.getDbManager().deleteMailContainer(messageIdMap.get(theMessageCount-PERSIST_COUNT));
 					}
 				}
 			} else if (messageIdMap.get(theUid).getOriginalMessage() == null) {

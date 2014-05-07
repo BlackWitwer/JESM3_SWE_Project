@@ -55,7 +55,9 @@ public class SyncService extends Service implements
 	private int syncIntervallMin;
 	private int mailSyncIntervallMin;
 	private boolean syncActive;
+	private String prefs;
 	private boolean mailSyncActive;
+	private boolean doNotification;
 	private Backend backend;
 
 	private DatabaseManager dbManager;
@@ -88,6 +90,10 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		doNotification = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_NOTIF_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -113,6 +119,10 @@ public class SyncService extends Service implements
 				SettingsFragment.KEY_PREF_SYNC_ONOFF, false);
 		mailSyncActive = sharedPrefs.getBoolean(
 				SettingsFragment.KEY_PREF_MAIL_SYNC_ONOFF, false);
+		doNotification = sharedPrefs.getBoolean(
+				SettingsFragment.KEY_PREF_NOTIF_ONOFF, false);
+		prefs = sharedPrefs
+				.getString(SettingsFragment.KEY_PREF_CONNECTION, "0");
 		syncIntervallMin = Integer.parseInt(sharedPrefs.getString(
 				SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
 		mailSyncIntervallMin = Integer.parseInt(sharedPrefs.getString(
@@ -136,7 +146,8 @@ public class SyncService extends Service implements
 
 	public void getLecturesforGui(final GUICallbackIF aCallbackIF) {
 		List<Wochenplan> parsedWeeks = null;
-		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
+		List<Vorlesung> oldVorlesungen = dbManager
+				.getVorlesungen(
 				Requests.REQUEST_ALL);
 		if (oldVorlesungen.size() == 0) {
 			new Thread(new Runnable() {
@@ -207,8 +218,7 @@ public class SyncService extends Service implements
 		int resultLectures = 0;
 		int resultMarks = 0;
 		int connection = checkConnection();
-		String prefs = sharedPrefs.getString(
-				SettingsFragment.KEY_PREF_CONNECTION, "0");
+
 		boolean valid = ConnectivityManager.isNetworkTypeValid(connection);
 		Log.d(logname, "Connection in autoSync " + connection);
 		Log.d(logname, "Preferences " + prefs);
@@ -217,6 +227,7 @@ public class SyncService extends Service implements
 					&& (prefs.equals("1") || prefs.equals("2"))) {
 				sync();
 				markSync();
+				mailSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
@@ -253,10 +264,14 @@ public class SyncService extends Service implements
 					startAutoSync();
 				}
 			}, syncIntervallMin * 60 * 1000, syncIntervallMin * 60 * 1000);
+			// }, 40 * 1000, 40 * 1000);
 			Log.d(logname, "SyncTimer aktualisiert");
 		}
 	}
 
+	/**
+	 * The refreshtimer Method for mail
+	 */
 	private void refreshMailSyncTimer() {
 		mailTimer.cancel();
 		
@@ -433,7 +448,9 @@ public class SyncService extends Service implements
 				if (oldMark.getTitel().equals(newMark.getTitel())
 						&& !oldMark.getCredits().equals(newMark.getCredits())) {
 					// trigger Notification
-					createMarkNotification();
+					if (doNotification) {
+						createMarkNotification();
+					}
 				}
 			}
 		}
@@ -448,11 +465,13 @@ public class SyncService extends Service implements
 	/**
 	 * starts the Sync of mails
 	 */
-	private void mailSync() {
+	public void mailSync() {
 		// TODO mailSync
-
+		backend.getMailManager().sync();
 		// if new mail
-		createMailNotification();
+		if (doNotification) {
+			createMailNotification();
+		}
 	}
 
 	/**
@@ -512,15 +531,21 @@ public class SyncService extends Service implements
 
 			syncIntervallMin = Integer.parseInt(sharedPreferences.getString(
 					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
+			Log.d(logname, "syncintervall changed to " + syncIntervallMin
+					+ " minutes");
 
 
 			refreshSyncTimer();
-			Log.d(logname, "syncintervall changed to " + syncIntervallMin
-					+ " minutes");
 		} else if (key.equals(SettingsFragment.KEY_PREF_SYNC_ONOFF)
 				&& syncActive != sharedPreferences.getBoolean(key, false)) {
 			syncActive = sharedPreferences.getBoolean(key, false);
 			refreshSyncTimer();
+		} else if (key.equals(SettingsFragment.KEY_PREF_CONNECTION)
+				&& !prefs.equals(sharedPreferences.getString(key, "0"))) {
+			prefs = sharedPreferences.getString(key, "0");
+		} else if (key.equals(SettingsFragment.KEY_PREF_NOTIF_ONOFF)
+				&& doNotification != sharedPreferences.getBoolean(key, false)) {
+			doNotification = sharedPreferences.getBoolean(key, false);
 		}
 	}
 }

@@ -228,10 +228,12 @@ public class StundenplanGenerator {
 				calendar.add(GregorianCalendar.DAY_OF_WEEK, -(calendar.get(GregorianCalendar.DAY_OF_WEEK)-2));
 				theWochenplan.setAnfangsDatumDate(calendar.getTime());
 				theWochenplan.setKalenderwoche(calendar.get(GregorianCalendar.WEEK_OF_YEAR));
+				//Hier findet ein Wechsel der Kalenderwoche statt.
 				calendar.add(GregorianCalendar.DAY_OF_WEEK, 6);
 				theWochenplan.setEndDatumDate(calendar.getTime());
+			} else {
+				calendar.add(GregorianCalendar.WEEK_OF_YEAR, 1);
 			}
-			calendar.add(GregorianCalendar.WEEK_OF_YEAR, 1);
 		}
 		
 		//Füllt leere Tage mit einer Freien Tag Vorlesung auf.

@@ -25,7 +25,7 @@ public class Backend {
 		
 		this.connection = new DualisConnection(this);
 		this.vorlesungsplanManager = new VorlesungsplanManager();
-		this.dbManager = new DatabaseManager(customApplication);
+		this.dbManager = new DatabaseManager(customApplication.getApplicationContext());
 		this.notenManager = new NotenManager();
 	}
 	

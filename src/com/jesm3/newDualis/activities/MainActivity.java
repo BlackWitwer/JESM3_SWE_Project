@@ -53,7 +53,7 @@ import com.jesm3.newDualis.mail.MailExpandableListView;
 import com.jesm3.newDualis.mail.MailListener;
 import com.jesm3.newDualis.mail.MailManager;
 import com.jesm3.newDualis.noten.Note;
-import com.jesm3.newDualis.noten.NotenManager;
+import com.jesm3.newDualis.persist.DatabaseManager;
 import com.jesm3.newDualis.stupla.SemesterplanExportDialog;
 import com.jesm3.newDualis.stupla.Vorlesung;
 import com.jesm3.newDualis.stupla.VorlesungsplanManager;
@@ -692,13 +692,17 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 				
 			//TODO Hier muss noch die anzeige gemacht werden
 			noten = new ArrayList<Note>();
-			final NotenManager theNotenManager = ((CustomApplication)getActivity().getApplication()).getBackend().getNotenManager();
-			noten.addAll(theNotenManager.getNoten()); 
-			Log.d(logname, "noten.size()" + noten.size());
+			final DatabaseManager dbManager = ((CustomApplication) getActivity()
+					.getApplication()).getBackend().getDbManager();
+			List<Note> oldNoten = dbManager.getNoten();
+			Log.d(logname, "oldNoten in Main: " + oldNoten.size());
+			noten.addAll(oldNoten);
+			Log.d(logname, "noten.size() in Main: " + noten.size());
 			if (noten.size() == 0) {
 				((CustomApplication) getActivity()
 						.getApplication()).getSyncService().getMarksForGui(guiCallback);
 			} else {
+				setMarksOnGui(aContainer);
 				aContainer.findViewById(R.id.progressMarkSync).setVisibility(
 						View.INVISIBLE);
 				aContainer.findViewById(R.id.update_marks).setEnabled(true);
@@ -735,7 +739,7 @@ public class MainActivity extends FragmentActivity implements SemesterplanExport
 			} else {
 				aView.findViewById(R.id.mailProgressBar).setVisibility(View.GONE);
 			}
-			manager.getLatestMessages(10, new MailListener() {
+			manager.getLatestMessages(MailManager.PERSIST_COUNT, new MailListener() {
 				@Override
 				public void mailReceived() {
 					listAdapter.setMessages(((CustomApplication) getActivity().getApplication()).getBackend().getMailManager().getCachedMails());
