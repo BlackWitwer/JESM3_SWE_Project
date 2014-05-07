@@ -1,7 +1,6 @@
 package com.jesm3.newDualis.settings;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -51,26 +50,9 @@ public class SettingsFragment extends PreferenceFragment implements
 	 */
 	public static final String KEY_PREF_CONNECTION = "pref_key_connection";
 	/**
-	 * Kategorie Benachrichtigungen
-	 */
-	public static final String KEY_PREF_NOTIFICATIONS_CAT = "pref_key_notifications_cat";
-	/**
 	 * Checkbox Benachrichtigungen an/aus
 	 */
 	public static final String KEY_PREF_NOTIF_ONOFF = "pref_key_notif_onoff";
-	/**
-	 * List Intervall Benachrichtigung
-	 */
-	public static final String KEY_PREF_NOTIF_INTERVALL = "pref_key_notif_intervall";
-	/**
-	 * Checkbox Ton
-	 */
-	public static final String KEY_PREF_SOUND = "pref_key_sound";
-	/**
-	 * Checkbox Vibration
-	 */
-	public static final String KEY_PREF_VIBRATION = "pref_key_vibration";
-
 	
 	/**
 	 * Umwandlungsmap
@@ -155,12 +137,6 @@ public class SettingsFragment extends PreferenceFragment implements
 		String sync_connection_val = sharedPref.getString(KEY_PREF_CONNECTION, "");
 		Preference  notif_onoff = findPreference(KEY_PREF_NOTIF_ONOFF);
 		boolean notif_onoff_val = sharedPref.getBoolean(KEY_PREF_NOTIF_ONOFF, false);
-		Preference  notif_intervall = findPreference(KEY_PREF_NOTIF_INTERVALL);
-		String notif_intervall_val = sharedPref.getString(KEY_PREF_NOTIF_INTERVALL, "");
-		Preference  notif_sound = findPreference(KEY_PREF_SOUND);
-		boolean notif_sound_val = sharedPref.getBoolean(KEY_PREF_SOUND, false);
-		Preference  notif_vibration = findPreference(KEY_PREF_VIBRATION);
-		boolean notif_vibration_val = sharedPref.getBoolean(KEY_PREF_VIBRATION, false);
 		
 		if (sync_onoff_val) {
 			sync_onoff.setSummary(R.string.sync_on);
@@ -202,20 +178,6 @@ public class SettingsFragment extends PreferenceFragment implements
 			notif_onoff.setSummary(R.string.notif_on);
 		} else {
 			notif_onoff.setSummary(R.string.notif_off);
-		}
-
-		notif_intervall.setSummary(convertMinutes.get(notif_intervall_val));
-		
-		if (notif_sound_val) {
-			notif_sound.setSummary(R.string.sound_on);
-		} else {
-			notif_sound.setSummary(R.string.sound_off);
-		}
-		
-		if (notif_vibration_val) {
-			notif_vibration.setSummary(R.string.vibration_on);
-		} else {
-			notif_vibration.setSummary(R.string.vibration_off);
 		}
 	}
 

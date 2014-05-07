@@ -227,6 +227,7 @@ public class SyncService extends Service implements
 					&& (prefs.equals("1") || prefs.equals("2"))) {
 				sync();
 				markSync();
+				mailSync();
 
 			} else if (connection == ConnectivityManager.TYPE_WIFI
 					&& (prefs.equals("0") || prefs.equals("2"))) {
@@ -263,6 +264,7 @@ public class SyncService extends Service implements
 					startAutoSync();
 				}
 			}, syncIntervallMin * 60 * 1000, syncIntervallMin * 60 * 1000);
+			// }, 40 * 1000, 40 * 1000);
 			Log.d(logname, "SyncTimer aktualisiert");
 		}
 	}
@@ -463,9 +465,9 @@ public class SyncService extends Service implements
 	/**
 	 * starts the Sync of mails
 	 */
-	private void mailSync() {
+	public void mailSync() {
 		// TODO mailSync
-
+		backend.getMailManager().sync();
 		// if new mail
 		if (doNotification) {
 			createMailNotification();
@@ -529,11 +531,11 @@ public class SyncService extends Service implements
 
 			syncIntervallMin = Integer.parseInt(sharedPreferences.getString(
 					SettingsFragment.KEY_PREF_INTERVALL_SYNC, "720"));
+			Log.d(logname, "syncintervall changed to " + syncIntervallMin
+					+ " minutes");
 
 
 			refreshSyncTimer();
-			Log.d(logname, "syncintervall changed to " + syncIntervallMin
-					+ " minutes");
 		} else if (key.equals(SettingsFragment.KEY_PREF_SYNC_ONOFF)
 				&& syncActive != sharedPreferences.getBoolean(key, false)) {
 			syncActive = sharedPreferences.getBoolean(key, false);
