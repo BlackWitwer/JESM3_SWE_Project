@@ -141,7 +141,8 @@ public class SyncService extends Service implements
 
 	public void getLecturesforGui(final GUICallbackIF aCallbackIF) {
 		List<Wochenplan> parsedWeeks = null;
-		List<Vorlesung> oldVorlesungen = backend.getDbManager().getVorlesungen(
+		List<Vorlesung> oldVorlesungen = dbManager
+				.getVorlesungen(
 				Requests.REQUEST_ALL);
 		if (oldVorlesungen.size() == 0) {
 			new Thread(new Runnable() {
