@@ -448,7 +448,7 @@ public class SyncService extends Service implements
 				Note newMark = newMarksList.get(i);
 
 				if (oldMark.getTitel().equals(newMark.getTitel())
-						&& !oldMark.getCredits().equals(newMark.getCredits())) {
+						&& !oldMark.getNote().equals(newMark.getNote())) {
 					// trigger Notification
 					if (doNotification) {
 						createMarkNotification();
