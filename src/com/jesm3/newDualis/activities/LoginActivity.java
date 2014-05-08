@@ -50,9 +50,9 @@ public class LoginActivity extends Activity{
 		
 		//Nur zu Testzwecken. Unterbindet eine Sicherung die es nicht erlaubt im Interface Thread Netzwerkaktivitäten zu verwenden.
 		//TODO dass muss noch raus.
-		StrictMode.ThreadPolicy policy = new StrictMode.
-				ThreadPolicy.Builder().permitAll().build();
-		StrictMode.setThreadPolicy(policy);
+//		StrictMode.ThreadPolicy policy = new StrictMode.
+//				ThreadPolicy.Builder().permitAll().build();
+//		StrictMode.setThreadPolicy(policy);
 		//-----------------------------------
 		boolean theSuccessFlag = ((CustomApplication)getApplication()).getUserManager().loadUserData();
 		if (theSuccessFlag) {
